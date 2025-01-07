@@ -12,6 +12,7 @@ final class MainView: UIView {
         label.text = "서울시"
         label.font = .systemFont(ofSize: 24, weight: .bold)
         label.textColor = .white
+        label.textAlignment = .left
         return label
     }()
     
@@ -20,6 +21,7 @@ final class MainView: UIView {
         label.text = "Cloudy"
         label.font = .systemFont(ofSize: 16)
         label.textColor = .white
+        label.textAlignment = .left
         return label
     }()
     
@@ -28,6 +30,7 @@ final class MainView: UIView {
         label.text = "18'C"
         label.font = .systemFont(ofSize: 32, weight: .bold)
         label.textColor = .white
+        label.textAlignment = .left
         return label
     }()
 }
