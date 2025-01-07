@@ -117,21 +117,17 @@ final class MainView: UIView {
         topStackView.snp.makeConstraints {
             $0.top.equalTo(safeAreaLayoutGuide).offset(15)
             $0.leading.trailing.equalToSuperview().inset(20)
-//            $0.height.equalTo(450)
         }
         
         mainWeatherBlock.snp.makeConstraints {
-//            $0.height.equalToSuperview().multipliedBy(0.4)
             $0.height.equalTo(170)
         }
         
         feelsLikeBlock.snp.makeConstraints {
-//            $0.height.equalToSuperview().multipliedBy(0.2)
             $0.height.equalTo(80)
         }
         
         windSpeedBlock.snp.makeConstraints {
-//            $0.height.equalToSuperview().multipliedBy(0.3)
             $0.height.equalTo(110)
         }
     }
