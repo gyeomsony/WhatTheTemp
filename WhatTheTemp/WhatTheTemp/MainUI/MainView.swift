@@ -83,4 +83,12 @@ final class MainView: UIView {
         label.text = text
         return label
     }
+    
+    private func makeWeatherIconImageView(_ image: UIImage) -> UIImageView {
+        let imageView = UIImageView()
+        imageView.image = image
+        imageView.contentMode = .scaleAspectFit
+        imageView.frame.size = CGSize(width: 30, height: 30)
+        return imageView
+    }
 }
