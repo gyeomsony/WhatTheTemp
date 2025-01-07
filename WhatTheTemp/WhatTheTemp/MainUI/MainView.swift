@@ -66,7 +66,7 @@ final class MainView: UIView {
         return view
     }()
     
-    private let feelsLikeTemperatureLabel: UILabel = {
+    private let weatherDegreeLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 16, weight: .bold)
         label.textColor = .white
