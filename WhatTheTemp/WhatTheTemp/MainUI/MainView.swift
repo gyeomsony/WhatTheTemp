@@ -22,4 +22,12 @@ final class MainView: UIView {
         label.textColor = .white
         return label
     }()
+    
+    private let temperatureLabel: UILabel = {
+        let label = UILabel()
+        label.text = "18'C"
+        label.font = .systemFont(ofSize: 32, weight: .bold)
+        label.textColor = .white
+        return label
+    }()
 }
