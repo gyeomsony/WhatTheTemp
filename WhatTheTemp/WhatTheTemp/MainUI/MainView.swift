@@ -71,16 +71,17 @@ final class MainView: UIView {
     private lazy var windStackView = VerticalStackView(with: [IconImageView(image: "Wind"),
                                                               windSpeedLabel,
                                                               WeatherTitleLabel("풍속")])
-    
     private let humidityLabel = WeatherDegreeLabel()
     private lazy var humidityStackView = VerticalStackView(with: [IconImageView(image: "Hymidity"),
                                                                   humidityLabel,
                                                                  WeatherTitleLabel("습도")])
-    
     private let rainLabel = WeatherDegreeLabel()
     private lazy var rainStackView = VerticalStackView(with: [IconImageView(image: "Rain"),
                                                               rainLabel,
                                                               WeatherTitleLabel("강수")])
+    private lazy var windSpeedBlock = makeGrayBackgroundView(with: HorizontalStackView(with: [windStackView,
+                                                                                              humidityStackView,
+                                                                                              rainStackView]))
     
     // MARK: - Make UIComponet Methods
     private func makeGrayBackgroundView(with stackView: UIStackView) -> UIView {
