@@ -65,4 +65,13 @@ final class MainView: UIView {
         view.addSubview(mainWeatherStackView)
         return view
     }()
+    
+    private let feelsLikeTemperatureLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 16, weight: .bold)
+        label.textColor = .white
+        label.textAlignment = .center
+        label.text = "-8'C"
+        return label
+    }()
 }
