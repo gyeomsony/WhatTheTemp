@@ -62,6 +62,9 @@ final class MainView: UIView {
     private lazy var feelsLikeTemperatureLabel = makeWeatherDegreeLabel("-8'C")
     private lazy var feelsLikeTitleLabel = makeWeatherTitleLabel("체감")
     
+    private lazy var minTemperatureLabel = makeWeatherDegreeLabel("-1'C")
+    private lazy var minTitleLabel = makeWeatherTitleLabel("최저")
+    
     // MARK: - Make UIComponet Methods
     private func makeGrayBackgroundView(with stackView: UIStackView) -> UIView {
         let view = UIView()
