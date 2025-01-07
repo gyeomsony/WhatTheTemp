@@ -71,6 +71,17 @@ final class MainView: UIView {
     private lazy var maxTemperatureStackView = VerticalStackView(with: [maxTemperatureLabel,
                                                                         WeatherTitleLabel("최고")])
     
+    private let windIconImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = UIImage(named: "Wind")
+        imageView.contentMode = .scaleAspectFit
+        return imageView
+    }()
+    private let windSpeedLabel = WeatherDegreeLabel()
+    private lazy var windStackView = VerticalStackView(with: [windIconImageView,
+                                                              windSpeedLabel,
+                                                              WeatherTitleLabel("풍속")])
+    
     // MARK: - Make UIComponet Methods
     private func makeGrayBackgroundView(with stackView: UIStackView) -> UIView {
         let view = UIView()
