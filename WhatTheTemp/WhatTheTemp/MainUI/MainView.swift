@@ -7,6 +7,7 @@
 import UIKit
 
 final class MainView: UIView {
+    // MARK: - UI Components
     private let locationNameLabel: UILabel = {
         let label = UILabel()
         label.text = "서울시"
@@ -58,6 +59,7 @@ final class MainView: UIView {
         return stackView
     }()
     
+    // MARK: - Make UIComponet Methods
     private func makeGrayBackgroundView(with stackView: UIStackView) -> UIView {
         let view = UIView()
         view.backgroundColor = .lightGray
