@@ -66,9 +66,18 @@ final class MainView: UIView {
         return view
     }
     
-    private func makeweatherDegreeLabel(_ text: String) -> UILabel {
+    private func makeWeatherDegreeLabel(_ text: String) -> UILabel {
         let label = UILabel()
         label.font = .systemFont(ofSize: 16, weight: .bold)
+        label.textColor = .white
+        label.textAlignment = .center
+        label.text = text
+        return label
+    }
+    
+    private func makeWeatherTitleLabel(_ text: String) -> UILabel {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 14, weight: .light)
         label.textColor = .white
         label.textAlignment = .center
         label.text = text
