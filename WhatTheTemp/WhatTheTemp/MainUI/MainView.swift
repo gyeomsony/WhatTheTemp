@@ -83,6 +83,16 @@ final class MainView: UIView {
     private lazy var windSpeedBlock = HorizontalStackView(with: [windStackView,
                                                                  humidityStackView,
                                                                  rainStackView])
+    private lazy var topStackView: UIStackView = {
+        let stackView = UIStackView(arrangedSubviews: [mainWeatherBlock,
+                                                       feelsLikeBlock,
+                                                       windSpeedBlock])
+        stackView.axis = .vertical
+        stackView.distribution = .equalSpacing
+        stackView.alignment = .fill
+        stackView.spacing = 15
+        return stackView
+    }()
     
     // MARK: - Initializer
     override init(frame: CGRect) {
@@ -98,14 +108,28 @@ final class MainView: UIView {
     
     // MARK: - Private Functions
     private func setupSubviews() {
-        [mainWeatherBlock,
-         feelsLikeBlock,
-         windSpeedBlock].forEach { addSubview($0) }
+        self.addSubview(topStackView)
     }
     
     private func setupAutoLayouts() {
+        topStackView.translatesAutoresizingMaskIntoConstraints = false
+        
+        topStackView.snp.makeConstraints {
+            $0.top.equalToSuperview().offset(15)
+            $0.leading.trailing.equalToSuperview().inset(20)
+            $0.height.equalToSuperview().multipliedBy(0.6)
+        }
+        
         mainWeatherBlock.snp.makeConstraints {
-            $0.edges.equalToSuperview().inset(20)
+            $0.height.equalToSuperview().multipliedBy(0.4)
+        }
+        
+        feelsLikeBlock.snp.makeConstraints {
+            $0.height.equalToSuperview().multipliedBy(0.3)
+        }
+        
+        windSpeedBlock.snp.makeConstraints {
+            $0.height.equalToSuperview().multipliedBy(0.3)
         }
     }
 }
