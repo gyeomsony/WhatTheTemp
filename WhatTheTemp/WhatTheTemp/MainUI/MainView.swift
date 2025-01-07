@@ -81,6 +81,11 @@ final class MainView: UIView {
                                                                   humidityLabel,
                                                                  WeatherTitleLabel("습도")])
     
+    private let rainLabel = WeatherDegreeLabel()
+    private lazy var rainStackView = VerticalStackView(with: [IconImageView(image: "Rain"),
+                                                              rainLabel,
+                                                              WeatherTitleLabel("강수")])
+    
     // MARK: - Make UIComponet Methods
     private func makeGrayBackgroundView(with stackView: UIStackView) -> UIView {
         let view = UIView()
