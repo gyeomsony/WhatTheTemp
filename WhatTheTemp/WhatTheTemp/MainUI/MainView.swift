@@ -59,14 +59,14 @@ final class MainView: UIView {
         return stackView
     }()
     
-    private lazy var feelsLikeTemperatureLabel = makeWeatherDegreeLabel("-8'C")
-    private lazy var feelsLikeTitleLabel = makeWeatherTitleLabel("체감")
+    private let feelsLikeTemperatureLabel = WeatherDegreeLabel()
+    private let feelsLikeTitleLabel = WeatherTitleLabel("체감")
     
-    private lazy var minTemperatureLabel = makeWeatherDegreeLabel("-1'C")
-    private lazy var minTitleLabel = makeWeatherTitleLabel("최저")
+    private let minTemperatureLabel = WeatherDegreeLabel()
+    private let minTitleLabel = WeatherTitleLabel("최저")
     
-    private lazy var maxTemperatureLabel = makeWeatherDegreeLabel("3'C")
-    private lazy var maxTitleLabel = makeWeatherTitleLabel("최고")
+    private let maxTemperatureLabel = WeatherDegreeLabel()
+    private let maxTitleLabel = WeatherTitleLabel("최고")
     
     // MARK: - Make UIComponet Methods
     private func makeGrayBackgroundView(with stackView: UIStackView) -> UIView {
@@ -75,24 +75,6 @@ final class MainView: UIView {
         view.layer.cornerRadius = 20
         view.addSubview(stackView)
         return view
-    }
-    
-    private func makeWeatherDegreeLabel(_ text: String) -> UILabel {
-        let label = UILabel()
-        label.font = .systemFont(ofSize: 16, weight: .bold)
-        label.textColor = .white
-        label.textAlignment = .center
-        label.text = text
-        return label
-    }
-    
-    private func makeWeatherTitleLabel(_ text: String) -> UILabel {
-        let label = UILabel()
-        label.font = .systemFont(ofSize: 14, weight: .light)
-        label.textColor = .white
-        label.textAlignment = .center
-        label.text = text
-        return label
     }
     
     private func makeWeatherIconImageView(_ image: UIImage) -> UIImageView {
