@@ -17,6 +17,16 @@ final class HorizontalStackView: UIStackView {
         axis = .horizontal
         distribution = .equalSpacing
         alignment = .fill
+        backgroundColor = .lightGray
+        layer.cornerRadius = 20
+        
+        isLayoutMarginsRelativeArrangement = true
+        layoutMargins = UIEdgeInsets(
+            top: 10,
+            left: 20,
+            bottom: 10,
+            right: 20
+        )
     }
     
     required init(coder: NSCoder) {

@@ -5,6 +5,7 @@
 //  Created by 이명지 on 1/7/25.
 //
 import UIKit
+import SnapKit
 
 final class MainView: UIView {
     // MARK: - UI Components
@@ -51,8 +52,8 @@ final class MainView: UIView {
         return imageView
     }()
     
-    private lazy var mainWeatherBlock = makeGrayBackgroundView(with: HorizontalStackView(with: [mainWeatherTextStackView,
-                                                                                                weatherIconImageView]))
+    private lazy var mainWeatherBlock = HorizontalStackView(with: [mainWeatherTextStackView,
+                                                                   weatherIconImageView])
     
     private let feelsLikeTemperatureLabel = WeatherDegreeLabel()
     private lazy var feelsLikeStackView = VerticalStackView(with: [feelsLikeTemperatureLabel,
@@ -63,9 +64,9 @@ final class MainView: UIView {
     private let maxTemperatureLabel = WeatherDegreeLabel()
     private lazy var maxTemperatureStackView = VerticalStackView(with: [maxTemperatureLabel,
                                                                         WeatherTitleLabel("최고")])
-    private lazy var feelsLikeBlock = makeGrayBackgroundView(with: HorizontalStackView(with: [feelsLikeStackView,
-                                                                                              minTemperatureStackView,
-                                                                                              maxTemperatureStackView]))
+    private lazy var feelsLikeBlock = HorizontalStackView(with: [feelsLikeStackView,
+                                                                 minTemperatureStackView,
+                                                                 maxTemperatureStackView])
     
     private let windSpeedLabel = WeatherDegreeLabel()
     private lazy var windStackView = VerticalStackView(with: [IconImageView(image: "Wind"),
@@ -79,31 +80,32 @@ final class MainView: UIView {
     private lazy var rainStackView = VerticalStackView(with: [IconImageView(image: "Rain"),
                                                               rainLabel,
                                                               WeatherTitleLabel("강수")])
-    private lazy var windSpeedBlock = makeGrayBackgroundView(with: HorizontalStackView(with: [windStackView,
-                                                                                              humidityStackView,
-                                                                                              rainStackView]))
+    private lazy var windSpeedBlock = HorizontalStackView(with: [windStackView,
+                                                                 humidityStackView,
+                                                                 rainStackView])
     
-    // MARK: - Make UIComponet Methods
-    private func makeGrayBackgroundView(with stackView: UIStackView) -> UIView {
-        let view = UIView()
-        view.backgroundColor = .lightGray
-        view.layer.cornerRadius = 20
-        view.addSubview(stackView)
-        return view
-    }
-    
+    // MARK: - Initializer
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupSubviews()
+        setupAutoLayouts()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
+    
+    // MARK: - Private Functions
     private func setupSubviews() {
         [mainWeatherBlock,
          feelsLikeBlock,
          windSpeedBlock].forEach { addSubview($0) }
+    }
+    
+    private func setupAutoLayouts() {
+        mainWeatherBlock.snp.makeConstraints {
+            $0.edges.equalToSuperview().inset(20)
+        }
     }
 }
