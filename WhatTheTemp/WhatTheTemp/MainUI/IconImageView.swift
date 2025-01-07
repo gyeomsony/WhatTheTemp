@@ -12,6 +12,7 @@ final class IconImageView: UIImageView {
         super.init(frame: .zero)
         self.image = UIImage(named: "Wind")
         self.contentMode = .scaleAspectFit
+        self.frame.size = CGSize(width: 30, height: 30)
     }
     
     required init?(coder: NSCoder) {
