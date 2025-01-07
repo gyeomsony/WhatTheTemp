@@ -85,15 +85,6 @@ final class MainView: UIView {
         return imageView
     }
     
-    private func makeVerticalStackView(with views: [UIView]) -> UIStackView {
-        let stackView = UIStackView(arrangedSubviews: views)
-        stackView.axis = .vertical
-        stackView.distribution = .fill
-        stackView.alignment = .center
-        stackView.spacing = 5
-        return stackView
-    }
-    
     override init(frame: CGRect) {
         super.init(frame: frame)
     }
