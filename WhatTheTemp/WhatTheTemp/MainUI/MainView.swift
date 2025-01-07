@@ -14,4 +14,12 @@ final class MainView: UIView {
         label.textColor = .white
         return label
     }()
+    
+    private let weatherLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Cloudy"
+        label.font = .systemFont(ofSize: 16)
+        label.textColor = .white
+        return label
+    }()
 }
