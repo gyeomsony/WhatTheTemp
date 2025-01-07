@@ -60,13 +60,16 @@ final class MainView: UIView {
     }()
     
     private let feelsLikeTemperatureLabel = WeatherDegreeLabel()
-    private let feelsLikeTitleLabel = WeatherTitleLabel("체감")
+    private lazy var feelsLikeStackView = VerticalStackView(with: [feelsLikeTemperatureLabel,
+                                                                  WeatherTitleLabel("체감")])
     
     private let minTemperatureLabel = WeatherDegreeLabel()
-    private let minTitleLabel = WeatherTitleLabel("최저")
+    private lazy var minTemperatureStackView = VerticalStackView(with: [minTemperatureLabel,
+                                                                        WeatherTitleLabel("최저")])
     
     private let maxTemperatureLabel = WeatherDegreeLabel()
-    private let maxTitleLabel = WeatherTitleLabel("최고")
+    private lazy var maxTemperatureStackView = VerticalStackView(with: [maxTemperatureLabel,
+                                                                        WeatherTitleLabel("최고")])
     
     // MARK: - Make UIComponet Methods
     private func makeGrayBackgroundView(with stackView: UIStackView) -> UIView {
