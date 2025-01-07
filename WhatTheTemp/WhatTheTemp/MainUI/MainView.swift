@@ -8,7 +8,7 @@ import UIKit
 import SnapKit
 
 final class MainView: UIView {
-    // MARK: - UI Components
+    // MARK: - 상단 UI Components
     private let locationNameLabel: UILabel = {
         let label = UILabel()
         label.text = "서울시"
@@ -94,6 +94,7 @@ final class MainView: UIView {
         return stackView
     }()
     
+    // MARK: - 하단 UI Components
     private var timeFilterButtons = [UIButton]()
     
     private lazy var timeFilterStackView: UIStackView = {
@@ -104,6 +105,22 @@ final class MainView: UIView {
         stackView.spacing = 15
         return stackView
     }()
+    
+    private lazy var hourlyCollectionView: UICollectionView = {
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: createHourlyCollectionViewLayout())
+        collectionView.backgroundColor = .clear
+        collectionView.showsHorizontalScrollIndicator = false
+        return collectionView
+    }()
+    
+    private func createHourlyCollectionViewLayout() -> UICollectionViewFlowLayout {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
+        layout.minimumInteritemSpacing = 10
+        layout.minimumLineSpacing = 10
+        layout.itemSize = CGSize(width: 80, height: 100)
+        return layout
+    }
     
     // MARK: - Initializer
     override init(frame: CGRect) {
