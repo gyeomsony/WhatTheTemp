@@ -42,4 +42,11 @@ final class MainView: UIView {
         stackView.alignment = .leading
         return stackView
     }()
+    
+    private let weatherIconImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = UIImage(named: "Cloudy")
+        imageView.contentMode = .scaleAspectFit
+        return imageView
+    }()
 }
