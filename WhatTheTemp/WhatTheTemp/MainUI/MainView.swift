@@ -57,4 +57,12 @@ final class MainView: UIView {
         stackView.alignment = .center
         return stackView
     }()
+    
+    private lazy var mainWeatherView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .lightGray
+        view.layer.cornerRadius = 20
+        view.addSubview(mainWeatherStackView)
+        return view
+    }()
 }
