@@ -15,10 +15,10 @@ final class HorizontalStackView: UIStackView {
     convenience init(with views: [UIView]) {
         self.init(arrangedSubviews: views)
         axis = .horizontal
-        distribution = .equalSpacing
-        alignment = .fill
+        distribution = .fillEqually
+        alignment = .center
         backgroundColor = .lightGray
-        layer.cornerRadius = 20
+        layer.cornerRadius = 25
         
         isLayoutMarginsRelativeArrangement = true
         layoutMargins = UIEdgeInsets(
