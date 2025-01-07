@@ -33,4 +33,13 @@ final class MainView: UIView {
         label.textAlignment = .left
         return label
     }()
+    
+    private lazy var mainWeatherTextStackView: UIStackView = {
+        let stackView = UIStackView(arrangedSubviews: [locationNameLabel, weatherLabel, temperatureLabel])
+        stackView.axis = .vertical
+        stackView.spacing = 5
+        stackView.distribution = .fill
+        stackView.alignment = .leading
+        return stackView
+    }()
 }
