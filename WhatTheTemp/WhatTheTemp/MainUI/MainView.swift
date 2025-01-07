@@ -49,4 +49,12 @@ final class MainView: UIView {
         imageView.contentMode = .scaleAspectFit
         return imageView
     }()
+    
+    private lazy var mainWeatherStackView: UIStackView = {
+        let stackView = UIStackView(arrangedSubviews: [mainWeatherTextStackView, weatherIconImageView])
+        stackView.axis = .horizontal
+        stackView.distribution = .equalSpacing
+        stackView.alignment = .center
+        return stackView
+    }()
 }
