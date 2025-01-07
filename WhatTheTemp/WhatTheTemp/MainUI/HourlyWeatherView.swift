@@ -12,7 +12,7 @@ final class HourlyWeatherView: UIView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
+        setupButtons()
     }
     
     required init?(coder: NSCoder) {
@@ -27,7 +27,13 @@ final class HourlyWeatherView: UIView {
             button.setTitleColor(.gray, for: .normal)
             button.setTitleColor(.white, for: .selected)
             button.tag = index
+            button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
             buttons.append(button)
         }
+    }
+    
+    @objc
+    private func buttonTapped(_ sender: UIButton) {
+        
     }
 }
