@@ -95,14 +95,6 @@ final class MainView: UIView {
         return view
     }
     
-    private func makeWeatherIconImageView(_ image: UIImage) -> UIImageView {
-        let imageView = UIImageView()
-        imageView.image = image
-        imageView.contentMode = .scaleAspectFit
-        imageView.frame.size = CGSize(width: 30, height: 30)
-        return imageView
-    }
-    
     override init(frame: CGRect) {
         super.init(frame: frame)
     }
