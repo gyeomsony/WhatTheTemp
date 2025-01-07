@@ -58,20 +58,20 @@ final class MainView: UIView {
         return stackView
     }()
     
-    private let weatherDegreeLabel: UILabel = {
-        let label = UILabel()
-        label.font = .systemFont(ofSize: 16, weight: .bold)
-        label.textColor = .white
-        label.textAlignment = .center
-        label.text = "-8'C"
-        return label
-    }()
-    
     private func makeGrayBackgroundView(with stackView: UIStackView) -> UIView {
         let view = UIView()
         view.backgroundColor = .lightGray
         view.layer.cornerRadius = 20
         view.addSubview(stackView)
         return view
+    }
+    
+    private func makeweatherDegreeLabel(_ text: String) -> UILabel {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 16, weight: .bold)
+        label.textColor = .white
+        label.textAlignment = .center
+        label.text = text
+        return label
     }
 }
