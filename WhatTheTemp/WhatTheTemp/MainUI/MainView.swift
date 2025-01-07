@@ -94,9 +94,16 @@ final class MainView: UIView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        setupSubviews()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    private func setupSubviews() {
+        [mainWeatherBlock,
+         feelsLikeBlock,
+         windSpeedBlock].forEach { addSubview($0) }
     }
 }
