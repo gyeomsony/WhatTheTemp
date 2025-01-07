@@ -94,6 +94,17 @@ final class MainView: UIView {
         return stackView
     }()
     
+    private var timeFilterButtons = [UIButton]()
+    
+    private lazy var timeFilterStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        stackView.distribution = .fillEqually
+        stackView.alignment = .fill
+        stackView.spacing = 15
+        return stackView
+    }()
+    
     // MARK: - Initializer
     override init(frame: CGRect) {
         super.init(frame: frame)
