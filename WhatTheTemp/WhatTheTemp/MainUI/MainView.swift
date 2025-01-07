@@ -40,7 +40,7 @@ final class MainView: UIView {
         let stackView = UIStackView(arrangedSubviews: [locationNameLabel, weatherLabel, temperatureLabel])
         stackView.axis = .vertical
         stackView.spacing = 5
-        stackView.distribution = .fill
+        stackView.distribution = .equalCentering
         stackView.alignment = .leading
         return stackView
     }()
@@ -88,7 +88,7 @@ final class MainView: UIView {
                                                        feelsLikeBlock,
                                                        windSpeedBlock])
         stackView.axis = .vertical
-        stackView.distribution = .equalSpacing
+        stackView.distribution = .fill
         stackView.alignment = .fill
         stackView.spacing = 15
         return stackView
@@ -115,21 +115,24 @@ final class MainView: UIView {
         topStackView.translatesAutoresizingMaskIntoConstraints = false
         
         topStackView.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(15)
+            $0.top.equalTo(safeAreaLayoutGuide).offset(15)
             $0.leading.trailing.equalToSuperview().inset(20)
-            $0.height.equalToSuperview().multipliedBy(0.6)
+//            $0.height.equalTo(450)
         }
         
         mainWeatherBlock.snp.makeConstraints {
-            $0.height.equalToSuperview().multipliedBy(0.4)
+//            $0.height.equalToSuperview().multipliedBy(0.4)
+            $0.height.equalTo(170)
         }
         
         feelsLikeBlock.snp.makeConstraints {
-            $0.height.equalToSuperview().multipliedBy(0.3)
+//            $0.height.equalToSuperview().multipliedBy(0.2)
+            $0.height.equalTo(80)
         }
         
         windSpeedBlock.snp.makeConstraints {
-            $0.height.equalToSuperview().multipliedBy(0.3)
+//            $0.height.equalToSuperview().multipliedBy(0.3)
+            $0.height.equalTo(110)
         }
     }
 }
