@@ -51,13 +51,8 @@ final class MainView: UIView {
         return imageView
     }()
     
-    private lazy var mainWeatherStackView: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [mainWeatherTextStackView, weatherIconImageView])
-        stackView.axis = .horizontal
-        stackView.distribution = .equalSpacing
-        stackView.alignment = .center
-        return stackView
-    }()
+    private lazy var mainWeatherBlock = makeGrayBackgroundView(with: HorizontalStackView(with: [mainWeatherTextStackView,
+                                                                                                weatherIconImageView]))
     
     private let feelsLikeTemperatureLabel = WeatherDegreeLabel()
     private lazy var feelsLikeStackView = VerticalStackView(with: [feelsLikeTemperatureLabel,
