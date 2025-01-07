@@ -58,14 +58,6 @@ final class MainView: UIView {
         return stackView
     }()
     
-    private lazy var grayBackgroundView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .lightGray
-        view.layer.cornerRadius = 20
-        view.addSubview(mainWeatherStackView)
-        return view
-    }()
-    
     private let weatherDegreeLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 16, weight: .bold)
@@ -74,4 +66,12 @@ final class MainView: UIView {
         label.text = "-8'C"
         return label
     }()
+    
+    private func makeGrayBackgroundView(with stackView: UIStackView) -> UIView {
+        let view = UIView()
+        view.backgroundColor = .lightGray
+        view.layer.cornerRadius = 20
+        view.addSubview(stackView)
+        return view
+    }
 }
