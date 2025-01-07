@@ -10,9 +10,11 @@ import UIKit
 final class IconImageView: UIImageView {
     init(image: String) {
         super.init(frame: .zero)
-        self.image = UIImage(named: "Wind")
+        self.image = UIImage(named: "Cloudy")
         self.contentMode = .scaleAspectFit
-        self.frame.size = CGSize(width: 30, height: 30)
+        self.snp.makeConstraints {
+            $0.size.equalTo(CGSize(width: 30, height: 30))
+        }
     }
     
     required init?(coder: NSCoder) {
