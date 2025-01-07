@@ -58,7 +58,7 @@ final class MainView: UIView {
         return stackView
     }()
     
-    private lazy var mainWeatherView: UIView = {
+    private lazy var grayBackgroundView: UIView = {
         let view = UIView()
         view.backgroundColor = .lightGray
         view.layer.cornerRadius = 20
