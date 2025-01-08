@@ -23,6 +23,15 @@ final class WeatherViewController: UIViewController {
         return collectionView
     }()
     
+    private lazy var pageControl: UIPageControl = {
+        let pageControl = UIPageControl()
+        pageControl.numberOfPages = pages.count
+        pageControl.currentPage = 0
+        pageControl.currentPageIndicatorTintColor = .white
+        pageControl.pageIndicatorTintColor = .lightGray
+        return pageControl
+    }()
+    
     private var pages: [Int] = [0, 1]
     
     override func viewDidLoad() {
@@ -34,6 +43,12 @@ final class WeatherViewController: UIViewController {
         view.addSubview(pageCollectionView)
         pageCollectionView.snp.makeConstraints {
             $0.edges.equalToSuperview()
+        }
+        
+        view.addSubview(pageControl)
+        pageControl.snp.makeConstraints {
+            $0.centerX.equalToSuperview()
+            $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-20)
         }
         
         pageCollectionView.delegate = self
@@ -63,5 +78,12 @@ extension WeatherViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         collectionView.dequeueReusableCell(withReuseIdentifier: "WeatherPageCell", for: indexPath) as! WeatherPageCell
+    }
+}
+
+extension WeatherViewController: UICollectionViewDelegate {
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        let currentPage = Int(scrollView.contentOffset.x / scrollView.bounds.width)
+        pageControl.currentPage = currentPage
     }
 }
