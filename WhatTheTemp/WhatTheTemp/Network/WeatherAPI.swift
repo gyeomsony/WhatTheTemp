@@ -1,5 +1,5 @@
 //
-//  ApiManager.swift
+//  WeatherAPI.swift
 //  WhatTheTemp
 //
 //  Created by 손겸 on 1/8/25.
