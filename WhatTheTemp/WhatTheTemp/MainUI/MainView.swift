@@ -8,6 +8,7 @@ import UIKit
 import SnapKit
 
 final class MainView: UIView {
+    
     // MARK: - 상단 UI Components
     private let locationNameLabel: UILabel = {
         let label = UILabel()
@@ -117,6 +118,7 @@ final class MainView: UIView {
         setupSubviews()
         setupButtons()
         setupAutoLayouts()
+        setupDelegates()
     }
     
     required init?(coder: NSCoder) {
@@ -188,4 +190,25 @@ final class MainView: UIView {
         }
         sender.isSelected = true
     }
+    
+    private func setupDelegates() {
+        hourlyCollectionView.delegate = self
+        hourlyCollectionView.dataSource = self
+    }
+}
+
+extension MainView: UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return 6
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "HourlyCollectionViewCell", for: indexPath) as? HourlyCollectionViewCell else {
+            return UICollectionViewCell()
+        }
+        return cell
+    }
+}
+
+extension MainView: UICollectionViewDelegate {
 }
