@@ -1,5 +1,5 @@
 //
-//  MainView.swift
+//  WeatherView.swift
 //  WhatTheTemp
 //
 //  Created by 이명지 on 1/7/25.
@@ -7,7 +7,7 @@
 import UIKit
 import SnapKit
 
-final class MainView: UIView {
+final class WeatherView: UIView {
     
     // MARK: - 상단 UI Components
     // 지역명, 날씨, 기온 표시 컴포넌트
@@ -202,7 +202,7 @@ final class MainView: UIView {
 }
 
 // MARK: - UIUICollectionView DataSource
-extension MainView: UICollectionViewDataSource {
+extension WeatherView: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return 6
     }
@@ -216,5 +216,5 @@ extension MainView: UICollectionViewDataSource {
 }
 
 // MARK: - UICollectionView Delegate
-extension MainView: UICollectionViewDelegate {
+extension WeatherView: UICollectionViewDelegate {
 }
