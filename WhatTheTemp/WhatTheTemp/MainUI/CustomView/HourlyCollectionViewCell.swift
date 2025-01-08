@@ -16,4 +16,7 @@ final class HourlyCollectionViewCell: UICollectionViewCell {
         label.textAlignment = .center
         return label
     }()
+    
+    private let weatherIconImageView = IconImageView(image: "Cloudy")
+    
 }
