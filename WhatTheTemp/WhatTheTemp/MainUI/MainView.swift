@@ -106,9 +106,8 @@ final class MainView: UIView {
     private let timeFilterButtonsStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .horizontal
-        stackView.distribution = .fillEqually
+        stackView.distribution = .equalSpacing
         stackView.alignment = .fill
-        stackView.spacing = 15
         return stackView
     }()
     
@@ -160,12 +159,12 @@ final class MainView: UIView {
         
         timeFilterButtonsStackView.snp.makeConstraints {
             $0.top.equalTo(topStackView.snp.bottom).offset(40)
-            $0.leading.trailing.equalToSuperview().inset(20)
-            $0.height.equalTo(40)
+            $0.leading.trailing.equalToSuperview().inset(40)
+            $0.height.equalTo(30)
         }
         
         hourlyCollectionView.snp.makeConstraints {
-            $0.top.equalTo(timeFilterButtonsStackView.snp.bottom).offset(16)
+            $0.top.equalTo(timeFilterButtonsStackView.snp.bottom).offset(10)
             $0.leading.trailing.equalToSuperview().inset(20)
             $0.height.equalTo(120)
         }
