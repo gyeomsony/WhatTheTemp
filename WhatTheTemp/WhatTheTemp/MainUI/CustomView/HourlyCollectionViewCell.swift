@@ -19,4 +19,11 @@ final class HourlyCollectionViewCell: UICollectionViewCell {
     
     private let weatherIconImageView = IconImageView(image: "Cloudy")
     
+    private let temperatureLabel: UILabel = {
+        let label = UILabel()
+        label.font = .boldSystemFont(ofSize: 16)
+        label.textColor = .white
+        label.textAlignment = .center
+        return label
+    }()
 }
