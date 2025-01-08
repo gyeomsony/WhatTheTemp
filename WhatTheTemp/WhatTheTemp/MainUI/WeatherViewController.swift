@@ -20,4 +20,6 @@ final class WeatherViewController: UIViewController {
         collectionView.showsHorizontalScrollIndicator = false
         return collectionView
     }()
+    
+    private var pages: [Int] = []
 }
