@@ -14,6 +14,7 @@ final class HourlyCollectionViewCell: UICollectionViewCell {
         label.font = .systemFont(ofSize: 12)
         label.textColor = .white
         label.textAlignment = .center
+        label.text = "10am"
         return label
     }()
     
@@ -24,6 +25,7 @@ final class HourlyCollectionViewCell: UICollectionViewCell {
         label.font = .boldSystemFont(ofSize: 16)
         label.textColor = .white
         label.textAlignment = .center
+        label.text = "16'C"
         return label
     }()
     
