@@ -159,4 +159,19 @@ final class MainView: UIView {
             $0.height.equalTo(110)
         }
     }
+    
+    private func setupButtons() {
+        let buttonTitles = ["Today", "Tomorrow", "Next 3 Days"]
+        for (index, title) in buttonTitles.enumerated() {
+            let button = UIButton(type: .system)
+            button.setTitle(title, for: .normal)
+            button.setTitleColor(.gray, for: .normal)
+            button.setTitleColor(.white, for: .selected)
+            button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
+            button.tag = index
+            timeFilterButtons.append(button)
+            timeFilterStackView.addArrangedSubview(button)
+        }
+        timeFilterButtons.first?.isSelected = true
+    }
 }
