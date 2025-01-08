@@ -1,5 +1,5 @@
 //
-//  SearchListTableViewCell.swift
+//  SearchResultListTableViewCell.swift
 //  WhatTheTemp
 //
 //  Created by t2023-m0019 on 1/8/25.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class SearchListTableViewCell: UITableViewCell, ReuseIdentifying {
+final class SearchResultListTableViewCell: UITableViewCell, ReuseIdentifying {
     private let cityName: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 18)
@@ -25,7 +25,7 @@ final class SearchListTableViewCell: UITableViewCell, ReuseIdentifying {
     }
 }
 
-private extension SearchListTableViewCell {
+private extension SearchResultListTableViewCell {
     func setupUI() {
         addSubview(cityName)
     }

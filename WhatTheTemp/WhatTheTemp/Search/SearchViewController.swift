@@ -1,5 +1,5 @@
 //
-//  SearchBarViewController.swift
+//  SearchViewController.swift
 //  WhatTheTemp
 //
 //  Created by t2023-m0019 on 1/8/25.
@@ -9,9 +9,9 @@ import UIKit
 import RxSwift
 import RxCocoa
 
-final class SearchBarViewController: UIViewController {
+final class SearchViewController: UIViewController {
     private var disposeBag = DisposeBag()
-    private lazy var searchListVC = SearchListViewController()
+    private lazy var searchListVC = SearchResultListViewController()
     
     private lazy var searchController: UISearchController = {
         let searchController = UISearchController(searchResultsController: searchListVC)

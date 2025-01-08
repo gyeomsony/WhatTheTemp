@@ -1,5 +1,5 @@
 //
-//  SearchListView.swift
+//  SearchResultLi.swift
 //  WhatTheTemp
 //
 //  Created by t2023-m0019 on 1/8/25.
@@ -8,7 +8,7 @@
 import UIKit
 import SnapKit
 
-final class SearchListView: UIView {
+final class SearchResultListView: UIView {
     lazy var tableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .plain)
         tableView.backgroundColor = .white
@@ -25,7 +25,7 @@ final class SearchListView: UIView {
     }
 }
 
-private extension SearchListView {
+private extension SearchResultListView {
     func setupUI() {
         addSubview(tableView)
     }
@@ -45,17 +45,17 @@ private extension SearchListView {
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = UITableView.automaticDimension
         
-        tableView.register(SearchListTableViewCell.self, forCellReuseIdentifier: SearchListTableViewCell.reuseIdentifier)
+        tableView.register(SearchResultListTableViewCell.self, forCellReuseIdentifier: SearchResultListTableViewCell.reuseIdentifier)
     }
 }
 
-extension SearchListView: UITableViewDelegate, UITableViewDataSource {
+extension SearchResultListView: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 1
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: SearchListTableViewCell.reuseIdentifier, for: indexPath) as? SearchListTableViewCell else {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: SearchResultListTableViewCell.reuseIdentifier, for: indexPath) as? SearchResultListTableViewCell else {
             return UITableViewCell()
         }
         

@@ -1,5 +1,5 @@
 //
-//  SearchListViewController.swift
+//  SearchResultListViewController.swift
 //  WhatTheTemp
 //
 //  Created by t2023-m0019 on 1/8/25.
@@ -7,9 +7,9 @@
 
 import UIKit
 
-final class SearchListViewController: UIViewController {
+final class SearchResultListViewController: UIViewController {
     var searchQuery: String?
-    let searchListView = SearchListView()
+    let searchListView = SearchResultListView()
 
     override func loadView() {
         super.loadView()
