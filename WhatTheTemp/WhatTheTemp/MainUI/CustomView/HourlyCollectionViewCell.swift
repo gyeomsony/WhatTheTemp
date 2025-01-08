@@ -50,4 +50,11 @@ final class HourlyCollectionViewCell: UICollectionViewCell {
     private func setupSubviews() {
         addSubview(stackView)
     }
+    
+    private func setupAutoLayout() {
+        stackView.snp.makeConstraints {
+            $0.top.bottom.equalToSuperview().inset(15)
+            $0.leading.trailing.equalToSuperview().inset(20)
+        }
+    }
 }
