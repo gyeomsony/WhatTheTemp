@@ -40,11 +40,18 @@ final class HourlyCollectionViewCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
+        setupView()
+        setupSubviews()
+        setupAutoLayout()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    private func setupView() {
+        layer.cornerRadius = 20
+        backgroundColor = .lightGray
     }
     
     private func setupSubviews() {
