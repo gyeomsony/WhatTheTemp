@@ -10,6 +10,7 @@ import SnapKit
 final class MainView: UIView {
     
     // MARK: - 상단 UI Components
+    // 지역명, 날씨, 기온 표시 컴포넌트
     private let locationNameLabel: UILabel = {
         let label = UILabel()
         label.text = "서울시"
@@ -56,6 +57,7 @@ final class MainView: UIView {
     private lazy var mainWeatherBlock = HorizontalStackView(with: [mainWeatherTextStackView,
                                                                    weatherIconImageView])
     
+    // 체감온도, 최저온도, 최고온도 표시 컴포넌트
     private let feelsLikeTemperatureLabel = WeatherDegreeLabel()
     private lazy var feelsLikeStackView = VerticalStackView(with: [feelsLikeTemperatureLabel,
                                                                   WeatherTitleLabel("체감")])
@@ -69,6 +71,7 @@ final class MainView: UIView {
                                                                  minTemperatureStackView,
                                                                  maxTemperatureStackView])
     
+    // 풍속, 습도, 강수확률 표시 컴포넌트
     private let windSpeedLabel = WeatherDegreeLabel()
     private lazy var windStackView = VerticalStackView(with: [IconImageView(image: "Wind"),
                                                               windSpeedLabel,
@@ -84,6 +87,8 @@ final class MainView: UIView {
     private lazy var windSpeedBlock = HorizontalStackView(with: [windStackView,
                                                                  humidityStackView,
                                                                  rainStackView])
+    
+    // 오늘 날씨 나타내는 컴포넌트들 묶는 스택뷰
     private lazy var topStackView: UIStackView = {
         let stackView = UIStackView(arrangedSubviews: [mainWeatherBlock,
                                                        feelsLikeBlock,
@@ -197,6 +202,7 @@ final class MainView: UIView {
     }
 }
 
+// MARK: - UIUICollectionView DataSource
 extension MainView: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return 6
@@ -210,5 +216,6 @@ extension MainView: UICollectionViewDataSource {
     }
 }
 
+// MARK: - UICollectionView Delegate
 extension MainView: UICollectionViewDelegate {
 }
