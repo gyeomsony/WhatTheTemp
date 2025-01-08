@@ -11,13 +11,15 @@ final class SearchResultListTableViewCell: UITableViewCell, ReuseIdentifying {
     private let cityName: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 18)
-        label.textColor = .blue
+        label.textColor = UIColor(red: 155/255, green: 155/255, blue: 155/255, alpha: 1.0)
         label.text = "대한민국 서울특별시"
         return label
     }()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        self.selectionStyle = .none
+        self.backgroundColor = UIColor(red: 33/255, green: 33/255, blue: 33/255, alpha: 1.0)
     }
     
     required init?(coder: NSCoder) {

@@ -11,13 +11,14 @@ import SnapKit
 final class SearchResultListView: UIView {
     lazy var tableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .plain)
-        tableView.backgroundColor = .white
         return tableView
     }()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
+        setupConstraint()
+        setupTableView()
     }
     
     required init?(coder: NSCoder) {
@@ -27,6 +28,7 @@ final class SearchResultListView: UIView {
 
 private extension SearchResultListView {
     func setupUI() {
+        self.backgroundColor = UIColor(red: 33/255, green: 33/255, blue: 33/255, alpha: 1.0)
         addSubview(tableView)
     }
     
@@ -39,7 +41,7 @@ private extension SearchResultListView {
     func setupTableView() {
         tableView.delegate = self
         tableView.dataSource = self
-        
+        tableView.backgroundColor = UIColor(red: 33/255, green: 33/255, blue: 33/255, alpha: 1.0)
         tableView.separatorInset.right = 15
         
         tableView.rowHeight = UITableView.automaticDimension

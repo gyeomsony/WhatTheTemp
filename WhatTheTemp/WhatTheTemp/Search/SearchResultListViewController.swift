@@ -9,15 +9,14 @@ import UIKit
 
 final class SearchResultListViewController: UIViewController {
     var searchQuery: String?
-    let searchListView = SearchResultListView()
+    let searchResultListView = SearchResultListView()
 
     override func loadView() {
         super.loadView()
-        self.view = searchListView
+        self.view = searchResultListView
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = UIColor(red: 33/255, green: 33/255, blue: 33/255, alpha: 1.0)
     }
 }
