@@ -47,5 +47,7 @@ final class HourlyCollectionViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    
+    private func setupSubviews() {
+        addSubview(stackView)
+    }
 }
