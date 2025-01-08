@@ -26,4 +26,15 @@ final class HourlyCollectionViewCell: UICollectionViewCell {
         label.textAlignment = .center
         return label
     }()
+    
+    private lazy var stackView: UIStackView = {
+        let stackView = UIStackView(arrangedSubviews: [hourLabel,
+                                                       weatherIconImageView,
+                                                       temperatureLabel])
+        stackView.axis = .vertical
+        stackView.spacing = 8
+        stackView.alignment = .fill
+        stackView.distribution = .fillEqually
+        return stackView
+    }()
 }
