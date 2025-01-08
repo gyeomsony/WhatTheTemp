@@ -38,6 +38,15 @@ final class WeatherViewController: UIViewController {
         pageCollectionView.delegate = self
         pageCollectionView.dataSource = self
     }
+    
+    func addPage() {
+        let newIndex = pages.count
+        pages.append(newIndex)
+        pageCollectionView.reloadData()
+        
+        let indexPath = IndexPath(item: newIndex, section: 0)
+        pageCollectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
+    }
 }
 
 extension WeatherViewController: UICollectionViewDelegate {
