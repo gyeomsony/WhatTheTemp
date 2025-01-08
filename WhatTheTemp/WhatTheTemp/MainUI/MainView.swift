@@ -106,21 +106,10 @@ final class MainView: UIView {
         return stackView
     }()
     
-    private lazy var hourlyCollectionView: UICollectionView = {
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: createHourlyCollectionViewLayout())
-        collectionView.backgroundColor = .clear
-        collectionView.showsHorizontalScrollIndicator = false
+    private lazy var hourlyCollectionView: HourlyCollectionView = {
+        let collectionView = HourlyCollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
         return collectionView
     }()
-    
-    private func createHourlyCollectionViewLayout() -> UICollectionViewFlowLayout {
-        let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .horizontal
-        layout.minimumInteritemSpacing = 10
-        layout.minimumLineSpacing = 10
-        layout.itemSize = CGSize(width: 80, height: 100)
-        return layout
-    }
     
     // MARK: - Initializer
     override init(frame: CGRect) {
