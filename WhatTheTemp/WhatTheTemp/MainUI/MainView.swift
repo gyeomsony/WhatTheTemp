@@ -185,9 +185,18 @@ final class MainView: UIView {
             button.setTitleColor(.white, for: .selected)
             button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
             button.tag = index
+            button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
             timeFilterButtons.append(button)
             timeFilterButtonsStackView.addArrangedSubview(button)
         }
         timeFilterButtons.first?.isSelected = true
+    }
+    
+    @objc
+    private func buttonTapped(_ sender: UIButton) {
+        timeFilterButtons.forEach {
+            $0.isSelected = false
+        }
+        sender.isSelected = true
     }
 }
