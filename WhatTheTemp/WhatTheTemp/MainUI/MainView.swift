@@ -97,7 +97,7 @@ final class MainView: UIView {
     // MARK: - 하단 UI Components
     private var timeFilterButtons = [UIButton]()
     
-    private lazy var timeFilterStackView: UIStackView = {
+    private let timeFilterButtonsStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .horizontal
         stackView.distribution = .fillEqually
@@ -126,6 +126,7 @@ final class MainView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupSubviews()
+        setupButtons()
         setupAutoLayouts()
     }
     
@@ -137,6 +138,8 @@ final class MainView: UIView {
     // MARK: - Private Functions
     private func setupSubviews() {
         self.addSubview(topStackView)
+        self.addSubview(timeFilterButtonsStackView)
+        self.addSubview(hourlyCollectionView)
     }
     
     private func setupAutoLayouts() {
@@ -158,19 +161,32 @@ final class MainView: UIView {
         windSpeedBlock.snp.makeConstraints {
             $0.height.equalTo(110)
         }
+        
+        timeFilterButtonsStackView.snp.makeConstraints {
+            $0.top.equalTo(topStackView.snp.bottom).offset(40)
+            $0.leading.trailing.equalToSuperview().inset(20)
+            $0.height.equalTo(40)
+        }
+        
+        hourlyCollectionView.snp.makeConstraints {
+            $0.top.equalTo(timeFilterButtonsStackView.snp.bottom).offset(16)
+            $0.leading.trailing.equalToSuperview().inset(20)
+            $0.height.equalTo(120)
+        }
     }
     
     private func setupButtons() {
         let buttonTitles = ["Today", "Tomorrow", "Next 3 Days"]
         for (index, title) in buttonTitles.enumerated() {
-            let button = UIButton(type: .system)
+            let button = UIButton(type: .custom)
+            button.backgroundColor = .clear
             button.setTitle(title, for: .normal)
             button.setTitleColor(.gray, for: .normal)
             button.setTitleColor(.white, for: .selected)
             button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
             button.tag = index
             timeFilterButtons.append(button)
-            timeFilterStackView.addArrangedSubview(button)
+            timeFilterButtonsStackView.addArrangedSubview(button)
         }
         timeFilterButtons.first?.isSelected = true
     }
