@@ -15,13 +15,15 @@ final class WeatherViewController: UIViewController {
         layout.minimumInteritemSpacing = 0
         
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.register(WeatherPageCell.self, forCellWithReuseIdentifier: "WeatherPageCell")
         collectionView.backgroundColor = .clear
         collectionView.isPagingEnabled = true
         collectionView.showsHorizontalScrollIndicator = false
+        collectionView.contentInsetAdjustmentBehavior = .never
         return collectionView
     }()
     
-    private var pages: [Int] = []
+    private var pages: [Int] = [0, 1]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,7 +36,6 @@ final class WeatherViewController: UIViewController {
             $0.edges.equalToSuperview()
         }
         
-        pageCollectionView.register(WeatherPageCell.self, forCellWithReuseIdentifier: "WeatherPageCell")
         pageCollectionView.delegate = self
         pageCollectionView.dataSource = self
     }
@@ -49,9 +50,9 @@ final class WeatherViewController: UIViewController {
     }
 }
 
-extension WeatherViewController: UICollectionViewDelegate {
+extension WeatherViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        collectionView.bounds.size
+        view.frame.size
     }
 }
 
