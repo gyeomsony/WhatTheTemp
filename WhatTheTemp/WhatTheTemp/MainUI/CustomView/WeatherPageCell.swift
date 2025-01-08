@@ -22,7 +22,7 @@ final class WeatherPageCell: UICollectionViewCell {
     private func setupWeatherView() {
         contentView.addSubview(weatherView)
         weatherView.snp.makeConstraints {
-            $0.edges.equalTo(contentView)
+            $0.edges.equalToSuperview()
         }
     }
 }
