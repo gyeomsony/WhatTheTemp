@@ -30,6 +30,15 @@ final class WeatherView: UIView {
         return button
     }()
     
+    private let settingButton: UIButton = {
+        let button = UIButton()
+        let config = UIImage.SymbolConfiguration(pointSize: 20, weight: .medium)
+        let image = UIImage(systemName: "gearshape", withConfiguration: config)
+        button.setImage(image, for: .normal)
+        button.tintColor = .clear
+        return button
+    }()
+    
     // MARK: - 상단 UI Components
     // 지역명, 날씨, 기온 표시 컴포넌트
     private let locationNameLabel: UILabel = {
