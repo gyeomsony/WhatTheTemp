@@ -2,7 +2,7 @@
 //  SearchViewController.swift
 //  WhatTheTemp
 //
-//  Created by t2023-m0019 on 1/8/25.
+//  Created by 박시연 on 1/8/25.
 //
 
 import UIKit
@@ -12,19 +12,30 @@ import RxCocoa
 final class SearchViewController: UIViewController {
     private var disposeBag = DisposeBag()
     private lazy var searchListVC = SearchResultListViewController()
+    private let viewModel: SearchViewModel
     
     private lazy var searchController: UISearchController = {
         let searchController = UISearchController(searchResultsController: searchListVC)
         searchController.obscuresBackgroundDuringPresentation = false
+        searchController.searchResultsUpdater = self
         return searchController
     }()
+    
+    init(viewModel: SearchViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor(red: 33/255, green: 33/255, blue: 33/255, alpha: 1.0)
         setupNavigationBar()
         setupSearchController()
-        searchBarBind()
+        bindViewModel()
     }
     
     func setupNavigationBar() {
@@ -66,12 +77,23 @@ final class SearchViewController: UIViewController {
         searchController.searchBar.setValue("취소", forKey: "cancelButtonText") // "Cancel" 텍스트를 "취소"로 변경
     }
     
-    func searchBarBind() {
-        searchController.searchBar.rx.text
-            .compactMap { $0 } // Optional이 아닌 값만 방출
-            .subscribe(onNext: { query in
-                // TODO: - API 호출 구현 추가
+    // ViewModel에 바인딩
+    func bindViewModel() {
+        viewModel.addressList
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] addressList in
+                self?.searchListVC.updateResult(addressList)
             })
             .disposed(by: disposeBag)
+    }
+}
+
+// MARK: - UISearchResultsUpdating Method
+extension SearchViewController: UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        guard let query = searchController.searchBar.text, !query.isEmpty else {
+            return
+        }
+        viewModel.fetchAddressList(query: query) // 검색 결과 업데이트
     }
 }
