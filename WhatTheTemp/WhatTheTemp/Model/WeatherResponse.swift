@@ -46,13 +46,13 @@ struct CurrentWeather: Decodable {
 }
 
 struct HourlyWeather: Decodable {
-    let dt: Int                              // timeIntervalSince1970 값
+    let dateTime: Int                        // timeIntervalSince1970 값
     let temperature: Double                 // 시간 별 온도
     let rain: Int                            // 강수 확률 MARK: current weather에 강수 확률이 없어서 이 값을 현재 강수 확률로 활용해야 할 듯
     let weather: [Weather]                   // 시간 별 날씨 icon에 활용할 날씨 코드
     
     enum CodingKeys: String, CodingKey {
-        case dt
+        case dateTime = "dt"
         case temperature = "temp"
         case rain = "pop"
         case weather
@@ -60,12 +60,12 @@ struct HourlyWeather: Decodable {
 }
 
 struct DailyWeather: Decodable {
-    let dt: Int
+    let dateTime: Int
     let temperature: DailyTemperature
     let weather: [Weather]
     
     enum CodingKeys: String, CodingKey {
-        case dt
+        case dateTime = "dt"
         case temperature = "temp"
         case weather
     }
