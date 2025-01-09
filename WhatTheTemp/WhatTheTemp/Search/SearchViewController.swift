@@ -7,23 +7,26 @@
 
 import UIKit
 import RxSwift
-import RxCocoa
 
 final class SearchViewController: UIViewController {
     private var disposeBag = DisposeBag()
-    private lazy var searchListVC = SearchResultListViewController()
     private let viewModel: SearchViewModel
+    private var searchResultViewModel: SearchResultViewModel?
+    private var searchListVC: SearchResultListViewController?
     
     private lazy var searchController: UISearchController = {
         let searchController = UISearchController(searchResultsController: searchListVC)
         searchController.obscuresBackgroundDuringPresentation = false
-        searchController.searchResultsUpdater = self
         return searchController
     }()
     
     init(viewModel: SearchViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
+        // 초기화 시 viewModel을 기반으로 searchResultViewModel을 초기화
+        searchResultViewModel = SearchResultViewModel(addressList: viewModel.addressList.asObservable())
+        // searchListVC 초기화
+        searchListVC = SearchResultListViewController(viewModel: searchResultViewModel!)
     }
     
     required init?(coder: NSCoder) {
@@ -36,6 +39,7 @@ final class SearchViewController: UIViewController {
         setupNavigationBar()
         setupSearchController()
         bindViewModel()
+        bindSearchBar()
     }
     
     func setupNavigationBar() {
@@ -61,6 +65,7 @@ final class SearchViewController: UIViewController {
             string: "도시명, 우편번호를 입력해주세요.",
             attributes: [NSAttributedString.Key.foregroundColor: UIColor(red: 155/255, green: 155/255, blue: 155/255, alpha: 1.0)]
         )
+        
         // 입력 텍스트 색상 설정
         textField.textColor = UIColor.white
         
@@ -79,21 +84,19 @@ final class SearchViewController: UIViewController {
     
     // ViewModel에 바인딩
     func bindViewModel() {
-        viewModel.addressList
-            .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] addressList in
-                self?.searchListVC.updateResult(addressList)
+        // SearchViewModel에서 데이터를 가져와 SearchResultViewModel에 바인딩
+        searchResultViewModel = SearchResultViewModel(addressList: viewModel.addressList.asObservable())
+    }
+    
+    func bindSearchBar() {
+        searchController.searchBar.rx.text // 검색창 텍스트 변경 이벤트
+            .orEmpty // Optional 제거
+            //.debounce(.milliseconds(300), scheduler: MainScheduler.instance) // 입력 후 300ms 동안 대기
+            .distinctUntilChanged() // 이전 값과 동일하면 무시
+            .filter { !$0.isEmpty } // 비어 있지 않은 값만 처리
+            .subscribe(onNext: { [weak self] query in
+                self?.viewModel.fetchAddressList(query: query) // ViewModel에 데이터 요청
             })
             .disposed(by: disposeBag)
-    }
-}
-
-// MARK: - UISearchResultsUpdating Method
-extension SearchViewController: UISearchResultsUpdating {
-    func updateSearchResults(for searchController: UISearchController) {
-        guard let query = searchController.searchBar.text, !query.isEmpty else {
-            return
-        }
-        viewModel.fetchAddressList(query: query) // 검색 결과 업데이트
     }
 }
