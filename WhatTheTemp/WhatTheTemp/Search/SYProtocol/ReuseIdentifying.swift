@@ -2,7 +2,7 @@
 //  ReuseIdentifying.swift
 //  WhatTheTemp
 //
-//  Created by t2023-m0019 on 1/8/25.
+//  Created by t박시연 on 1/8/25.
 //
 
 protocol ReuseIdentifying: AnyObject {
