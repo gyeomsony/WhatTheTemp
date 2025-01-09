@@ -32,6 +32,7 @@ final class WeatherViewController: UIViewController {
         return pageControl
     }()
     
+    // 테스트로 2페이지 설정
     private var pages: [Int] = [0, 1]
     
     override func viewDidLoad() {
