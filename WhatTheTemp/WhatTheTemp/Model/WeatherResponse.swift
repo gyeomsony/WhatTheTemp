@@ -73,8 +73,12 @@ struct DailyWeather: Decodable {
 
 struct DailyTemperature: Decodable {
     let temperature: Double
+    let minTemperature: Double                  // 최저 기온 MARK: 이 값 역시 현재 날씨 보여주는 view에서 활용
+    let maxTemperature: Double                  // 최고 기온 MARK: 이 값 역시 현재 날씨 보여주는 view에서 활용
     
     enum CodingKeys: String, CodingKey {
         case temperature = "day"
+        case minTemperature = "min"
+        case maxTemperature = "max"
     }
 }
