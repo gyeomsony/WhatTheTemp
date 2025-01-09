@@ -13,7 +13,6 @@ final class WeatherDegreeLabel: UILabel {
         font = .systemFont(ofSize: 16, weight: .bold)
         textColor = .white
         textAlignment = .center
-        text = "-8'C"
     }
     
     required init?(coder: NSCoder) {
