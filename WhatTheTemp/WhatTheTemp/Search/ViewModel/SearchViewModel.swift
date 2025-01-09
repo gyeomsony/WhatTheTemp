@@ -13,8 +13,8 @@ final class SearchViewModel {
     private let repository: KakaoMapRepositoryProtocol
     private let disposeBag = DisposeBag()
     
+    // 주소 리스트를 저장할 BehaviorRelay
     let addressList = BehaviorRelay<[KakaoMapModel.Document]>(value: [])
-    //let addressList = PublishRelay<[KakaoMapModel.Document]>()
 
     init(repository: KakaoMapRepositoryProtocol) {
         self.repository = repository
