@@ -9,6 +9,7 @@ import RxSwift
 import RxCocoa
 
 final class WeatherView: UIView {
+    private let disposeBag = DisposeBag()
     
     // MARK: - 네비게이션 바
     private let navigationBar: UINavigationBar = {
@@ -38,6 +39,14 @@ final class WeatherView: UIView {
         button.tintColor = .clear
         return button
     }()
+    
+    var searchButtonTapped: Observable<Void> {
+        searchButton.rx.tap.asObservable()
+    }
+    
+    var settingButtonTapped: Observable<Void> {
+        settingButton.rx.tap.asObservable()
+    }
     
     // MARK: - 상단 UI Components
     // 지역명, 날씨, 기온 표시 컴포넌트
