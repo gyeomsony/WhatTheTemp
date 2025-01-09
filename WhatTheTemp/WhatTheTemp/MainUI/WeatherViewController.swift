@@ -37,6 +37,7 @@ final class WeatherViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupNavigationBar()
         setupCollectionView()
     }
     
@@ -63,6 +64,25 @@ final class WeatherViewController: UIViewController {
         
         let indexPath = IndexPath(item: newIndex, section: 0)
         pageCollectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
+    }
+    
+    private func setupNavigationBar() {
+        let searchButton = UIBarButtonItem(image: UIImage(systemName: "magnifyingglass"),
+                                         style: .plain,
+                                         target: self,
+                                         action: nil)
+        let settingsButton = UIBarButtonItem(image: UIImage(systemName: "gearshape"),
+                                           style: .plain,
+                                           target: self,
+                                           action: nil)
+        
+        navigationItem.rightBarButtonItem = searchButton
+        navigationItem.leftBarButtonItem = settingsButton
+        
+        navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
+        navigationController?.navigationBar.shadowImage = UIImage()
+        navigationController?.navigationBar.tintColor = .white
+        navigationController?.navigationBar.isTranslucent = true
     }
 }
 

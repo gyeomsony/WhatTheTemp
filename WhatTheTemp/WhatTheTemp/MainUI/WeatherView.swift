@@ -9,44 +9,6 @@ import RxSwift
 import RxCocoa
 
 final class WeatherView: UIView {
-    private let disposeBag = DisposeBag()
-    
-    // MARK: - 네비게이션 바
-    private let navigationBar: UINavigationBar = {
-        let navigationBar = UINavigationBar()
-        navigationBar.setBackgroundImage(UIImage(), for: .default)
-        navigationBar.shadowImage = UIImage()
-        navigationBar.isTranslucent = true
-        return navigationBar
-    }()
-    
-    private let navigationItem = UINavigationItem()
-    
-    private let searchButton: UIButton = {
-        let button = UIButton()
-        let config = UIImage.SymbolConfiguration(pointSize: 20, weight: .medium)
-        let image = UIImage(systemName: "magnifyingglass", withConfiguration: config)
-        button.setImage(image, for: .normal)
-        button.tintColor = .clear
-        return button
-    }()
-    
-    private let settingButton: UIButton = {
-        let button = UIButton()
-        let config = UIImage.SymbolConfiguration(pointSize: 20, weight: .medium)
-        let image = UIImage(systemName: "gearshape", withConfiguration: config)
-        button.setImage(image, for: .normal)
-        button.tintColor = .clear
-        return button
-    }()
-    
-    var searchButtonTapped: Observable<Void> {
-        searchButton.rx.tap.asObservable()
-    }
-    
-    var settingButtonTapped: Observable<Void> {
-        settingButton.rx.tap.asObservable()
-    }
     
     // MARK: - 상단 UI Components
     // 지역명, 날씨, 기온 표시 컴포넌트
@@ -177,8 +139,6 @@ final class WeatherView: UIView {
     }
     
     private func setupAutoLayouts() {
-        topStackView.translatesAutoresizingMaskIntoConstraints = false
-        
         topStackView.snp.makeConstraints {
             $0.top.equalTo(safeAreaLayoutGuide).offset(15)
             $0.leading.trailing.equalToSuperview().inset(20)
