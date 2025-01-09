@@ -10,4 +10,6 @@ import Moya
 
 final class ApiManager {
     private let provider = MoyaProvider<WeatherAPI>()
+    
+    // fetchWeather 메서드 구현 예정
 }
