@@ -139,10 +139,8 @@ final class WeatherView: UIView {
     }
     
     private func setupAutoLayouts() {
-        topStackView.translatesAutoresizingMaskIntoConstraints = false
-        
         topStackView.snp.makeConstraints {
-            $0.top.equalTo(safeAreaLayoutGuide).offset(15)
+            $0.top.equalTo(safeAreaLayoutGuide).offset(20)
             $0.leading.trailing.equalToSuperview().inset(20)
         }
         
