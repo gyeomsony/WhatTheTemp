@@ -10,9 +10,7 @@ import Moya
 
 enum WeatherAPI {
     case oneCall(lat: Double,      // 위도
-                 lon: Double,      // 경도
-                 exclude: String,  // 제외할 항목
-                 units: String)    // 단위 (metric = 온도 섭씨 (°C))
+                 lon: Double)    // 경도
 }
 
 extension WeatherAPI: TargetType {
@@ -33,19 +31,20 @@ extension WeatherAPI: TargetType {
     
     var task: Moya.Task {
         switch self {
-        case let .oneCall(lat, lon, exclude, units):
+        case let .oneCall(lat, lon):
             let parameters: [String: Any] = [
                 "lat": lat,
                 "lon": lon,
-                "exclude": exclude,
-                "units": units,
-                //"appid": APIKey.openWeatherMap
+                "exclude": "minutely,alerts",
+                "units": "metric",
+                "lang": "kr",
+                "appid": APIKey.openWeatherMap
             ]
             return .requestParameters(parameters: parameters, encoding: URLEncoding.default)
         }
     }
     
     var headers: [String : String]? {
-        ["Content-Type": "application/json"]
+        nil
     }
 }
