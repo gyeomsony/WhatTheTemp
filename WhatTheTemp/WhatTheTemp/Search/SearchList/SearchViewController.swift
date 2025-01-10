@@ -13,7 +13,8 @@ final class SearchViewController: UIViewController {
     private let viewModel: SearchViewModel
     private var searchResultViewModel: SearchResultViewModel?
     private var searchListVC: SearchResultListViewController?
-    
+    let searchHistoryListView = SearchHistoryView()
+
     private lazy var searchController: UISearchController = {
         let searchController = UISearchController(searchResultsController: searchListVC)
         searchController.obscuresBackgroundDuringPresentation = false
@@ -33,15 +34,25 @@ final class SearchViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func loadView() {
+        super.loadView()
+        self.view = searchHistoryListView
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor(red: 33/255, green: 33/255, blue: 33/255, alpha: 1.0)
         setupNavigationBar()
         setupSearchController()
+        setupCollectionView()
         bindViewModel()
         bindSearchBar()
     }
-    
+}
+
+// MARK: - Private Method
+
+private extension SearchViewController {
     func setupNavigationBar() {
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.largeTitleDisplayMode = .always
@@ -82,6 +93,13 @@ final class SearchViewController: UIViewController {
         searchController.searchBar.setValue("취소", forKey: "cancelButtonText") // "Cancel" 텍스트를 "취소"로 변경
     }
     
+    func setupCollectionView() {
+        searchHistoryListView.collectionView.delegate = self
+        searchHistoryListView.collectionView.dataSource = self
+        
+        searchHistoryListView.collectionView.register(SearchHistoryCollectionViewCell.self, forCellWithReuseIdentifier: SearchHistoryCollectionViewCell.reuseIdentifier)
+    }
+    
     // ViewModel에 바인딩
     func bindViewModel() {
         // SearchViewModel에서 데이터를 가져와 SearchResultViewModel에 바인딩
@@ -91,12 +109,26 @@ final class SearchViewController: UIViewController {
     func bindSearchBar() {
         searchController.searchBar.rx.text // 검색창 텍스트 변경 이벤트
             .orEmpty // Optional 제거
-            //.debounce(.milliseconds(300), scheduler: MainScheduler.instance) // 입력 후 300ms 동안 대기
             .distinctUntilChanged() // 이전 값과 동일하면 무시
             .filter { !$0.isEmpty } // 비어 있지 않은 값만 처리
             .subscribe(onNext: { [weak self] query in
                 self?.viewModel.fetchAddressList(query: query) // ViewModel에 데이터 요청
             })
             .disposed(by: disposeBag)
+    }
+}
+
+// TODO: - Rx로 변경 예정
+extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        15
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SearchHistoryCollectionViewCell.reuseIdentifier, for: indexPath) as? SearchHistoryCollectionViewCell else {
+            return UICollectionViewCell()
+        }
+        
+        return cell
     }
 }
