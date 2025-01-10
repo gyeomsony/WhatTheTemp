@@ -11,18 +11,46 @@ import SnapKit
 final class SearchHistoryCollectionViewCell: UICollectionViewCell, ReuseIdentifying {
     let baseView = UIView()
     
+    let weatherIconImageView = IconImageView()
+    
     let leftVerticalStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .vertical
-        stackView.alignment = .center
-        stackView.distribution = .equalSpacing
-        stackView.spacing = 10
+        stackView.alignment = .leading
+        stackView.distribution = .fill
+        return stackView
+    }()
+    
+    var cityNameLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 14, weight: .medium)
+        label.textColor = .white
+        label.text = "남양주"
+        label.textAlignment = .center
+        return label
+    }()
+    
+    var weatherConditionLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 14, weight: .medium)
+        label.textColor = .white
+        label.text = "대체로 맑음"
+        label.textAlignment = .center
+        return label
+    }()
+    
+    let rightVerticalStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.alignment = .trailing
+        stackView.distribution = .fill
+        stackView.spacing = 20
         return stackView
     }()
     
     var temperatureLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 30, weight: .bold)
+        label.font = .systemFont(ofSize: 38, weight: .regular)
         label.textColor = .white
         label.text = "-13°"
         return label
@@ -31,7 +59,7 @@ final class SearchHistoryCollectionViewCell: UICollectionViewCell, ReuseIdentify
     let temparatureStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .horizontal
-        stackView.alignment = .center
+        stackView.alignment = .bottom
         stackView.distribution = .equalSpacing
         stackView.spacing = 5
         return stackView
@@ -39,7 +67,7 @@ final class SearchHistoryCollectionViewCell: UICollectionViewCell, ReuseIdentify
     
     var minTemperatureLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 12, weight: .medium)
+        label.font = .systemFont(ofSize: 14, weight: .medium)
         label.textColor = .white
         label.text = "최저 -15°"
         return label
@@ -47,29 +75,9 @@ final class SearchHistoryCollectionViewCell: UICollectionViewCell, ReuseIdentify
     
     var maxTemperatureLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 12, weight: .medium)
+        label.font = .systemFont(ofSize: 14, weight: .medium)
         label.textColor = .white
         label.text = "최고 -5°"
-        return label
-    }()
-    
-    let rightVerticalStackView: UIStackView = {
-        let stackView = UIStackView()
-        stackView.axis = .vertical
-        stackView.alignment = .center
-        stackView.distribution = .equalSpacing
-        stackView.spacing = 10
-        return stackView
-    }()
-    
-    let weatherIconImageView = IconImageView()
-    
-    var cityNameLabel: UILabel = {
-        let label = UILabel()
-        label.font = .systemFont(ofSize: 12, weight: .medium)
-        label.textColor = .white
-        label.text = "남양주"
-        label.textAlignment = .center
         return label
     }()
     
@@ -92,12 +100,12 @@ extension SearchHistoryCollectionViewCell {
         baseView.clipsToBounds = true
         
         addSubview(baseView)
-        baseView.addSubViews([leftVerticalStackView, rightVerticalStackView])
+        baseView.addSubViews([weatherIconImageView, leftVerticalStackView, rightVerticalStackView])
         
-        leftVerticalStackView.addArrangedSubViews([temperatureLabel, temparatureStackView])
+        leftVerticalStackView.addArrangedSubViews([cityNameLabel, weatherConditionLabel])
         temparatureStackView.addArrangedSubViews([minTemperatureLabel, maxTemperatureLabel])
         
-        rightVerticalStackView.addArrangedSubViews([weatherIconImageView, cityNameLabel])
+        rightVerticalStackView.addArrangedSubViews([temperatureLabel, temparatureStackView])
     }
     
     func setupConstraint() {
@@ -105,14 +113,20 @@ extension SearchHistoryCollectionViewCell {
             $0.edges.equalToSuperview()
         }
         
+        weatherIconImageView.snp.makeConstraints {
+            $0.leading.equalTo(baseView.snp.leading).offset(20)
+            $0.top.equalToSuperview().inset(10)
+        }
+        
         leftVerticalStackView.snp.makeConstraints {
             $0.leading.equalTo(baseView.snp.leading).offset(20)
-            $0.top.bottom.equalToSuperview().inset(10)
+            $0.bottom.equalTo(rightVerticalStackView.snp.bottom)
         }
         
         rightVerticalStackView.snp.makeConstraints {
             $0.trailing.equalTo(baseView.snp.trailing).offset(-20)
-            $0.top.bottom.equalToSuperview().inset(10)
+            $0.top.equalToSuperview().offset(10)
+            $0.bottom.equalToSuperview().offset(-10)
         }
     }
 }
