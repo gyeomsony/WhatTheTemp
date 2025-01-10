@@ -28,7 +28,8 @@ final class KakaoMapRepository: KakaoMapRepositoryProtocol {
             .map { response -> [KakaoMapModel.Document] in
                 do {
                     let kakaoMapModel = try JSONDecoder().decode(KakaoMapModel.self, from: response.data)
-                    return kakaoMapModel.documents
+                    // "서"가 포함된 주소만 필터링
+                    return kakaoMapModel.documents.filter { $0.addressName.contains(query) }
                 } catch {
                     print("Decoding error: \(error)")
                     return []

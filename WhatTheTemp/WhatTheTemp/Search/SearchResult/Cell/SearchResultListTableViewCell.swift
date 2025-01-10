@@ -12,7 +12,7 @@ final class SearchResultListTableViewCell: UITableViewCell, ReuseIdentifying {
     private let cityName: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 18)
-        label.textColor = .white
+        label.textColor = UIColor(red: 155/255, green: 155/255, blue: 155/255, alpha: 1.0)
         return label
     }()
     
