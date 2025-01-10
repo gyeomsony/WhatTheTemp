@@ -105,7 +105,6 @@ final class SearchViewController: UIViewController {
     func bindSearchBar() {
         searchController.searchBar.rx.text // 검색창 텍스트 변경 이벤트
             .orEmpty // Optional 제거
-            //.debounce(.milliseconds(300), scheduler: MainScheduler.instance) // 입력 후 300ms 동안 대기
             .distinctUntilChanged() // 이전 값과 동일하면 무시
             .filter { !$0.isEmpty } // 비어 있지 않은 값만 처리
             .subscribe(onNext: { [weak self] query in

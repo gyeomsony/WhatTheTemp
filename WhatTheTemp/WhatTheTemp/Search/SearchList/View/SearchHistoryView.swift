@@ -11,6 +11,7 @@ import SnapKit
 final class SearchHistoryView: UIView {
     lazy var collectionView: UICollectionView = {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: createFlowLayout())
+        collectionView.showsVerticalScrollIndicator = false
         collectionView.backgroundColor = .clear
 
         return collectionView
@@ -33,7 +34,7 @@ private extension SearchHistoryView {
     
     func setupConstraint() {
         collectionView.snp.makeConstraints {
-            $0.left.right.equalToSuperview()
+            $0.leading.trailing.equalToSuperview()
             $0.top.equalTo(safeAreaLayoutGuide.snp.top)
             $0.bottom.equalTo(safeAreaLayoutGuide.snp.bottom)
         }
@@ -43,7 +44,7 @@ private extension SearchHistoryView {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
         layout.minimumLineSpacing = 10
-        layout.itemSize = CGSize(width: UIScreen.main.bounds.width - 40, height: 100)
+        layout.itemSize = CGSize(width: UIScreen.main.bounds.width - 32, height: 100)
         
         return layout
     }
