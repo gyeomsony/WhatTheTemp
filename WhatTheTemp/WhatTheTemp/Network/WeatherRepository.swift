@@ -18,21 +18,7 @@ final class WeatherRepository: WeatherRepositoryProtocol {
     private let provider = MoyaProvider<WeatherAPI>()
     
     func fetchWeather(lat: Double, lon: Double) -> Single<WeatherResponse> {
-        return Single.create { [weak self] observer in
-            let disposable = self?.provider.rx.request(.oneCall(lat: lat, lon: lon))
-                .map(WeatherResponse.self)
-                .subscribe { event in
-                    switch event {
-                    case .success(let response):
-                        return observer(.success(response))
-                    case .failure(let error):
-                        return observer(.failure(error))
-                    }
-                }
-            guard let disposable = disposable else {
-                return Disposables.create()
-            }
-            return disposable
-        }
+        return provider.rx.request(.oneCall(lat: lat, lon: lon))
+            .map(WeatherResponse.self)
     }
 }
