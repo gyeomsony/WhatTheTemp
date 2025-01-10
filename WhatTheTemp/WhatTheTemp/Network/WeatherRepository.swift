@@ -10,7 +10,11 @@ import RxMoya
 import Moya
 import RxSwift
 
-final class WeatherRepository {
+protocol WeatherRepositoryProtocol {
+    func fetchWeather(lat: Double, lon: Double) -> Single<WeatherResponse>
+}
+
+final class WeatherRepository: WeatherRepositoryProtocol {
     private let provider = MoyaProvider<WeatherAPI>()
     
     func fetchWeather(lat: Double, lon: Double) -> Single<WeatherResponse> {
