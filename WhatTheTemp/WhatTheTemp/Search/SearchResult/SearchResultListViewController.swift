@@ -32,7 +32,10 @@ final class SearchResultListViewController: UIViewController {
         setupTableView()
         bindViewModel()
     }
-    
+}
+
+// MARK: - Private Method
+private extension SearchResultListViewController {
     func setupTableView() {
         searchResultListView.tableView.backgroundColor = UIColor(red: 33/255, green: 33/255, blue: 33/255, alpha: 1.0)
         searchResultListView.tableView.separatorInset.right = 15

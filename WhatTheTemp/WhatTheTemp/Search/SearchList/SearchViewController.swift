@@ -48,7 +48,11 @@ final class SearchViewController: UIViewController {
         bindViewModel()
         bindSearchBar()
     }
-    
+}
+
+// MARK: - Private Method
+
+private extension SearchViewController {
     func setupNavigationBar() {
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.largeTitleDisplayMode = .always
@@ -114,6 +118,7 @@ final class SearchViewController: UIViewController {
     }
 }
 
+// TODO: - Rx로 변경 예정
 extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         15
