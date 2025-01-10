@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>OpenWeatherMapAPIKey</key>
+	<string>8ef68fb1d27fb92f55802750b90d54f7</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>현재 위치의 날씨 정보 제공을 위해서는 위치 정보 수집 동의가 필요합니다.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>

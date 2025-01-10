@@ -39,7 +39,7 @@ extension WeatherAPI: TargetType {
                 "lon": lon,
                 "exclude": exclude,
                 "units": units,
-                //"appid": APIKey.openWeatherMap
+                "appid": APIKey.openWeatherMap
             ]
             return .requestParameters(parameters: parameters, encoding: URLEncoding.default)
         }
