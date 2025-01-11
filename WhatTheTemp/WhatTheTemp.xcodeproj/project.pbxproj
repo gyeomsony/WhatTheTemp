@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		45AB2CF52D329D9300544715 /* DGCharts in Frameworks */ = {isa = PBXBuildFile; productRef = 45AB2CF42D329D9300544715 /* DGCharts */; };
+		45AB2D112D32BE3C00544715 /* RxDataSources in Frameworks */ = {isa = PBXBuildFile; productRef = 45AB2D102D32BE3C00544715 /* RxDataSources */; };
 		8E6AC1562D2D500500D40A96 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 8E6AC1552D2D500500D40A96 /* SnapKit */; };
 		8E6AC1592D2D502000D40A96 /* RxCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = 8E6AC1582D2D502000D40A96 /* RxCocoa */; };
 		8E6AC15B2D2D502000D40A96 /* RxRelay in Frameworks */ = {isa = PBXBuildFile; productRef = 8E6AC15A2D2D502000D40A96 /* RxRelay */; };
@@ -49,6 +50,7 @@
 				8E6AC15B2D2D502000D40A96 /* RxRelay in Frameworks */,
 				8E6AC1592D2D502000D40A96 /* RxCocoa in Frameworks */,
 				8E6AC15E2D2D504500D40A96 /* Moya in Frameworks */,
+				45AB2D112D32BE3C00544715 /* RxDataSources in Frameworks */,
 				45AB2CF52D329D9300544715 /* DGCharts in Frameworks */,
 				8E6AC1562D2D500500D40A96 /* SnapKit in Frameworks */,
 			);
@@ -99,6 +101,7 @@
 				8E6AC15D2D2D504500D40A96 /* Moya */,
 				8E6AC15F2D2D504500D40A96 /* RxMoya */,
 				45AB2CF42D329D9300544715 /* DGCharts */,
+				45AB2D102D32BE3C00544715 /* RxDataSources */,
 			);
 			productName = WhatTheTemp;
 			productReference = 8E6AC1042D2D425E00D40A96 /* WhatTheTemp.app */;
@@ -133,6 +136,7 @@
 				8E6AC1572D2D502000D40A96 /* XCRemoteSwiftPackageReference "RxSwift" */,
 				8E6AC15C2D2D504500D40A96 /* XCRemoteSwiftPackageReference "Moya" */,
 				45AB2CF32D329D9300544715 /* XCRemoteSwiftPackageReference "Charts" */,
+				45AB2D0F2D32BE3C00544715 /* XCRemoteSwiftPackageReference "RxDataSources" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 8E6AC1052D2D425E00D40A96 /* Products */;
@@ -380,6 +384,14 @@
 				minimumVersion = 5.1.0;
 			};
 		};
+		45AB2D0F2D32BE3C00544715 /* XCRemoteSwiftPackageReference "RxDataSources" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/RxSwiftCommunity/RxDataSources.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.0.2;
+			};
+		};
 		8E6AC1542D2D500500D40A96 /* XCRemoteSwiftPackageReference "SnapKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/SnapKit/SnapKit";
@@ -411,6 +423,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 45AB2CF32D329D9300544715 /* XCRemoteSwiftPackageReference "Charts" */;
 			productName = DGCharts;
+		};
+		45AB2D102D32BE3C00544715 /* RxDataSources */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 45AB2D0F2D32BE3C00544715 /* XCRemoteSwiftPackageReference "RxDataSources" */;
+			productName = RxDataSources;
 		};
 		8E6AC1552D2D500500D40A96 /* SnapKit */ = {
 			isa = XCSwiftPackageProductDependency;
