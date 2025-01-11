@@ -79,6 +79,7 @@ final class WeatherViewController: UIViewController {
         navigationItem.rightBarButtonItem = searchButton
         navigationItem.leftBarButtonItem = settingsButton
         
+        settingsButton.menu = MenuHelper.createSettingsMenu()
         navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
         navigationController?.navigationBar.shadowImage = UIImage()
         navigationController?.navigationBar.tintColor = .white
