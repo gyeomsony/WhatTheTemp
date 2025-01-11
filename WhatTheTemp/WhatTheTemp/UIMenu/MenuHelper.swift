@@ -7,6 +7,7 @@
 
 import UIKit
 
+/// 메뉴를 생성하고 설정 버튼에 표시할 수 있는 헬퍼 구조체
 struct MenuHelper {
     static func createSettingsMenu() -> UIMenu {
         // 섭씨
