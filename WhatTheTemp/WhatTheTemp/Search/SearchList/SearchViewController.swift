@@ -14,6 +14,7 @@ final class SearchViewController: UIViewController {
     private var searchResultViewModel: SearchResultViewModel?
     private var searchListVC: SearchResultListViewController?
     let searchHistoryListView = SearchHistoryView()
+    private var refreshControl = UIRefreshControl()
 
     private lazy var searchController: UISearchController = {
         let searchController = UISearchController(searchResultsController: searchListVC)
@@ -44,6 +45,7 @@ final class SearchViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor(red: 33/255, green: 33/255, blue: 33/255, alpha: 1.0)
+        setupRefreshControl()
         setupNavigationBar()
         setupSearchController()
         setupCollectionView()
@@ -55,6 +57,22 @@ final class SearchViewController: UIViewController {
 // MARK: - Private Method
 
 private extension SearchViewController {
+    func setupRefreshControl() {
+        // refreshControl property에 UIRefreshControl() 할당
+        searchHistoryListView.collectionView.refreshControl = UIRefreshControl()
+        searchHistoryListView.collectionView.refreshControl?.addTarget(self, action: #selector(handleRefreshControl), for: .valueChanged)
+        
+        searchHistoryListView.collectionView.refreshControl?.tintColor = .white
+    }
+    
+    @objc
+    func handleRefreshControl() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            self.searchHistoryListView.collectionView.reloadData()
+            self.searchHistoryListView.collectionView.refreshControl?.endRefreshing()
+        }
+    }
+    
     func setupNavigationBar() {
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.largeTitleDisplayMode = .always
