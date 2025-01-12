@@ -15,11 +15,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         
         let window = UIWindow(windowScene: windowScene)
-        //window.rootViewController = UINavigationController(rootViewController: WeatherViewController())
-        
-        let viewModel = SearchViewModel(repository: KakaoMapRepository()) // SearchViewModel의 인스턴스 생성
-        window.rootViewController = UINavigationController(rootViewController: SearchViewController(viewModel: viewModel))
-
+        window.rootViewController = UINavigationController(rootViewController: WeatherViewController())
         window.makeKeyAndVisible()
         
         self.window = window
