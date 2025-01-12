@@ -25,7 +25,9 @@ final class SearchViewController: UIViewController {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
         // 초기화 시 viewModel을 기반으로 searchResultViewModel을 초기화
-        searchResultViewModel = SearchResultViewModel(addressList: viewModel.addressList.asObservable())
+        searchResultViewModel = SearchResultViewModel(
+            addressList: viewModel.addressList.asObservable(),
+            searchQuery: viewModel.searchQuery.asObservable())
         // searchListVC 초기화
         searchListVC = SearchResultListViewController(viewModel: searchResultViewModel!)
     }
@@ -103,7 +105,10 @@ private extension SearchViewController {
     // ViewModel에 바인딩
     func bindViewModel() {
         // SearchViewModel에서 데이터를 가져와 SearchResultViewModel에 바인딩
-        searchResultViewModel = SearchResultViewModel(addressList: viewModel.addressList.asObservable())
+        searchResultViewModel = SearchResultViewModel(
+            addressList: viewModel.addressList.asObservable(),
+            searchQuery: viewModel.searchQuery.asObservable()
+        )
     }
     
     func bindSearchBar() {
@@ -112,7 +117,8 @@ private extension SearchViewController {
             .distinctUntilChanged() // 이전 값과 동일하면 무시
             .filter { !$0.isEmpty } // 비어 있지 않은 값만 처리
             .subscribe(onNext: { [weak self] query in
-                self?.viewModel.fetchAddressList(query: query) // ViewModel에 데이터 요청
+                self?.viewModel.fetchAddressList(query: query) // API 요청
+                self?.searchResultViewModel?.searchText.onNext(query) // 검색어 전달
             })
             .disposed(by: disposeBag)
     }

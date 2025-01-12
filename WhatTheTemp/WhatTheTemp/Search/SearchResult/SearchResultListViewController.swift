@@ -51,8 +51,11 @@ private extension SearchResultListViewController {
         // ViewModel의 resultList와 테이블 뷰를 바인딩
         viewModel.resultList
             .observe(on: MainScheduler.instance)
-            .bind(to: searchResultListView.tableView.rx.items(cellIdentifier: SearchResultListTableViewCell.reuseIdentifier, cellType: SearchResultListTableViewCell.self)) { index, document, cell in
-                cell.configure(query: document) // 셀 데이터 설정
+            .bind(to: searchResultListView.tableView.rx.items(cellIdentifier: SearchResultListTableViewCell.reuseIdentifier, cellType: SearchResultListTableViewCell.self)) { [weak self] index, item, cell in
+                if let cell = cell as? SearchResultListTableViewCell {
+                    // item은 (document, searchText) 튜플이므로, 해당 값을 각각 전달
+                    cell.configure(query: item.document, searchText: item.searchText)
+                }
             }
             .disposed(by: disposeBag)
         

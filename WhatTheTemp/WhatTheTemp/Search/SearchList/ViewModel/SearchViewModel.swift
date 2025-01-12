@@ -15,12 +15,15 @@ final class SearchViewModel {
     
     // 주소 리스트를 저장할 BehaviorRelay
     let addressList = BehaviorRelay<[KakaoMapModel.Document]>(value: [])
-
+    // 검색어를 저장할 BehaviorRelay
+    let searchQuery = BehaviorRelay<String>(value: "")
+    
     init(repository: KakaoMapRepositoryProtocol) {
         self.repository = repository
     }
     
     func fetchAddressList(query: String) {
+        searchQuery.accept(query) // 검색어 업데이트
         repository.fetchAddressSearchList(query: query)
             .subscribe(onSuccess: { [weak self] addressList in
                 self?.addressList.accept(addressList)

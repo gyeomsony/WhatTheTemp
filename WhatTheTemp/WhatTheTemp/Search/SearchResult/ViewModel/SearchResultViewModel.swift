@@ -12,14 +12,31 @@ import RxRelay
 final class SearchResultViewModel {
     private let disposeBag = DisposeBag()
     
+    // 검색어를 저장할 BehaviorSubject
+    let searchText = BehaviorSubject<String>(value: "")
+
     // 결과 데이터를 저장할 BehaviorRelay
-    let resultList = BehaviorRelay<[KakaoMapModel.Document]>(value: [])
+    private let _resultList = BehaviorRelay<[KakaoMapModel.Document]>(value: [])
+
+    // 외부에서 접근할 Observable 프로퍼티
+    var resultList: Observable<[(document: KakaoMapModel.Document, searchText: String)]> {
+        return Observable.combineLatest(_resultList.asObservable(), searchText) { documents, searchText in
+            documents.map { document in
+                (document: document, searchText: searchText)
+            }
+        }
+    }
     
     // ViewModel 생성 시 데이터 바인딩
-    init(addressList: Observable<[KakaoMapModel.Document]>) {
+    init(addressList: Observable<[KakaoMapModel.Document]>, searchQuery: Observable<String>) {
         // 검색 결과 데이터를 관찰하고 업데이트
         addressList
-            .bind(to: resultList)
+            .bind(to: _resultList)
+            .disposed(by: disposeBag)
+        
+        // 검색어를 관찰하고 업데이트
+        searchQuery
+            .bind(to: searchText)
             .disposed(by: disposeBag)
     }
 }
