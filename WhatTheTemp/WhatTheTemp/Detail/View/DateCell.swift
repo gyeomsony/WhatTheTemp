@@ -8,9 +8,11 @@
 import UIKit
 
 import SnapKit
+import RxSwift
 
 final class DateCell: UICollectionViewCell {
     static let identifier = "DateCell"
+    private var disposeBag = DisposeBag()
     
     private let weekdayLabel: UILabel = {
         let label = UILabel()
@@ -23,7 +25,6 @@ final class DateCell: UICollectionViewCell {
     
     private let dateLabel: UILabel = {
         let label = UILabel()
-        label.textColor = .black
         label.textAlignment = .center
         label.font = .systemFont(ofSize: 14.0, weight: .semibold)
         
@@ -45,9 +46,25 @@ final class DateCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configure(with dateInfo: DateInfo) {
-        weekdayLabel.text = dateInfo.weekday
-        dateLabel.text = dateInfo.date
+    func bind(to viewModel: DateCellViewModel) {
+        // DisposeBag 초기화: 재사용될 때 구독 해제
+        disposeBag = DisposeBag()
+        
+        viewModel.weekdayText
+            .bind(to: weekdayLabel.rx.text)
+            .disposed(by: disposeBag)
+        
+        viewModel.dateText
+            .bind(to: dateLabel.rx.text)
+            .disposed(by: disposeBag)
+        
+        viewModel.isSelected
+            .observe(on: MainScheduler.instance)
+            .withUnretained(self)
+            .subscribe(onNext: { c, selected in
+                c.dateLabel.textColor = selected ? .black : .white
+                c.dateLabel.backgroundColor = selected ? .white : .clear
+            }).disposed(by: disposeBag)
     }
     
     private func configureUI() {

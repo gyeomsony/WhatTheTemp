@@ -9,9 +9,12 @@ import UIKit
 
 import SnapKit
 import DGCharts
+import RxSwift
+import RxCocoa
 
 final class TemperatureChartCell: UICollectionViewCell {
     static let identifier = "TemperatureChartCell"
+    private var disposeBag = DisposeBag()
     
     private let weatherIconHStackView: UIStackView = {
         let stackView = UIStackView()
@@ -72,28 +75,34 @@ final class TemperatureChartCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configureLineChart(from model: TemperatureInfo) {
-        let entries = zip(model.times, model.temperature).map { time, temp in
-            let yMin = lineChartView.rightAxis.axisMinimum
-            let yMax = lineChartView.rightAxis.axisMaximum
-            let yValue = max(yMin, min(yMax, temp))
-            
-            return ChartDataEntry(x: time, y: yValue)
-        }
+    func bind(to viewModel: TemperatureCharCellViewModel) {
+        viewModel.temperatureEntries
+            .drive(onNext: { [weak self] entries in
+                self?.configureLineChart(entris: entries)
+            }).disposed(by: disposeBag)
         
-        let dataSet = LineChartDataSet(entries: entries, label: "Cubic Line Data")
+        viewModel.weatherIcons
+            .drive(onNext: { [weak self] icons in
+                self?.configureWeatherIcons(icons: icons)
+            }).disposed(by: disposeBag)
+    }
+    
+    private func configureLineChart(entris: [ChartEntry]) {
+        let chartEntries = entris.map { ChartDataEntry(x: $0.x, y: $0.y) }
+        let dataSet = LineChartDataSet(entries: chartEntries, label: "Cubic Line Data")
+    
         dataSet.mode = .cubicBezier
         
         dataSet.lineWidth = 4.0
         dataSet.setColor(UIColor(red: 0.4, green: 0.7, blue: 1.0, alpha: 1.0))
         
-        guard let maxEntry = entries.max(by: { $0.y < $1.y }),
-              let minEntry = entries.min(by: { $0.y < $1.y }) else { return }
+        guard let maxEntry = chartEntries.max(by: { $0.y < $1.y }),
+              let minEntry = chartEntries.min(by: { $0.y < $1.y }) else { return }
         
         dataSet.circleRadius = 5.0
         dataSet.circleHoleRadius = 2.0
         dataSet.circleHoleColor = UIColor(red: 0.4, green: 0.7, blue: 1.0, alpha: 1.0)
-        dataSet.circleColors = entries.map { $0 == maxEntry || $0 == minEntry ? .black : .clear }
+        dataSet.circleColors = chartEntries.map { $0 == maxEntry || $0 == minEntry ? .black : .clear }
         dataSet.valueFormatter = CustomValueFormatter(maxEntry: maxEntry, minEntry: minEntry)
         dataSet.valueFont = UIFont.systemFont(ofSize: 14.0, weight: .bold)
         dataSet.valueTextColor = .gray
@@ -107,26 +116,14 @@ final class TemperatureChartCell: UICollectionViewCell {
         let chartData = LineChartData(dataSet: dataSet)
         lineChartView.data = chartData
         lineChartView.notifyDataSetChanged()
-        
-        for (index, condition) in model.conditions.enumerated() {
-            let isDayTime: Bool
-            
-            switch index {
-            case 0...2: // 첫 번째 3개는 밤
-                isDayTime = false
-            case 3...8: // 중간 6개는 낮
-                isDayTime = true
-            case 9...11: // 마지막 3개는 밤
-                isDayTime = false
-            default:
-                isDayTime = false // 기본값
-            }
-            
-            let iconName = VXCWeatherIcons.getIconName(from: condition, isDayTime: isDayTime)
-            
-            let icon = UIImageView(image: UIImage(named: iconName))
-            icon.contentMode = .scaleAspectFit
-            weatherIconHStackView.addArrangedSubview(icon)
+    }
+    
+    private func configureWeatherIcons(icons: [String]) {
+        weatherIconHStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
+        icons.forEach { iconName in
+            let imageView = UIImageView(image: UIImage(named: iconName))
+            imageView.contentMode = .scaleAspectFit
+            weatherIconHStackView.addArrangedSubview(imageView)
         }
     }
     
@@ -179,7 +176,7 @@ final class TemperatureChartCell: UICollectionViewCell {
 // MARK: - Formatter classes.
 final class TemperatureYAxisValueFormatter: AxisValueFormatter {
     func stringForValue(_ value: Double, axis: DGCharts.AxisBase?) -> String {
-        // Y축 값이 -30인 경우 빈 문자열 반환(라벨 생략)
+        // Y축 값이 -25인 경우 빈 문자열 반환(라벨 생략)
         // 그 외의 경우, 값에 "°"를 추가하여 반환 (정수로 변환)
         value == -25 ? "" : "\(Int(value))°"
     }

@@ -10,8 +10,8 @@ import Foundation
 import RxDataSources
 
 enum SectionItem {
-    case date(DateInfo)
-    case temp(TemperatureInfo)
+    case date(DateCellViewModel)
+    case temp(TemperatureCharCellViewModel)
 }
 
 struct SectionModel {

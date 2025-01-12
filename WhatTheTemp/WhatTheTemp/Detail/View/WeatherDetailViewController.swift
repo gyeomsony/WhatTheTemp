@@ -15,6 +15,9 @@ final class WeatherDetailViewController: UIViewController {
     private let viewModel: WeatherDetailViewModel
     private let disposeBag = DisposeBag()
     
+    // 초기 로딩 상태를 관리하는 플래그
+    private var isInitialScrollPerformed = false
+    
     // MARK: - SubViews.
     private let navigationBar = WeatherDetailNavigationBar()
     
@@ -34,22 +37,22 @@ final class WeatherDetailViewController: UIViewController {
     private lazy var dataSource = RxCollectionViewSectionedReloadDataSource<SectionModel>(
         configureCell: { dataSource, collectionView, indexPath, item in
             switch item {
-            case .date(let dateInfo):
+            case .date(let dateCellViewModel):
                 guard let dateCell = collectionView.dequeueReusableCell(
                     withReuseIdentifier: DateCell.identifier,
                     for: indexPath) as? DateCell else { return UICollectionViewCell() }
-                dateCell.configure(with: dateInfo)
+                dateCell.bind(to: dateCellViewModel)
                 
                 return dateCell
-            case .temp(let temperatureInfo):
+            case .temp(let chartCellViewModel):
                 guard let temperatureChartCell = collectionView.dequeueReusableCell(
                     withReuseIdentifier: TemperatureChartCell.identifier,
                     for: indexPath) as? TemperatureChartCell else { return UICollectionViewCell() }
-                temperatureChartCell.configureLineChart(from: temperatureInfo)
+                temperatureChartCell.bind(to:chartCellViewModel)
                 
                 return temperatureChartCell
             }
-        }, configureSupplementaryView: { dataSource, collectionView, kind, indexPath in
+        }, configureSupplementaryView: { [weak self] dataSource, collectionView, kind, indexPath in
             let section = dataSource[indexPath.section]
             
             switch kind {
@@ -60,10 +63,15 @@ final class WeatherDetailViewController: UIViewController {
                         withReuseIdentifier: DateSectionFooterView.identifier,
                         for: indexPath
                     ) as? DateSectionFooterView else { return UICollectionReusableView() }
-                    dateFooter.configure(with: section.footer ?? "")
+                    let section = dataSource.sectionModels[indexPath.section]
+                    
+                    if let footerText = self?.viewModel.dateSectionFooterData.value {
+                        dateFooter.configure(with: footerText)
+                    }
+                    
                     return dateFooter
                 }
-            default: return UICollectionReusableView() }
+                default: return UICollectionReusableView() }
             
             return UICollectionReusableView()
         })
@@ -94,6 +102,43 @@ final class WeatherDetailViewController: UIViewController {
         viewModel.weatherSections
             .bind(to: collectionView.rx.items(dataSource: dataSource))
             .disposed(by: disposeBag)
+        
+        collectionView.rx.itemSelected
+            .withUnretained(self)
+            .subscribe(onNext: { vc, indexPath in
+                let item = vc.dataSource[indexPath]
+                switch item {
+                case .date(let dateCellViewModel):
+                    vc.viewModel.selectCell(with: dateCellViewModel.dateInfo.id)
+                    vc.updateFooter()
+                default:
+                    break
+                }
+            }).disposed(by: disposeBag)
+        
+        collectionView.rx.itemSelected
+            .filter { $0.section == 0 }
+            .withUnretained(self)
+            .compactMap { vc, indexPath -> Int? in
+                let item = vc.dataSource[indexPath]
+                guard case let .date(dateCellViewModel) = item else { return nil }
+                
+                return vc.viewModel.convertChartIndex(forDateCellID: dateCellViewModel.dateInfo.id)
+            }.withUnretained(self)
+            .subscribe(onNext: { vc, chartIndex in
+                let indexPath = IndexPath(item: chartIndex, section: 1)
+                vc.collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
+            }).disposed(by: disposeBag)
+    }
+    
+    private func updateFooter() {
+        guard let footerView = collectionView.supplementaryView(
+            forElementKind: UICollectionView.elementKindSectionFooter,
+            at: IndexPath(item: 0, section: 0)) as? DateSectionFooterView else { return }
+        
+        if let footerText = viewModel.dateSectionFooterData.value {
+            footerView.configure(with: footerText)
+        }
     }
     
     // MARK: - View layout method.
@@ -130,18 +175,18 @@ final class WeatherDetailViewController: UIViewController {
             }
         }
     }
-
+    
     private func createDateSection() -> NSCollectionLayoutSection {
         let itemSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(0.14),
             heightDimension: .fractionalHeight(1.0))
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
         item.edgeSpacing = NSCollectionLayoutEdgeSpacing(
-                leading: .fixed(10),
-                top: nil,
-                trailing: nil,
-                bottom: nil
-            )
+            leading: .fixed(10),
+            top: nil,
+            trailing: nil,
+            bottom: nil
+        )
         
         let groupSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1.0),
@@ -183,7 +228,29 @@ final class WeatherDetailViewController: UIViewController {
         
         let section = NSCollectionLayoutSection(group: group)
         section.boundarySupplementaryItems = []
-        section.orthogonalScrollingBehavior = .paging
+        section.orthogonalScrollingBehavior = .groupPaging
+        
+        // 가로 스크롤 이벤트 감지
+        section.visibleItemsInvalidationHandler = { [weak self] _, contentOffset, layoutEnvironment in
+            guard let self = self else { return }
+            
+            // 초기 스크롤 방지
+            if !self.isInitialScrollPerformed { return self.isInitialScrollPerformed = true }
+            
+            let pageIndex = Int(round(contentOffset.x / layoutEnvironment.container.contentSize.width))
+            
+            Observable.just(pageIndex)
+                .distinctUntilChanged()
+                .throttle(.milliseconds(300), scheduler: MainScheduler.instance)
+                .subscribe(onNext: { [weak self] throttledIndex in
+                    guard let self = self else { return }
+                    self.viewModel.updateSelectedCellID(forChartIndex: throttledIndex)
+                    
+                    // 날짜 섹션 스크롤 동기화
+                    let dateSectionIndexPath = IndexPath(item: throttledIndex, section: 0)
+                    self.collectionView.scrollToItem(at: dateSectionIndexPath, at: .centeredHorizontally, animated: true)
+                }).disposed(by: self.disposeBag)
+        }
         
         return section
     }
@@ -197,7 +264,7 @@ struct WeatherDetailViewController_Previews: PreviewProvider {
     static var previews: some View {
         PreviewWrapper()
     }
-
+    
     struct PreviewWrapper: View {
         @State private var showModal = false
         
@@ -211,14 +278,14 @@ struct WeatherDetailViewController_Previews: PreviewProvider {
             }
         }
     }
-
+    
     struct WeatherDetailViewController_Presentable: UIViewControllerRepresentable {
         func makeUIViewController(context: Context) -> some UIViewController {
             let vm = WeatherDetailViewModel(repository: WeatherRepository())
             let vc = WeatherDetailViewController(viewModel: vm)
             return vc
         }
-
+        
         func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {}
     }
 }

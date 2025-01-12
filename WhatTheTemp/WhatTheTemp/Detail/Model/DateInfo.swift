@@ -8,6 +8,7 @@
 import Foundation
 
 struct DateInfo {
+    let id: String
     let date: String
     let weekday: String
     let fullDate: String
