@@ -65,3 +65,64 @@ enum WeatherAssets: String {
         }
     }
 }
+
+// MARK: - Visual Crossing 
+// MARK: - Visual Crossing Weather Icon Mapping
+enum VXCWeatherIcons: String {
+    case clearDay
+    case clearNight
+    case cloudDay
+    case cloudNight
+    case drizzleDay
+    case drizzleNight
+    case dustDay
+    case dustNight
+    case heavyRainDay
+    case heavyRainNight
+    case lightRainDay
+    case lightRainNight
+    case lightSnowDay
+    case lightSnowNight
+    case mistDay
+    case mistNight
+    case rainDay
+    case rainNight
+    case snowDay
+    case snowNight
+    case squalls
+    case thunderDay
+    case thunderNight
+    case thunderRainDay
+    case thunderRainNight
+
+    static func getIconName(from condition: String, isDayTime: Bool) -> String {
+        switch condition.lowercased() {
+        case "clear":
+            return isDayTime ? clearDay.rawValue : clearNight.rawValue
+        case "partly cloudy", "partially cloudy", "mostly clear", "partly sunny":
+            return isDayTime ? cloudDay.rawValue : cloudNight.rawValue
+        case "cloudy", "overcast":
+            return isDayTime ? cloudDay.rawValue : cloudNight.rawValue
+        case "drizzle", "light drizzle":
+            return isDayTime ? drizzleDay.rawValue : drizzleNight.rawValue
+        case "dust", "sandstorm":
+            return isDayTime ? dustDay.rawValue : dustNight.rawValue
+        case "heavy rain", "torrential rain":
+            return isDayTime ? heavyRainDay.rawValue : heavyRainNight.rawValue
+        case "light rain", "showers", "rain":
+            return isDayTime ? lightRainDay.rawValue : lightRainNight.rawValue
+        case "snow", "light snow", "flurries":
+            return isDayTime ? lightSnowDay.rawValue : lightSnowNight.rawValue
+        case "mist", "fog", "haze":
+            return isDayTime ? mistDay.rawValue : mistNight.rawValue
+        case "squalls", "windy":
+            return squalls.rawValue
+        case "thunderstorm", "thunder":
+            return isDayTime ? thunderDay.rawValue : thunderNight.rawValue
+        case "thunder rain":
+            return isDayTime ? thunderRainDay.rawValue : thunderRainNight.rawValue
+        default:
+            return "Nodata"
+        }
+    }
+}
