@@ -97,9 +97,9 @@ struct VXCDailyWeather: Decodable {
 struct VXCHourlyWeather: Decodable {
     let datetime: String
     let temp: Double
-    let feelslike: Double
-    let humidity: Double
+//    let feelslike: Double
+//    let humidity: Double
     let conditions: String
-    let icon: String
+    let precipitationProbability: Double?
 }
 

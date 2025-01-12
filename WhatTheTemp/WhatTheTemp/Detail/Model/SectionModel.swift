@@ -12,6 +12,7 @@ import RxDataSources
 enum SectionItem {
     case date(DateCellViewModel)
     case temp(TemperatureCharCellViewModel)
+//    case preci(PrecipitationChartCellViewModel)
 }
 
 struct SectionModel {

@@ -12,4 +12,5 @@ struct TemperatureInfo {
     let times: [Double]
     let temperature: [Double]
     let conditions: [String]
+    let precipitation: [Double?]
 }

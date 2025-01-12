@@ -15,6 +15,7 @@ struct ChartEntry {
 
 final class TemperatureCharCellViewModel {
     let temperatureEntries: Driver<[ChartEntry]>
+    let precipitationEntries: Driver<[ChartEntry]>
     let weatherIcons: Driver<[String]>
     
     init(temperatureInfo: TemperatureInfo) {
@@ -25,6 +26,15 @@ final class TemperatureCharCellViewModel {
                         ChartEntry(x: time, y: temp)
                     }
             }.asDriver(onErrorJustReturn: [])
+        
+        self.precipitationEntries = Observable.just(temperatureInfo)
+            .map { model in
+                zip(model.times, model.precipitation)
+                    .map { time, preci in
+                        ChartEntry(x: time, y: preci ?? 0.0)
+                    }
+            }.asDriver(onErrorJustReturn: [])
+            
         
         self.weatherIcons = Observable.just(temperatureInfo.conditions)
             .map { model -> [String] in

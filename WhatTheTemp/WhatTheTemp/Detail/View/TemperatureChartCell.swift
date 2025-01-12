@@ -10,11 +10,20 @@ import UIKit
 import SnapKit
 import DGCharts
 import RxSwift
-import RxCocoa
 
 final class TemperatureChartCell: UICollectionViewCell {
     static let identifier = "TemperatureChartCell"
     private var disposeBag = DisposeBag()
+    
+    private let temperatureContentView: UIView = {
+        let view = UIView()
+        view.layer.borderWidth = 1.0
+        view.layer.borderColor = UIColor.lightGray.cgColor
+        view.layer.cornerRadius = 12.0
+        view.backgroundColor = .clear
+        
+        return view
+    }()
     
     private let weatherIconHStackView: UIStackView = {
         let stackView = UIStackView()
@@ -25,7 +34,7 @@ final class TemperatureChartCell: UICollectionViewCell {
         return stackView
     }()
     
-    private let lineChartView: LineChartView = {
+    private let temperaturelineChartView: LineChartView = {
         let chartView = LineChartView()
         chartView.legend.enabled = false
         chartView.setViewPortOffsets(left: 15.0, top: 5.0, right: 30.0, bottom: 5.0)
@@ -56,6 +65,47 @@ final class TemperatureChartCell: UICollectionViewCell {
         return chartView
     }()
     
+    private let precipitationContentView: UIView = {
+        let view = UIView()
+        view.layer.borderWidth = 1.0
+        view.layer.borderColor = UIColor.lightGray.cgColor
+        view.layer.cornerRadius = 12.0
+        view.backgroundColor = .clear
+        
+        return view
+    }()
+    
+    private let precipitationLineChartView: LineChartView = {
+        let chartView = LineChartView()
+        chartView.legend.enabled = false
+        chartView.setViewPortOffsets(left: 15.0, top: 10.0, right: 30.0, bottom: 5.0)
+        chartView.highlightPerDragEnabled = false
+        
+        let xAxis = chartView.xAxis
+        xAxis.gridLineDashLengths = [5, 5]
+        xAxis.labelCount = 5
+        xAxis.axisMinimum = 0.0
+        xAxis.axisMaximum = 23.0
+        xAxis.forceLabelsEnabled = true
+        xAxis.valueFormatter = TimeXAxisValueFormatter()
+        xAxis.labelTextColor = .lightGray
+        xAxis.centerAxisLabelsEnabled = true
+        xAxis.labelPosition = .bottomInside
+        
+        let leftAxis = chartView.leftAxis
+        leftAxis.drawGridLinesEnabled = false
+        leftAxis.drawLabelsEnabled = false
+        
+        let rightAxis = chartView.rightAxis
+        rightAxis.valueFormatter = PercentageYAxisValueFormatter()
+        rightAxis.axisMaximum = 100
+        rightAxis.axisMinimum = -20
+        rightAxis.labelCount = 8
+        rightAxis.labelTextColor = .lightGray
+        
+        return chartView
+    }()
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         
@@ -67,7 +117,7 @@ final class TemperatureChartCell: UICollectionViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         
-        self.lineChartView.data = nil
+        self.temperaturelineChartView.data = nil
         self.weatherIconHStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
     }
     
@@ -84,6 +134,11 @@ final class TemperatureChartCell: UICollectionViewCell {
         viewModel.weatherIcons
             .drive(onNext: { [weak self] icons in
                 self?.configureWeatherIcons(icons: icons)
+            }).disposed(by: disposeBag)
+        
+        viewModel.precipitationEntries
+            .drive(onNext: { [weak self] precipitations in
+                self?.configurePrecipitationLineChart(entries: precipitations)
             }).disposed(by: disposeBag)
     }
     
@@ -114,8 +169,8 @@ final class TemperatureChartCell: UICollectionViewCell {
         dataSet.fillFormatter = DefaultFillFormatter { _, _ in CGFloat(-20) }
         
         let chartData = LineChartData(dataSet: dataSet)
-        lineChartView.data = chartData
-        lineChartView.notifyDataSetChanged()
+        temperaturelineChartView.data = chartData
+        temperaturelineChartView.notifyDataSetChanged()
     }
     
     private func configureWeatherIcons(icons: [String]) {
@@ -127,15 +182,41 @@ final class TemperatureChartCell: UICollectionViewCell {
         }
     }
     
-    private func configureUI() {
-        layer.cornerRadius = 12.0
-        layer.borderColor = UIColor.gray.cgColor
-        layer.borderWidth = 1.0
+    private func configurePrecipitationLineChart(entries: [ChartEntry]) {
+        let chartEntries = entries.map { ChartDataEntry(x: $0.x, y: $0.y) }
+        let dataSet = LineChartDataSet(entries: chartEntries, label: "Linear Line Data")
         
-        [weatherIconHStackView, lineChartView].forEach { contentView.addSubview($0) }
+        dataSet.mode = .cubicBezier
+        dataSet.lineWidth = 4.0
+        dataSet.setColor(UIColor(red: 0.4, green: 0.7, blue: 1.0, alpha: 1.0))
+        dataSet.drawCirclesEnabled = false
+        dataSet.circleRadius = 0.0
+        
+        dataSet.drawFilledEnabled = true
+        dataSet.fillColor = UIColor.systemBlue.withAlphaComponent(0.3)
+        dataSet.fillAlpha = 0.8
+        dataSet.axisDependency = .right
+        dataSet.fillFormatter = DefaultFillFormatter { _, _ in CGFloat(0) }
+        
+        let chartData = LineChartData(dataSet: dataSet)
+        precipitationLineChartView.data = chartData
+        precipitationLineChartView.notifyDataSetChanged()
+    }
+    
+    private func configureUI() {
+        [temperatureContentView, precipitationContentView].forEach { contentView.addSubview($0) }
+        
+        [weatherIconHStackView, temperaturelineChartView].forEach { temperatureContentView.addSubview($0) }
+        
+        precipitationContentView.addSubview(precipitationLineChartView)
     }
     
     private func setupConstraints() {
+        temperatureContentView.snp.makeConstraints {
+            $0.top.horizontalEdges.equalToSuperview()
+            $0.height.equalTo(UIScreen.main.bounds.height / 3.0)
+        }
+        
         weatherIconHStackView.snp.makeConstraints {
             $0.top.equalToSuperview().inset(5.0)
             $0.leading.equalToSuperview().inset(20.0)
@@ -143,8 +224,20 @@ final class TemperatureChartCell: UICollectionViewCell {
             $0.height.equalTo(30.0)
         }
         
-        lineChartView.snp.makeConstraints {
+        temperaturelineChartView.snp.makeConstraints {
             $0.top.equalTo(weatherIconHStackView.snp.bottom)
+            $0.horizontalEdges.equalToSuperview()
+            $0.bottom.equalToSuperview().inset(10.0)
+        }
+        
+        precipitationContentView.snp.makeConstraints {
+            $0.top.equalTo(temperatureContentView.snp.bottom).offset(20.0)
+            $0.horizontalEdges.equalToSuperview()
+            $0.height.equalTo(UIScreen.main.bounds.height / 3.0)
+        }
+        
+        precipitationLineChartView.snp.makeConstraints {
+            $0.top.equalToSuperview().inset(5.0)
             $0.horizontalEdges.equalToSuperview()
             $0.bottom.equalToSuperview().inset(10.0)
         }
@@ -155,18 +248,18 @@ final class TemperatureChartCell: UICollectionViewCell {
             target: self,
             action: #selector(handleLongPress(_:)))
         longPressGesture.minimumPressDuration = 0.2
-        lineChartView.addGestureRecognizer(longPressGesture)
+        temperaturelineChartView.addGestureRecognizer(longPressGesture)
     }
     
     @objc private func handleLongPress(_ gesture: UILongPressGestureRecognizer) {
-        let location = gesture.location(in: lineChartView)
+        let location = gesture.location(in: temperaturelineChartView)
         
         switch gesture.state {
         case .began, .changed:
-            let highlight = lineChartView.getHighlightByTouchPoint(location)
-            lineChartView.highlightValue(highlight)
+            let highlight = temperaturelineChartView.getHighlightByTouchPoint(location)
+            temperaturelineChartView.highlightValue(highlight)
         case .ended, .cancelled:
-            lineChartView.highlightValue(nil)
+            temperaturelineChartView.highlightValue(nil)
         default:
             break
         }

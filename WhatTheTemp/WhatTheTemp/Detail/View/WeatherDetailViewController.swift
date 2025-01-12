@@ -14,11 +14,8 @@ import RxDataSources
 final class WeatherDetailViewController: UIViewController {
     private let viewModel: WeatherDetailViewModel
     private let disposeBag = DisposeBag()
-    
-    // 초기 로딩 상태를 관리하는 플래그
     private var isInitialScrollPerformed = false
     
-    // MARK: - SubViews.
     private let navigationBar = WeatherDetailNavigationBar()
     
     private lazy var collectionView: UICollectionView = {
@@ -29,6 +26,7 @@ final class WeatherDetailViewController: UIViewController {
         collectionView.register(DateSectionFooterView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: DateSectionFooterView.identifier)
         
         collectionView.register(TemperatureChartCell.self, forCellWithReuseIdentifier: TemperatureChartCell.identifier)
+        collectionView.register(PrecipitationChartCell.self, forCellWithReuseIdentifier: PrecipitationChartCell.identifier)
         
         return collectionView
     }()
@@ -51,6 +49,13 @@ final class WeatherDetailViewController: UIViewController {
                 temperatureChartCell.bind(to:chartCellViewModel)
                 
                 return temperatureChartCell
+                //            case .preci(let precipitationCellViewModel):
+                //                guard let precipitationChartCell = collectionView.dequeueReusableCell(
+                //                    withReuseIdentifier: PrecipitationChartCell.identifier,
+                //                    for: indexPath) as? PrecipitationChartCell else { return UICollectionViewCell() }
+                //                precipitationChartCell.bind(to: precipitationCellViewModel)
+                //
+                //                return precipitationChartCell
             }
         }, configureSupplementaryView: { [weak self] dataSource, collectionView, kind, indexPath in
             let section = dataSource[indexPath.section]
@@ -161,8 +166,8 @@ final class WeatherDetailViewController: UIViewController {
     }
     
     // MARK: - CompotitionalLayout method.
-    private func createLayout() -> UICollectionViewLayout {
-        return UICollectionViewCompositionalLayout { [weak self] index, _ -> NSCollectionLayoutSection? in
+    private func createLayout() -> UICollectionViewCompositionalLayout {
+        let layout = UICollectionViewCompositionalLayout { [weak self]index, _  in
             guard let self = self else { return nil }
             
             switch index {
@@ -170,10 +175,14 @@ final class WeatherDetailViewController: UIViewController {
                 return createDateSection()
             case 1:
                 return createTemperatureSection()
+                //            case 2:
+                //                return createPrecipitationSection()
             default:
                 return nil
             }
         }
+        
+        return layout
     }
     
     private func createDateSection() -> NSCollectionLayoutSection {
@@ -223,12 +232,18 @@ final class WeatherDetailViewController: UIViewController {
         
         let groupSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1.0),
-            heightDimension: .absolute(UIScreen.main.bounds.height / 3.5))
+            heightDimension: .absolute(UIScreen.main.bounds.height / 1.5))
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
         
         let section = NSCollectionLayoutSection(group: group)
         section.boundarySupplementaryItems = []
-        section.orthogonalScrollingBehavior = .groupPaging
+        section.orthogonalScrollingBehavior = .paging
+        section.contentInsets = NSDirectionalEdgeInsets(
+            top: 0.0,
+            leading: 0.0,
+            bottom: 20.0,
+            trailing: 0.0
+        )
         
         // 가로 스크롤 이벤트 감지
         section.visibleItemsInvalidationHandler = { [weak self] _, contentOffset, layoutEnvironment in
@@ -249,11 +264,35 @@ final class WeatherDetailViewController: UIViewController {
                     // 날짜 섹션 스크롤 동기화
                     let dateSectionIndexPath = IndexPath(item: throttledIndex, section: 0)
                     self.collectionView.scrollToItem(at: dateSectionIndexPath, at: .centeredHorizontally, animated: true)
+                    self.updateFooter()
                 }).disposed(by: self.disposeBag)
         }
         
         return section
     }
+    
+    //    private func createPrecipitationSection() -> NSCollectionLayoutSection {
+    //        let itemSize = NSCollectionLayoutSize(
+    //            widthDimension: .fractionalWidth(1.0),
+    //            heightDimension: .fractionalHeight(1.0))
+    //        let item = NSCollectionLayoutItem(layoutSize: itemSize)
+    //        item.contentInsets = NSDirectionalEdgeInsets(
+    //            top: 0.0,
+    //            leading: 10.0,
+    //            bottom: 0.0,
+    //            trailing: 10.0)
+    //
+    //        let groupSize = NSCollectionLayoutSize(
+    //            widthDimension: .fractionalWidth(1.0),
+    //            heightDimension: .absolute(UIScreen.main.bounds.height / 3.5))
+    //        let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
+    //
+    //        let section = NSCollectionLayoutSection(group: group)
+    //        section.boundarySupplementaryItems = []
+    //        section.orthogonalScrollingBehavior = .paging
+    //
+    //        return section
+    //    }
 }
 
 #if DEBUG
