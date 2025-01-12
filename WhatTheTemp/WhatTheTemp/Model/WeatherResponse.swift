@@ -82,3 +82,24 @@ struct DailyTemperature: Decodable {
         case maxTemperature = "max"
     }
 }
+
+// MARK: - Model of Visual Crossing API
+struct VXCWeatherResponse: Decodable {
+    let resolvedAddress: String
+    let days: [VXCDailyWeather]
+}
+
+struct VXCDailyWeather: Decodable {
+    let datetime: String
+    let hours: [VXCHourlyWeather]
+}
+
+struct VXCHourlyWeather: Decodable {
+    let datetime: String
+    let temp: Double
+    let feelslike: Double
+    let humidity: Double
+    let conditions: String
+    let icon: String
+}
+
