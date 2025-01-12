@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// OpenWeather API 응답 데이터에 대응하는 모델
 struct WeatherResponse: Decodable {
     let currentWeather: CurrentWeather
     let hourlyWeather: [HourlyWeather]

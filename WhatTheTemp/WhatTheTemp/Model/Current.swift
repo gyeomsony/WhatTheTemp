@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// WeatherView - 현재 날씨에 바인딩할 모델
 struct Current {
     let locationName: String = "서울시"
     let weatherDescription: String      // 구름 조금
