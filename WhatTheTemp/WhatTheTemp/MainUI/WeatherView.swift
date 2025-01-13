@@ -223,6 +223,18 @@ final class WeatherView: UIView {
         }
     }
     
+    // MARK: - Binding Method
+    func bind(to viewModel: WeatherViewModel) {
+        viewModel.currentWeather
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] current in
+                self?.updateUI(with: current)
+            }, onError: { error in
+                print("데이터 바인딩 에러 발생: \(error)")
+            })
+            .disposed(by: disposeBag)
+    }
+    
     // MARK: - UI Update Method
     private func updateUI(with current: Current) {
         // 현재 날씨
