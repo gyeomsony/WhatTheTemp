@@ -8,7 +8,7 @@
 import UIKit
 
 final class WeatherViewController: UIViewController {
-    private let weatherViewModel = WeatherViewModel(repository: WeatherRepository())
+    private let viewModel: WeatherViewModel
     
     // Bool값을 사용해서 현재 온도를 관리하고 기본값은 "섭씨"로 함
     // UserDefaults를 사용해 선택 상태가 앱이 재실행 되더라도 유지가 됨
@@ -45,6 +45,15 @@ final class WeatherViewController: UIViewController {
     
     // 테스트로 2페이지 설정
     private var pages: [Int] = [0, 1]
+    
+    init(viewModel: WeatherViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -134,7 +143,7 @@ final class WeatherViewController: UIViewController {
         }
     }
     private func setupViewModel() {
-        weatherViewModel.fetchWeatherResponse(lat: 37.5665, lon: 126.9780)
+        viewModel.fetchWeatherResponse(lat: 37.5665, lon: 126.9780)
     }
 }
 
@@ -153,7 +162,7 @@ extension WeatherViewController: UICollectionViewDataSource {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "WeatherPageCell", for: indexPath) as? WeatherPageCell else {
             return UICollectionViewCell()
         }
-        cell.weatherView.bind(to: weatherViewModel)
+        cell.weatherView.bind(to: viewModel)
         cell.weatherView.updateTemperatureUnit(isCelsius: isCelsius) // 초기 값 전달
         return cell
     }
