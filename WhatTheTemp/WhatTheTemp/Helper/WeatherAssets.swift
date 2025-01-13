@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 enum WeatherAssets: String {
     case clearDay
@@ -34,7 +35,9 @@ enum WeatherAssets: String {
     case thunderRainDay
     case thunderRainNight
     
-    static func getIconName(from code: Int, isDayTime: Bool) -> String {
+    static func getIconName(from code: Int) -> String {
+        let isDayTime = Date.now.isDayTime
+        
         switch code {
         case 200...202, 230...232:
             return isDayTime ? thunderRainDay.rawValue : thunderRainNight.rawValue
@@ -62,6 +65,27 @@ enum WeatherAssets: String {
             return isDayTime ? cloudDay.rawValue : cloudNight.rawValue
         default:
             return isDayTime ? clearDay.rawValue : clearNight.rawValue
+        }
+    }
+    
+    static func getColorSet(from code: Int) -> (background: UIColor, block: UIColor) {
+        let isDayTime = Date.now.isDayTime
+        
+        switch code {
+        case 200...232:
+            return (background: UIColor.thunderBackground, block: UIColor.thunderBlock)
+        case 300...504:
+            return isDayTime ? (background: UIColor.rainDayBackground, block: UIColor.rainDayBlock) : (background: UIColor.rainNightBackground, block: UIColor.rainNightBlock)
+        case 511, 600...622:
+            return isDayTime ? (background: UIColor.snowDayBackground, block: UIColor.snowDayBlock) : (background: UIColor.snowNightBackground, block: UIColor.snowNightBlock)
+        case 701, 711, 721, 741:
+            return isDayTime ? (background: UIColor.mistDayBackground, block: UIColor.mistDayBlock) : (background: UIColor.mistNightBackground, block: UIColor.mistNightBlock)
+        case 731, 751, 761, 762, 771, 781:
+            return isDayTime ? (background: UIColor.dustDayBackground, block: UIColor.dustDayBlock) : (background: UIColor.dustNightBackground, block: UIColor.dustNightBlock)
+        case 801...804:
+            return isDayTime ? (background: UIColor.cloudDayBackground, block: UIColor.cloudDayBlock) : (background: UIColor.cloudNightBackground, block: UIColor.cloudNightBlock)
+        default:
+            return isDayTime ? (background: UIColor.clearDayBackground, block: UIColor.clearDayBlock) : (background: UIColor.clearNightBackground, block: UIColor.clearyNightBlock)
         }
     }
 }
