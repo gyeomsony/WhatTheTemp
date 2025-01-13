@@ -33,7 +33,6 @@ final class SearchHistoryCollectionViewCell: UICollectionViewCell, ReuseIdentify
         let label = UILabel()
         label.font = .systemFont(ofSize: 14, weight: .medium)
         label.textColor = .white
-        label.text = "대체로 맑음"
         label.textAlignment = .center
         return label
     }()
@@ -51,7 +50,6 @@ final class SearchHistoryCollectionViewCell: UICollectionViewCell, ReuseIdentify
         let label = UILabel()
         label.font = .systemFont(ofSize: 38, weight: .regular)
         label.textColor = .white
-        label.text = "-13°"
         return label
     }()
     
@@ -68,7 +66,6 @@ final class SearchHistoryCollectionViewCell: UICollectionViewCell, ReuseIdentify
         let label = UILabel()
         label.font = .systemFont(ofSize: 14, weight: .medium)
         label.textColor = .white
-        label.text = "최저 -15°"
         return label
     }()
     
@@ -76,7 +73,6 @@ final class SearchHistoryCollectionViewCell: UICollectionViewCell, ReuseIdentify
         let label = UILabel()
         label.font = .systemFont(ofSize: 14, weight: .medium)
         label.textColor = .white
-        label.text = "최고 -5°"
         return label
     }()
     
@@ -92,7 +88,16 @@ final class SearchHistoryCollectionViewCell: UICollectionViewCell, ReuseIdentify
     
     // CoreData에서 읽어온 데이터를 셀에 설정
     func configure(with history: SearchHistoryEntity) {
-        cityNameLabel.text = history.cityName // `cityName`을 셀에 표시
+        cityNameLabel.text = history.cityName
+        // 날씨 관련 데이터를 셀에 표시
+    }
+    
+    func updateWeatherInfo(current: Current) {
+        weatherIconImageView.image = UIImage(named: WeatherAssets.getIconName(from: current.weatherCode))
+        temperatureLabel.text = "\(current.currentTemperature)°"
+        weatherConditionLabel.text = current.weatherDescription
+        minTemperatureLabel.text = "Min: \(current.minTemperature)°"
+        maxTemperatureLabel.text = "Max: \(current.maxTemperature)°"
     }
 }
 

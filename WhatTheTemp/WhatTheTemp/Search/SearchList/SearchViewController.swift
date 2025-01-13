@@ -12,6 +12,7 @@ final class SearchViewController: UIViewController {
     private var disposeBag = DisposeBag()
     private let viewModel: SearchViewModel
     private var searchResultViewModel: SearchResultViewModel?
+    private var weatherViewModel: WeatherViewModel?
     private var searchListVC: SearchResultListViewController?
     let searchHistoryListView = SearchHistoryView()
     private var refreshControl = UIRefreshControl()
@@ -24,13 +25,16 @@ final class SearchViewController: UIViewController {
         return searchController
     }()
     
-    init(viewModel: SearchViewModel) {
+    init(viewModel: SearchViewModel, weatherViewModel: WeatherViewModel) {
         self.viewModel = viewModel
+        self.weatherViewModel = weatherViewModel
         super.init(nibName: nil, bundle: nil)
+        
         // 초기화 시 viewModel을 기반으로 searchResultViewModel을 초기화
         searchResultViewModel = SearchResultViewModel(
             addressList: viewModel.addressList.asObservable(),
             searchQuery: viewModel.searchQuery.asObservable())
+        
         // searchListVC 초기화
         searchListVC = SearchResultListViewController(viewModel: searchResultViewModel!)
     }
@@ -54,6 +58,7 @@ final class SearchViewController: UIViewController {
         bindViewModel()
         bindSearchBar()
         loadSearchHistory() // CoreData에서 데이터 로딩
+        loadWeatherData() // 날씨 데이터 로딩
     }
 }
 
@@ -150,6 +155,17 @@ private extension SearchViewController {
         searchHistoryData = coreDataManager.readSearchHistoryData()
         searchHistoryListView.collectionView.reloadData() // 데이터 로딩 후 컬렉션뷰 갱신
     }
+    
+    func loadWeatherData() {
+        // CoreData에서 읽어온 검색 기록을 기반으로 날씨 데이터 로딩
+        for history in searchHistoryData {
+            let lat = history.lat // CoreData에서 가져온 lat
+            let lon = history.lon // CoreData에서 가져온 lon
+            
+            // 날씨 데이터 요청
+            weatherViewModel?.fetchWeatherResponse(lat: lat, lon: lon)
+        }
+    }
 }
 
 // TODO: - Rx로 변경 예정
@@ -164,9 +180,18 @@ extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSo
             return UICollectionViewCell()
         }
         
-        // CoreData에서 읽어온 데이터를 셀에 전달
         let searchHistory = searchHistoryData[indexPath.row]
-        cell.configure(with: searchHistory) // `configure` 메서드를 통해 셀에 데이터를 설정
+        cell.configure(with: searchHistory)
+        
+        // 날씨 데이터를 업데이트하는 로직
+        let lat = searchHistory.lat
+        let lon = searchHistory.lon
+        weatherViewModel?.currentWeather
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { current in
+                cell.updateWeatherInfo(current: current)
+            })
+            .disposed(by: disposeBag)
         return cell
     }
 }
