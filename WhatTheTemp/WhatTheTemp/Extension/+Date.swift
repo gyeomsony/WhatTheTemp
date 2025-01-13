@@ -20,8 +20,6 @@ extension Date {
     // 오전 6시 ~ 오후 5시 : day
     // 오후 5시 1분 ~ 오전 5시 59분 : night
     var isDayTime: Bool {
-        //let hour = Calendar.current.component(.hour, from: self)
-        
         if self.hour >= 6 && self.hour <= 17 {
             return true
         } else {
