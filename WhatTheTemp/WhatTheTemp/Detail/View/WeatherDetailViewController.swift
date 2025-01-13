@@ -49,13 +49,6 @@ final class WeatherDetailViewController: UIViewController {
                 temperatureChartCell.bind(to:chartCellViewModel)
                 
                 return temperatureChartCell
-                //            case .preci(let precipitationCellViewModel):
-                //                guard let precipitationChartCell = collectionView.dequeueReusableCell(
-                //                    withReuseIdentifier: PrecipitationChartCell.identifier,
-                //                    for: indexPath) as? PrecipitationChartCell else { return UICollectionViewCell() }
-                //                precipitationChartCell.bind(to: precipitationCellViewModel)
-                //
-                //                return precipitationChartCell
             }
         }, configureSupplementaryView: { [weak self] dataSource, collectionView, kind, indexPath in
             let section = dataSource[indexPath.section]
@@ -175,8 +168,6 @@ final class WeatherDetailViewController: UIViewController {
                 return createDateSection()
             case 1:
                 return createTemperatureSection()
-                //            case 2:
-                //                return createPrecipitationSection()
             default:
                 return nil
             }
@@ -270,29 +261,6 @@ final class WeatherDetailViewController: UIViewController {
         
         return section
     }
-    
-    //    private func createPrecipitationSection() -> NSCollectionLayoutSection {
-    //        let itemSize = NSCollectionLayoutSize(
-    //            widthDimension: .fractionalWidth(1.0),
-    //            heightDimension: .fractionalHeight(1.0))
-    //        let item = NSCollectionLayoutItem(layoutSize: itemSize)
-    //        item.contentInsets = NSDirectionalEdgeInsets(
-    //            top: 0.0,
-    //            leading: 10.0,
-    //            bottom: 0.0,
-    //            trailing: 10.0)
-    //
-    //        let groupSize = NSCollectionLayoutSize(
-    //            widthDimension: .fractionalWidth(1.0),
-    //            heightDimension: .absolute(UIScreen.main.bounds.height / 3.5))
-    //        let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
-    //
-    //        let section = NSCollectionLayoutSection(group: group)
-    //        section.boundarySupplementaryItems = []
-    //        section.orthogonalScrollingBehavior = .paging
-    //
-    //        return section
-    //    }
 }
 
 #if DEBUG

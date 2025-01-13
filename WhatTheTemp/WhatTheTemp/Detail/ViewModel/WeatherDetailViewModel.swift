@@ -34,7 +34,6 @@ final class WeatherDetailViewModel {
                     .map { vm, response in
                         let dateSection = self.createDateSection(from: response)
                         let weatherSection = self.createWeatherSection(from: response)
-//                        let precipitationSection = self.createPrecipitationSection(from: response)
                         
                         // 첫 번째 셀 기본 선택 상태 설정
                         if let firstDateCellViewModel = dateSection.items.first,
@@ -42,8 +41,7 @@ final class WeatherDetailViewModel {
                             vm.selectedDateCellID.accept(dateCellViewModel.dateInfo.id)
                             vm.dateSectionFooterData.accept(dateCellViewModel.dateInfo.fullDate)
                         }
-                        
-//                        return [dateSection, weatherSection, precipitationSection]
+                    
                         return [dateSection, weatherSection]
                     }
             }.bind(to: weatherSections)
@@ -139,20 +137,6 @@ final class WeatherDetailViewModel {
             sectionItemMapper: SectionItem.temp
         )
     }
-    
-//    private func createPrecipitationSection(from response: VXCWeatherResponse) -> SectionModel {
-//        return createSection(
-//            from: response.days,
-//            mapToViewModel: { day in
-//                let times = day.hours.compactMap { self.parseTimeToDouble($0.datetime) }
-//                let precipitation = day.hours.map { $0.precipitationProbability }
-//                
-//                let precipitationInfo = PrecipitationInfo(date: day.datetime, times: times, precipitation: precipitation)
-//                
-//                return PrecipitationChartCellViewModel(precipitationInfo: precipitationInfo)
-//            },
-//            sectionItemMapper: SectionItem.preci)
-//    }
 
     private func createDateCellViewModel(from dailyWeather: VXCDailyWeather) -> DateCellViewModel {
         let fullDate = parseFullDate(dailyWeather.datetime)

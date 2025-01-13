@@ -17,6 +17,7 @@ protocol WeatherRepositoryProtocol {
     // Visual Crossing API
     func fetchVXCWeatherData(location: String, startDate: String, endDate: String) -> Single<VXCWeatherResponse>
     func fetchWeathers(coordinates: [(lat: Double, lon: Double)]) -> Single<[WeatherResponse]>
+}
 
 
 final class WeatherRepository: WeatherRepositoryProtocol {
@@ -28,10 +29,6 @@ final class WeatherRepository: WeatherRepositoryProtocol {
             .map(WeatherResponse.self)
     }
     
-    
-    func fetchVXCWeatherData(location: String, startDate: String, endDate: String) -> Single<VXCWeatherResponse> {
-        return provider.rx.request(.visualCrossing(location: location, startDate: startDate, endDate: endDate))
-            .map(VXCWeatherResponse.self)
     /// 여러개의 좌표를 배열로 받아 그에 대응하는 날씨 데이터의 배열을 반환
     func fetchWeathers(coordinates: [(lat: Double, lon: Double)]) -> Single<[WeatherResponse]> {
         let requests = coordinates.map { (lat, lon) in
@@ -42,5 +39,10 @@ final class WeatherRepository: WeatherRepositoryProtocol {
         return Single.zip(requests) { responses in
             return responses
         }
+    }
+    
+    func fetchVXCWeatherData(location: String, startDate: String, endDate: String) -> Single<VXCWeatherResponse> {
+        return provider.rx.request(.visualCrossing(location: location, startDate: startDate, endDate: endDate))
+            .map(VXCWeatherResponse.self)
     }
 }
