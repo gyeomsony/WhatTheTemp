@@ -50,6 +50,9 @@ final class WeatherView: UIView {
     private let weatherIconImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
+        imageView.snp.makeConstraints {
+            $0.size.equalTo(CGSize(width: 60, height: 60))
+        }
         return imageView
     }()
     
