@@ -18,10 +18,15 @@ enum MenuHelper {
         ) { _ in
             print("섭씨 버튼 눌림")
             
-            // 유저 디폴츠에 저장
+            // 유저 디폴츠에 섭씨 저장
             SettingsManager.saveTempUnit(.celsius)
             NotificationCenter.default.post(name: .tempUnitChanged, object: nil)
+            
+            // 온도 변환 후 UI 업데이트
+            let convertedTemperature = SettingsManager.convertTemperature(value: currentTemperature, to: .celsius)
+            updateTemperature(convertedTemperature)
         }
+        
         // 화씨 선택 항목
         let fahrenheitAction = UIAction(
             title: "화씨",
@@ -32,10 +37,13 @@ enum MenuHelper {
             
             // 유저 디폴츠에 화씨 저장
             SettingsManager.saveTempUnit(.fahrenheit)
-            // 메뉴 상태 변경을 앱에 알림
             NotificationCenter.default.post(name: .tempUnitChanged, object: nil)
             
+            // 온도 변환 후 UI 업데이트 
+            let convertedTemperature = SettingsManager.convertTemperature(value: currentTemperature, to: .fahrenheit)
+            updateTemperature(convertedTemperature)
         }
+        
         // 섭씨와 화씨를 포함한 메뉴 반환
         return UIMenu(
             title: "온도 설정",
@@ -43,6 +51,7 @@ enum MenuHelper {
         )
     }
 }
+
 /// Notification 이름 확장
 /// 온도 단위가 변경되었음을 알리는 Notification 이름
 extension Notification.Name {

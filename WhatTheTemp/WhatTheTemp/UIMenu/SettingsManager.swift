@@ -27,4 +27,14 @@ struct SettingsManager {
         let value = UserDefaults.standard.string(forKey: tempUnitKey) ?? TempUnit.celsius.rawValue
         return TempUnit(rawValue: value) ?? .celsius
     }
+    
+    // 온도 변환 함수
+    static func convertTemperature(value: Double, to unit: TempUnit) -> Double {
+        switch unit {
+        case .celsius:
+            return (value - 32) * 5 / 9
+        case .fahrenheit:
+            return (value - 9 / 5) + 32
+        }
+    }
 }
