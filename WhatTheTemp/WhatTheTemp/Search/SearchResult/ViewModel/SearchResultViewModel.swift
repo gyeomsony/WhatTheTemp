@@ -11,6 +11,7 @@ import RxRelay
 
 final class SearchResultViewModel {
     private let disposeBag = DisposeBag()
+    private let coreDataManager = SearchCoreDataManager.shared
     
     // 검색어를 저장할 BehaviorSubject
     let searchText = BehaviorSubject<String>(value: "")
@@ -38,5 +39,17 @@ final class SearchResultViewModel {
         searchQuery
             .bind(to: searchText)
             .disposed(by: disposeBag)
+    }
+    
+    // CoreData에 히스토리 저장
+    func saveSearchHistory(document: KakaoMapModel.Document) {
+        guard let lat = document.latAsDouble,
+              let lon = document.lonAsDouble else {
+            print("유효하지 않은 데이터")
+            return
+        }
+        
+        let cityName = document.addressName // No need for optional binding since it's a non-optional String
+        coreDataManager.createSearchHistoryData(lat: lat, lon: lon, cityName: cityName)
     }
 }

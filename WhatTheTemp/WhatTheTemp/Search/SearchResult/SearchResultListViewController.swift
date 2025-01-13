@@ -60,10 +60,12 @@ private extension SearchResultListViewController {
             .disposed(by: disposeBag)
         
         // 셀 선택 이벤트 처리
-        searchResultListView.tableView.rx.modelSelected(KakaoMapModel.Document.self)
-            .subscribe(onNext: { document in
-                // 셀 선택 후 처리 로직
-                print("Selected document: \(document)")
+        searchResultListView.tableView.rx.modelSelected((KakaoMapModel.Document, String).self)
+            .subscribe(onNext: { [weak self] tuple in
+                guard let self = self else { return }
+                let (document, searchText) = tuple
+                // document는 이미 non-optional이므로 직접 사용할 수 있습니다.
+                self.viewModel.saveSearchHistory(document: document)
             })
             .disposed(by: disposeBag)
     }
