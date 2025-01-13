@@ -70,6 +70,6 @@ final class HourlyCollectionViewCell: UICollectionViewCell {
         [hourLabel, temperatureLabel].forEach {
             $0.text = "Test"
         }
-        weatherIconImageView.image = UIImage(named: "Cloudy")
+        weatherIconImageView.image = UIImage(named: "clearDay")
     }
 }
