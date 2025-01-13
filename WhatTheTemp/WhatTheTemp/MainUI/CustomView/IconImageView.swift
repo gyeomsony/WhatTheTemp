@@ -8,8 +8,9 @@
 import UIKit
 
 final class IconImageView: UIImageView {
-    init() {
+    init(name: String) {
         super.init(frame: .zero)
+        self.image = UIImage(named: name)
         self.contentMode = .scaleAspectFit
         self.snp.makeConstraints {
             $0.size.equalTo(CGSize(width: 30, height: 30))
