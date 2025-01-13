@@ -11,9 +11,14 @@ import Moya
 import RxSwift
 
 protocol WeatherRepositoryProtocol {
+    // OpenWeather API
     func fetchWeather(lat: Double, lon: Double) -> Single<WeatherResponse>
+    
+    // Visual Crossing API
+    func fetchVXCWeatherData(location: String, startDate: String, endDate: String) -> Single<VXCWeatherResponse>
     func fetchWeathers(coordinates: [(lat: Double, lon: Double)]) -> Single<[WeatherResponse]>
 }
+
 
 final class WeatherRepository: WeatherRepositoryProtocol {
     private let provider = MoyaProvider<WeatherAPI>()
@@ -34,5 +39,10 @@ final class WeatherRepository: WeatherRepositoryProtocol {
         return Single.zip(requests) { responses in
             return responses
         }
+    }
+    
+    func fetchVXCWeatherData(location: String, startDate: String, endDate: String) -> Single<VXCWeatherResponse> {
+        return provider.rx.request(.visualCrossing(location: location, startDate: startDate, endDate: endDate))
+            .map(VXCWeatherResponse.self)
     }
 }
