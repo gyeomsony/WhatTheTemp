@@ -11,7 +11,7 @@ import SnapKit
 final class SearchHistoryCollectionViewCell: UICollectionViewCell, ReuseIdentifying {
     let baseView = UIView()
     
-    let weatherIconImageView = IconImageView()
+    let weatherIconImageView = IconImageView(name: "clearDay")
     
     let leftVerticalStackView: UIStackView = {
         let stackView = UIStackView()

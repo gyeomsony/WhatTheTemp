@@ -72,17 +72,17 @@ final class WeatherView: UIView {
     
     // 풍속, 습도, 강수확률 표시 컴포넌트
     private let windSpeedLabel = WeatherDegreeLabel()
-    private let windSpeedIconImageView = IconImageView()
+    private let windSpeedIconImageView = IconImageView(name: "windSpeed")
     private lazy var windStackView = VerticalStackView(with: [windSpeedIconImageView,
                                                               windSpeedLabel,
                                                               WeatherTitleLabel("풍속")])
     private let humidityLabel = WeatherDegreeLabel()
-    private let humidityIconImageView = IconImageView()
+    private let humidityIconImageView = IconImageView(name: "humidity")
     private lazy var humidityStackView = VerticalStackView(with: [humidityIconImageView,
                                                                   humidityLabel,
                                                                  WeatherTitleLabel("습도")])
     private let rainLabel = WeatherDegreeLabel()
-    private let rainIconImageView = IconImageView()
+    private let rainIconImageView = IconImageView(name: "rainProbability")
     private lazy var rainStackView = VerticalStackView(with: [rainIconImageView,
                                                               rainLabel,
                                                               WeatherTitleLabel("강수")])
