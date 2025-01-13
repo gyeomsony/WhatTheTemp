@@ -10,6 +10,8 @@ import RxCocoa
 
 final class WeatherView: UIView {
     
+    private let disposeBag = DisposeBag()
+    
     // MARK: - 상단 UI Components
     // 지역명, 날씨, 기온 표시 컴포넌트
     private let locationNameLabel: UILabel = {
@@ -219,6 +221,25 @@ final class WeatherView: UIView {
          rainIconImageView].forEach {
             $0.image = UIImage(named: "Cloudy")
         }
+    }
+    
+    // MARK: - UI Update Method
+    private func updateUI(with current: Current) {
+        // 현재 날씨
+        locationNameLabel.text = current.locationName
+        weatherLabel.text = current.weatherDescription
+        temperatureLabel.text = "\(Int(current.currentTemperature))°"
+        weatherIconImageView.image = UIImage(named: WeatherAssets.getIconName(from: current.weatherCode))
+        
+        // 체감온도, 최저기온, 최고기온
+        feelsLikeTemperatureLabel.text = "\(Int(current.feelsLikeTemperature))°"
+        minTemperatureLabel.text = "\(Int(current.minTemperature))°"
+        maxTemperatureLabel.text = "\(Int(current.maxTemperature))°"
+        
+        // 풍속, 습도, 강수확률
+        windSpeedLabel.text = "\(Int(current.windSpeed))m/s"
+        humidityLabel.text = "\(current.humidity)%"
+        rainLabel.text = "\(Int(current.rainProbability))%"
     }
 }
 
