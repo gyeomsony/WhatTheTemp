@@ -33,7 +33,7 @@ struct Weather: Decodable {
 struct CurrentWeather: Decodable {
     let temperature: Double                 // 현재 온도
     let feelsLike: Double                   // 체감 온도
-    let humidity: Double                       // 현재 습도
+    let humidity: Double                    // 현재 습도
     let windSpeed: Double                   // 현재 풍속
     let weather: [Weather]                  // 날씨 코드, 날씨 상태
     
@@ -47,10 +47,10 @@ struct CurrentWeather: Decodable {
 }
 
 struct HourlyWeather: Decodable {
-    let dateTime: Int                        // timeIntervalSince1970 값
+    let dateTime: Double                    // timeIntervalSince1970 값
     let temperature: Double                 // 시간 별 온도
-    let rain: Double                            // 강수 확률 MARK: current weather에 강수 확률이 없어서 이 값을 현재 강수 확률로 활용해야 할 듯
-    let weather: [Weather]                   // 시간 별 날씨 icon에 활용할 날씨 코드
+    let rain: Double                         // 강수 확률
+    let weather: [Weather]                   // 날씨 코드
     
     enum CodingKeys: String, CodingKey {
         case dateTime = "dt"
@@ -74,8 +74,8 @@ struct DailyWeather: Decodable {
 
 struct DailyTemperature: Decodable {
     let temperature: Double
-    let minTemperature: Double                  // 최저 기온 MARK: 이 값 역시 현재 날씨 보여주는 view에서 활용
-    let maxTemperature: Double                  // 최고 기온 MARK: 이 값 역시 현재 날씨 보여주는 view에서 활용
+    let minTemperature: Double                  // 최저 기온
+    let maxTemperature: Double                  // 최고 기온
     
     enum CodingKeys: String, CodingKey {
         case temperature = "day"
