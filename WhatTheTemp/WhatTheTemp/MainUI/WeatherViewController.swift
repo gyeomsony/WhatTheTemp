@@ -12,9 +12,8 @@ final class WeatherViewController: UIViewController {
     
     // Bool값을 사용해서 현재 온도를 관리하고 기본값은 "섭씨"로 함
     // UserDefaults를 사용해 선택 상태가 앱이 재실행 되더라도 유지가 됨
-    private var isCelsius: Bool = UserDefaults.standard.object(forKey: "isCelsius") as? Bool ?? true {
+    private var isCelsius: Bool = true {
         didSet {
-            UserDefaults.standard.set(isCelsius, forKey: "isCelsius")
             updateTemperatureUnit()
         }
     }
@@ -51,6 +50,7 @@ final class WeatherViewController: UIViewController {
         setupNavigationBar()
         setupCollectionView()
         setupViewModel()
+        updateTemperatureUnit()
     }
     
     private func setupCollectionView() {
