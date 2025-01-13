@@ -125,7 +125,6 @@ final class WeatherView: UIView {
         setupButtons()
         setupAutoLayouts()
         setupDelegates()
-        testMethod()
     }
     
     required init?(coder: NSCoder) {
@@ -199,28 +198,6 @@ final class WeatherView: UIView {
     private func setupDelegates() {
         hourlyCollectionView.delegate = self
         hourlyCollectionView.dataSource = self
-    }
-    
-    private func testMethod() {
-        [locationNameLabel,
-         weatherLabel,
-         temperatureLabel,
-         feelsLikeTemperatureLabel,
-         minTemperatureLabel,
-         maxTemperatureLabel,
-         windSpeedLabel,
-         humidityLabel,
-         rainLabel
-        ].forEach {
-            $0.text = "Test"
-        }
-        
-        [weatherIconImageView,
-         windSpeedIconImageView,
-         humidityIconImageView,
-         rainIconImageView].forEach {
-            $0.image = UIImage(named: "Cloudy")
-        }
     }
     
     // MARK: - Binding Method
