@@ -66,6 +66,7 @@ private extension SearchResultListViewController {
                 let (document, searchText) = tuple
                 // document는 이미 non-optional이므로 직접 사용할 수 있습니다.
                 self.viewModel.saveSearchHistory(document: document)
+                self.navigationController?.popViewController(animated: true)
             })
             .disposed(by: disposeBag)
     }
