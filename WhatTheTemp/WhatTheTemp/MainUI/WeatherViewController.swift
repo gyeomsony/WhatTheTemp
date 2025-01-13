@@ -8,6 +8,8 @@
 import UIKit
 
 final class WeatherViewController: UIViewController {
+    private let weatherViewModel = WeatherViewModel(repository: WeatherRepository())
+    
     private var pageCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
@@ -40,17 +42,7 @@ final class WeatherViewController: UIViewController {
         setupNavigationBar()
         setupCollectionView()
         setupNotificationObservers()
-        
-    }
-    // 앱의 온도 단위 설정 변경을 감지하고 메뉴 UI를 업데이트
-    private func setupNotificationObservers() {
-        NotificationCenter.default.addObserver(self, selector: #selector(updateMenu), name: .tempUnitChanged, object: nil)
-    }
-    // 설정 버튼의 메뉴를 현재 온도 단위에 맞게 재생성 후 업데이트
-    @objc private func updateMenu() {
-        if let settingsButton = navigationItem.leftBarButtonItem {
-            settingsButton.menu = MenuHelper.createSettingsMenu()
-        }
+        setupViewModel()
     }
     
     private func setupCollectionView() {
@@ -99,6 +91,21 @@ final class WeatherViewController: UIViewController {
         navigationController?.navigationBar.tintColor = .white
         navigationController?.navigationBar.isTranslucent = true
     }
+    
+    // 앱의 온도 단위 설정 변경을 감지하고 메뉴 UI를 업데이트
+    private func setupNotificationObservers() {
+        NotificationCenter.default.addObserver(self, selector: #selector(updateMenu), name: .tempUnitChanged, object: nil)
+    }
+    // 설정 버튼의 메뉴를 현재 온도 단위에 맞게 재생성 후 업데이트
+    @objc private func updateMenu() {
+        if let settingsButton = navigationItem.leftBarButtonItem {
+            settingsButton.menu = MenuHelper.createSettingsMenu()
+        }
+    }
+  
+    private func setupViewModel() {
+        weatherViewModel.fetchWeatherResponse(lat: 37.5665, lon: 126.9780)
+    }
 }
 
 extension WeatherViewController: UICollectionViewDelegateFlowLayout {
@@ -113,7 +120,11 @@ extension WeatherViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        collectionView.dequeueReusableCell(withReuseIdentifier: "WeatherPageCell", for: indexPath) as! WeatherPageCell
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "WeatherPageCell", for: indexPath) as? WeatherPageCell else {
+            return UICollectionViewCell()
+        }
+        cell.weatherView.bind(to: weatherViewModel)
+        return cell
     }
 }
 
