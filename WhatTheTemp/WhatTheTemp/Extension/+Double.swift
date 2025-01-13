@@ -13,4 +13,9 @@ extension Double {
         let date = Date(timeIntervalSince1970: self)
         return date.hour
     }
+    
+    var day: Int {
+        let date = Date(timeIntervalSince1970: self)
+        return date.day
+    }
 }

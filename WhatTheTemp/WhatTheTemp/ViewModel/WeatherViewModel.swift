@@ -16,6 +16,7 @@ class WeatherViewModel {
     let currentWeather = PublishRelay<Current>()
     let todayHourly = PublishRelay<[WeatherSummary]>()
     let tomorrowHourly = PublishRelay<[WeatherSummary]>()
+    let nextFiveDaily = PublishRelay<[WeatherSummary]>()
     
     init(repository: WeatherRepositoryProtocol) {
         self.repository = repository
@@ -23,7 +24,7 @@ class WeatherViewModel {
     
     func fetchWeatherResponse(lat: Double, lon: Double) {
         repository.fetchWeather(lat: lat, lon: lon)
-            .map { response -> (Current, [WeatherSummary], [WeatherSummary]) in
+            .map { response -> (Current, [WeatherSummary], [WeatherSummary], [WeatherSummary]) in
                 let current = Current(weatherDescription: response.currentWeather.weather[0].description,
                                       currentTemperature: response.currentWeather.temperature,
                                       weatherCode: response.currentWeather.weather[0].code,
@@ -47,12 +48,18 @@ class WeatherViewModel {
                     WeatherSummary(time: hourlyWeather.dateTime.hour, statusCode: hourlyWeather.weather[0].code, temperature: hourlyWeather.temperature)
                 }
                 
-                return (current, todayHourly, tomorrowHourly)
+                /// 오늘로부터 이틀 뒤 ~ 6일 뒤 (5일 간) daily weather
+                let nextFiveDaily = response.dailyWeather[2...6].map { dailyWeather in
+                    WeatherSummary(time: dailyWeather.dateTime.day, statusCode: dailyWeather.weather[0].code, temperature: dailyWeather.temperature.temperature)
+                }
+                
+                return (current, todayHourly, tomorrowHourly, nextFiveDaily)
             }
-            .subscribe(onSuccess: { [weak self] (current, todayHourly, tomorrowHourly) in
+            .subscribe(onSuccess: { [weak self] (current, todayHourly, tomorrowHourly, nextFiveDaily) in
                 self?.currentWeather.accept(current)
                 self?.todayHourly.accept(todayHourly)
                 self?.tomorrowHourly.accept(tomorrowHourly)
+                self?.nextFiveDaily.accept(nextFiveDaily)
             }, onFailure: { error in
                 print("에러 발생: \(error)")
             })

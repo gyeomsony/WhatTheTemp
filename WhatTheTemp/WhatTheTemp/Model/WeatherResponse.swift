@@ -61,7 +61,7 @@ struct HourlyWeather: Decodable {
 }
 
 struct DailyWeather: Decodable {
-    let dateTime: Int
+    let dateTime: Double
     let temperature: DailyTemperature
     let weather: [Weather]
     
