@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// WeatherView - today, tomorrow, next 3 days에 바인딩할 모델
 struct WeatherSummary {
     let time: Date                      // 시간
     let statusCode: Int                 // 날씨 코드
