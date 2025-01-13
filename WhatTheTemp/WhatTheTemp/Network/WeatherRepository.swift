@@ -13,10 +13,10 @@ import RxSwift
 protocol WeatherRepositoryProtocol {
     // OpenWeather API
     func fetchWeather(lat: Double, lon: Double) -> Single<WeatherResponse>
+    func fetchWeathers(coordinates: [(lat: Double, lon: Double)]) -> Single<[WeatherResponse]>
     
     // Visual Crossing API
     func fetchVXCWeatherData(location: String, startDate: String, endDate: String) -> Single<VXCWeatherResponse>
-    func fetchWeathers(coordinates: [(lat: Double, lon: Double)]) -> Single<[WeatherResponse]>
 }
 
 
