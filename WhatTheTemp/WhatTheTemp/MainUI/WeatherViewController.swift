@@ -8,6 +8,8 @@
 import UIKit
 
 final class WeatherViewController: UIViewController {
+    private let weatherViewModel = WeatherViewModel(repository: WeatherRepository())
+    
     private var pageCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
@@ -99,6 +101,10 @@ final class WeatherViewController: UIViewController {
         navigationController?.navigationBar.tintColor = .white
         navigationController?.navigationBar.isTranslucent = true
     }
+    
+    private func setupViewModel() {
+        weatherViewModel.fetchWeatherResponse(lat: 37.5665, lon: 126.9780)
+    }
 }
 
 extension WeatherViewController: UICollectionViewDelegateFlowLayout {
@@ -113,7 +119,11 @@ extension WeatherViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        collectionView.dequeueReusableCell(withReuseIdentifier: "WeatherPageCell", for: indexPath) as! WeatherPageCell
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "WeatherPageCell", for: indexPath) as? WeatherPageCell else {
+            return UICollectionViewCell()
+        }
+        cell.weatherView.bind(to: weatherViewModel)
+        return cell
     }
 }
 
