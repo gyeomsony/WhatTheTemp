@@ -17,7 +17,7 @@ final class HourlyCollectionViewCell: UICollectionViewCell {
         return label
     }()
     
-    private let weatherIconImageView = IconImageView()
+    private let weatherIconImageView = IconImageView(name: "clearDay")
     
     private let temperatureLabel: UILabel = {
         let label = UILabel()

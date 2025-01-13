@@ -8,7 +8,7 @@
 import UIKit
 
 final class WeatherPageCell: UICollectionViewCell {
-    private let weatherView = WeatherView()
+    private(set) var weatherView = WeatherView()
     
     override init(frame: CGRect) {
         super.init(frame: frame)

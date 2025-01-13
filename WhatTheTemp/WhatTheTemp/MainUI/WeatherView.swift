@@ -10,6 +10,8 @@ import RxCocoa
 
 final class WeatherView: UIView {
     
+    private let disposeBag = DisposeBag()
+    
     // MARK: - 상단 UI Components
     // 지역명, 날씨, 기온 표시 컴포넌트
     private let locationNameLabel: UILabel = {
@@ -70,17 +72,17 @@ final class WeatherView: UIView {
     
     // 풍속, 습도, 강수확률 표시 컴포넌트
     private let windSpeedLabel = WeatherDegreeLabel()
-    private let windSpeedIconImageView = IconImageView()
+    private let windSpeedIconImageView = IconImageView(name: "windSpeed")
     private lazy var windStackView = VerticalStackView(with: [windSpeedIconImageView,
                                                               windSpeedLabel,
                                                               WeatherTitleLabel("풍속")])
     private let humidityLabel = WeatherDegreeLabel()
-    private let humidityIconImageView = IconImageView()
+    private let humidityIconImageView = IconImageView(name: "humidity")
     private lazy var humidityStackView = VerticalStackView(with: [humidityIconImageView,
                                                                   humidityLabel,
                                                                  WeatherTitleLabel("습도")])
     private let rainLabel = WeatherDegreeLabel()
-    private let rainIconImageView = IconImageView()
+    private let rainIconImageView = IconImageView(name: "rainProbability")
     private lazy var rainStackView = VerticalStackView(with: [rainIconImageView,
                                                               rainLabel,
                                                               WeatherTitleLabel("강수")])
@@ -123,7 +125,6 @@ final class WeatherView: UIView {
         setupButtons()
         setupAutoLayouts()
         setupDelegates()
-        testMethod()
     }
     
     required init?(coder: NSCoder) {
@@ -199,26 +200,35 @@ final class WeatherView: UIView {
         hourlyCollectionView.dataSource = self
     }
     
-    private func testMethod() {
-        [locationNameLabel,
-         weatherLabel,
-         temperatureLabel,
-         feelsLikeTemperatureLabel,
-         minTemperatureLabel,
-         maxTemperatureLabel,
-         windSpeedLabel,
-         humidityLabel,
-         rainLabel
-        ].forEach {
-            $0.text = "Test"
-        }
+    // MARK: - Binding Method
+    func bind(to viewModel: WeatherViewModel) {
+        viewModel.currentWeather
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] current in
+                self?.updateUI(with: current)
+            }, onError: { error in
+                print("데이터 바인딩 에러 발생: \(error)")
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    // MARK: - UI Update Method
+    private func updateUI(with current: Current) {
+        // 현재 날씨
+        locationNameLabel.text = current.locationName
+        weatherLabel.text = current.weatherDescription
+        temperatureLabel.text = "\(Int(current.currentTemperature))°"
+        weatherIconImageView.image = UIImage(named: WeatherAssets.getIconName(from: current.weatherCode))
         
-        [weatherIconImageView,
-         windSpeedIconImageView,
-         humidityIconImageView,
-         rainIconImageView].forEach {
-            $0.image = UIImage(named: "Cloudy")
-        }
+        // 체감온도, 최저기온, 최고기온
+        feelsLikeTemperatureLabel.text = "\(Int(current.feelsLikeTemperature))°"
+        minTemperatureLabel.text = "\(Int(current.minTemperature))°"
+        maxTemperatureLabel.text = "\(Int(current.maxTemperature))°"
+        
+        // 풍속, 습도, 강수확률
+        windSpeedLabel.text = "\(Int(current.windSpeed))m/s"
+        humidityLabel.text = "\(current.humidity)%"
+        rainLabel.text = "\(Int(current.rainProbability))%"
     }
 }
 
