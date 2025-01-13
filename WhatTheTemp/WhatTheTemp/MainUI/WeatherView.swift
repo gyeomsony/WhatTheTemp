@@ -59,7 +59,7 @@ final class WeatherView: UIView {
     // 체감온도, 최저온도, 최고온도 표시 컴포넌트
     private let feelsLikeTemperatureLabel = WeatherDegreeLabel()
     private lazy var feelsLikeStackView = VerticalStackView(with: [feelsLikeTemperatureLabel,
-                                                                  WeatherTitleLabel("체감")])
+                                                                   WeatherTitleLabel("체감")])
     private let minTemperatureLabel = WeatherDegreeLabel()
     private lazy var minTemperatureStackView = VerticalStackView(with: [minTemperatureLabel,
                                                                         WeatherTitleLabel("최저")])
@@ -80,7 +80,7 @@ final class WeatherView: UIView {
     private let humidityIconImageView = IconImageView(name: "humidity")
     private lazy var humidityStackView = VerticalStackView(with: [humidityIconImageView,
                                                                   humidityLabel,
-                                                                 WeatherTitleLabel("습도")])
+                                                                  WeatherTitleLabel("습도")])
     private let rainLabel = WeatherDegreeLabel()
     private let rainIconImageView = IconImageView(name: "rainProbability")
     private lazy var rainStackView = VerticalStackView(with: [rainIconImageView,
@@ -213,7 +213,7 @@ final class WeatherView: UIView {
     }
     
     // MARK: - UI Update Method
-    private func updateUI(with current: Current) {
+    public func updateUI(with current: Current) {
         // 현재 날씨
         locationNameLabel.text = current.locationName
         weatherLabel.text = current.weatherDescription
@@ -229,6 +229,39 @@ final class WeatherView: UIView {
         windSpeedLabel.text = "\(Int(current.windSpeed))m/s"
         humidityLabel.text = "\(current.humidity)%"
         rainLabel.text = "\(Int(current.rainProbability))%"
+    }
+    
+    // 온도단위 업데이트 메서드
+    public func updateTemperatureUnit(isCelsius: Bool) {
+        let targetUnit: TempUnit = isCelsius ? .celsius : .fahrenheit
+        
+        // 현재 온도 변환
+        if let currentTempText = temperatureLabel.text?.dropLast(),
+           let currentTempValue = Double(currentTempText) {
+            let convertedCurrent = SettingsManager.convertTemperature(value: currentTempValue, to: targetUnit)
+            temperatureLabel.text = "\(Int(convertedCurrent))°"
+        }
+        
+        // 체감 온도 변환
+        if let feelsLikeText = feelsLikeTemperatureLabel.text?.dropLast(),
+           let feelsLikeValue = Double(feelsLikeText) {
+            let convertedFeelsLike = SettingsManager.convertTemperature(value: feelsLikeValue, to: targetUnit)
+            feelsLikeTemperatureLabel.text = "\(Int(convertedFeelsLike))°"
+        }
+        
+        // 최저 온도 변환
+        if let minTempText = minTemperatureLabel.text?.dropLast(),
+           let minTempValue = Double(minTempText) {
+            let convertedMin = SettingsManager.convertTemperature(value: minTempValue, to: targetUnit)
+            minTemperatureLabel.text = "\(Int(convertedMin))°"
+        }
+        
+        // 최고 온도 변환
+        if let maxTempText = maxTemperatureLabel.text?.dropLast(),
+           let maxTempValue = Double(maxTempText) {
+            let convertedMax = SettingsManager.convertTemperature(value: maxTempValue, to: targetUnit)
+            maxTemperatureLabel.text = "\(Int(convertedMax))°"
+        }
     }
 }
 
