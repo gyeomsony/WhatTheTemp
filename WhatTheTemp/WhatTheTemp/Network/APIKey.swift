@@ -16,4 +16,14 @@ struct APIKey {
         print("API Key가 로드되었습니다.")
         return key
     }()
+    
+    static let visualCrossing: String = {
+        guard let key = Bundle.main.infoDictionary?["VisualCrossingAPIKey"] as? String else {
+            print("API Key를 읽어오지 못했습니다. Info.plist를 확인하세요.")
+            fatalError("VisualCrossing APIKey가 설정되지 않았습니다.")
+        }
+        print("VisualCrossing API Key가 로드되었습니다.")
+        return key
+    }()
+    
 }
