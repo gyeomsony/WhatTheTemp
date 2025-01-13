@@ -34,7 +34,7 @@ struct SettingsManager {
         case .celsius:
             return (value - 32) * 5 / 9
         case .fahrenheit:
-            return (value - 9 / 5) + 32
+            return (value * 9 / 5) + 32
         }
     }
 }
