@@ -28,8 +28,10 @@ final class SearchResultListTableViewCell: UITableViewCell, ReuseIdentifying {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configure(query: KakaoMapModel.Document) {
-        cityName.text = query.addressName
+    // 하이라이트 기능을 추가한 configure 메서드
+    func configure(query: KakaoMapModel.Document, searchText: String) {
+        let highlightedText = query.addressName.highlightedText(for: searchText, highlightColor: .white)
+        cityName.attributedText = highlightedText
     }
 }
 
