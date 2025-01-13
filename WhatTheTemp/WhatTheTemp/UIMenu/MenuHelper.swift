@@ -8,8 +8,8 @@
 import UIKit
 
 /// 메뉴를 생성하고 설정 버튼에 표시할 수 있는 헬퍼 구조체
-struct MenuHelper {
-    static func createSettingsMenu() -> UIMenu {
+enum MenuHelper {
+    static func createSettingsMenu(currentTemperature: Double, updateTemperature: @escaping (Double) -> Void) -> UIMenu {
         // 섭씨 선택 항목
         let celsiusAction = UIAction(
             title: "섭씨",
