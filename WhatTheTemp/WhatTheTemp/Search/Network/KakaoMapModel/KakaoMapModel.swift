@@ -14,7 +14,7 @@ struct KakaoMapModel: Decodable {
 
     struct Document: Decodable {
         let addressName: String
-        let cityName: String?
+        let cityName: String? // 행정구역"시"까지 데이터
         let lon: String
         let lat: String
         
