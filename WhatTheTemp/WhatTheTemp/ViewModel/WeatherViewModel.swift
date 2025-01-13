@@ -14,7 +14,8 @@ class WeatherViewModel {
     private let disposeBag = DisposeBag()
     
     let currentWeather = PublishRelay<Current>()
-    let hourlyWeather = PublishRelay<[WeatherSummary]>()
+    let todayHourly = PublishRelay<[WeatherSummary]>()
+    let tomorrowHourly = PublishRelay<[WeatherSummary]>()
     
     init(repository: WeatherRepositoryProtocol) {
         self.repository = repository
@@ -22,7 +23,7 @@ class WeatherViewModel {
     
     func fetchWeatherResponse(lat: Double, lon: Double) {
         repository.fetchWeather(lat: lat, lon: lon)
-            .map { response -> (Current, [WeatherSummary] ) in
+            .map { response -> (Current, [WeatherSummary], [WeatherSummary]) in
                 let current = Current(weatherDescription: response.currentWeather.weather[0].description,
                                       currentTemperature: response.currentWeather.temperature,
                                       weatherCode: response.currentWeather.weather[0].code,
@@ -37,15 +38,21 @@ class WeatherViewModel {
                 let hour = Date.now.hour
                 
                 /// 현재 시 ~ 오늘 23시까지 hourly weather
-                let weatherSummaries = response.hourlyWeather[0...23-hour].map { hourlyWeather in
+                let todayHourly = response.hourlyWeather[0...23-hour].map { hourlyWeather in
                     WeatherSummary(time: hourlyWeather.dateTime.hour, statusCode: hourlyWeather.weather[0].code, temperature: hourlyWeather.temperature)
                 }
                 
-                return (current, weatherSummaries)
+                /// 내일 0시 ~ 23시까지 hourly weather
+                let tomorrowHourly = response.hourlyWeather[24-hour...47-hour].map { hourlyWeather in
+                    WeatherSummary(time: hourlyWeather.dateTime.hour, statusCode: hourlyWeather.weather[0].code, temperature: hourlyWeather.temperature)
+                }
+                
+                return (current, todayHourly, tomorrowHourly)
             }
-            .subscribe(onSuccess: { [weak self] (current, weatherSummaries) in
+            .subscribe(onSuccess: { [weak self] (current, todayHourly, tomorrowHourly) in
                 self?.currentWeather.accept(current)
-                self?.hourlyWeather.accept(weatherSummaries)
+                self?.todayHourly.accept(todayHourly)
+                self?.tomorrowHourly.accept(tomorrowHourly)
             }, onFailure: { error in
                 print("에러 발생: \(error)")
             })
