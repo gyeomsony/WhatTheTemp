@@ -32,9 +32,9 @@ struct SettingsManager {
     static func convertTemperature(value: Double, to unit: TempUnit) -> Double {
         switch unit {
         case .celsius:
-            return (value - 32) * 5 / 9
+            return (value - 32) * 5.0 / 9.0
         case .fahrenheit:
-            return (value * 9 / 5) + 32
+            return (value * 9.0 / 5.0) + 32
         }
     }
 }
