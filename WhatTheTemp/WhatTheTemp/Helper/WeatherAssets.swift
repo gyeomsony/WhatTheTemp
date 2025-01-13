@@ -35,7 +35,9 @@ enum WeatherAssets: String {
     case thunderRainDay
     case thunderRainNight
     
-    static func getIconName(from code: Int, isDayTime: Bool) -> String {
+    static func getIconName(from code: Int) -> String {
+        let isDayTime = Date.now.isDayTime
+        
         switch code {
         case 200...202, 230...232:
             return isDayTime ? thunderRainDay.rawValue : thunderRainNight.rawValue
@@ -66,7 +68,9 @@ enum WeatherAssets: String {
         }
     }
     
-    static func getColorSet(from code: Int, isDayTime: Bool) -> (background: UIColor, block: UIColor) {
+    static func getColorSet(from code: Int) -> (background: UIColor, block: UIColor) {
+        let isDayTime = Date.now.isDayTime
+        
         switch code {
         case 200...232:
             return (background: UIColor.thunderBackground, block: UIColor.thunderBlock)
