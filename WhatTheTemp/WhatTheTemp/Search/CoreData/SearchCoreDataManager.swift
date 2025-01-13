@@ -2,7 +2,7 @@
 //  SearchCoreDataManager.swift
 //  WhatTheTemp
 //
-//  Created by t2023-m0019 on 1/13/25.
+//  Created by 박시연 on 1/13/25.
 //
 
 import CoreData
@@ -21,7 +21,7 @@ final class SearchCoreDataManager {
     }
     
     // Create
-    func createSearchHistoryData(lat: Double, lon: Double, cityName: String) {
+    func createSearchHistoryData(lat: Double, lon: Double, cityName: String, addressName: String) {
         guard let entity = NSEntityDescription.entity(forEntityName: SearchHistoryEntity.className, in: context) else {
             print("Entity not found")
             return
@@ -32,6 +32,7 @@ final class SearchCoreDataManager {
         newHistory.setValue(lon, forKey: SearchHistoryEntity.Key.lon)
         newHistory.setValue(lat, forKey: SearchHistoryEntity.Key.lat)
         newHistory.setValue(cityName, forKey: SearchHistoryEntity.Key.cityName)
+        newHistory.setValue(addressName, forKey: SearchHistoryEntity.Key.addressName)
         
         do {
             try self.context.save()
@@ -54,10 +55,11 @@ final class SearchCoreDataManager {
     }
     
     // Update
-    func updateSearchHistoryData(contact: SearchHistoryEntity, lat: Double, lon: Double, cityName: String) {
+    func updateSearchHistoryData(contact: SearchHistoryEntity, lat: Double, lon: Double, cityName: String, addressName: String) {
         contact.setValue(lat, forKey: SearchHistoryEntity.Key.lat)
         contact.setValue(lon, forKey: SearchHistoryEntity.Key.lon)
         contact.setValue(cityName, forKey: SearchHistoryEntity.Key.cityName)
+        contact.setValue(addressName, forKey: SearchHistoryEntity.Key.addressName)
         
         do {
             try self.context.save()

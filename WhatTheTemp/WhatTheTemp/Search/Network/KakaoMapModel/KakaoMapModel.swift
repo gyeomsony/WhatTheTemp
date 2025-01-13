@@ -14,6 +14,7 @@ struct KakaoMapModel: Decodable {
 
     struct Document: Decodable {
         let addressName: String
+        let cityName: String?
         let lon: String
         let lat: String
         
@@ -27,6 +28,7 @@ struct KakaoMapModel: Decodable {
 
         enum CodingKeys: String, CodingKey {
             case addressName = "address_name"
+            case cityName = "region_2depth_name"
             case lon = "x"
             case lat = "y"
         }

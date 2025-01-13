@@ -2,7 +2,7 @@
 //  SearchHistoryEntity+CoreDataClass.swift
 //  WhatTheTemp
 //
-//  Created by t2023-m0019 on 1/13/25.
+//  Created by 박시연 on 1/13/25.
 //
 //
 
@@ -16,5 +16,6 @@ public class SearchHistoryEntity: NSManagedObject {
         static let lon = "lon"
         static let lat = "lat"
         static let cityName = "cityName"
+        static let addressName = "addressName"
     }
 }

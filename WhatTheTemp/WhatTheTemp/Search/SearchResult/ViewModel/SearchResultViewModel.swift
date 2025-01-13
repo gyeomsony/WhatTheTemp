@@ -2,7 +2,7 @@
 //  SearchResultViewModel.swift
 //  WhatTheTemp
 //
-//  Created by t2023-m0019 on 1/9/25.
+//  Created by 박시연 on 1/9/25.
 //
 
 import Foundation
@@ -44,12 +44,13 @@ final class SearchResultViewModel {
     // CoreData에 히스토리 저장
     func saveSearchHistory(document: KakaoMapModel.Document) {
         guard let lat = document.latAsDouble,
-              let lon = document.lonAsDouble else {
+              let lon = document.lonAsDouble,
+              let cityName = document.cityName else {
             print("유효하지 않은 데이터")
             return
         }
         
-        let cityName = document.addressName // No need for optional binding since it's a non-optional String
-        coreDataManager.createSearchHistoryData(lat: lat, lon: lon, cityName: cityName)
+        let addressName = document.addressName // 검색시 동까지 노출
+        coreDataManager.createSearchHistoryData(lat: lat, lon: lon, cityName: cityName, addressName: addressName)
     }
 }

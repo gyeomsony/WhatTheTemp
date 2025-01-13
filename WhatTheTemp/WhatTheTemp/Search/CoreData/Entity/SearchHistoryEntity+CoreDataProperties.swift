@@ -2,7 +2,7 @@
 //  SearchHistoryEntity+CoreDataProperties.swift
 //  WhatTheTemp
 //
-//  Created by t2023-m0019 on 1/13/25.
+//  Created by 박시연 on 1/13/25.
 //
 //
 
@@ -19,6 +19,7 @@ extension SearchHistoryEntity {
     @NSManaged public var lon: Double
     @NSManaged public var lat: Double
     @NSManaged public var cityName: String?
+    @NSManaged public var addressName: String?
 
 }
 

@@ -21,14 +21,11 @@ final class KakaoMapRepository: KakaoMapRepositoryProtocol {
     func fetchAddressSearchList(query: String) -> Single<[KakaoMapModel.Document]> {
         return kakaoProvider.rx.request(.getAddressList(query: query))
             .do(onSuccess: { response in
-                print("Response: \(response)")
-            }, onError: { error in
-                print("error \(error)")
+                print("Response Data: \(String(data: response.data, encoding: .utf8) ?? "No Data")")
             })
             .map { response -> [KakaoMapModel.Document] in
                 do {
                     let kakaoMapModel = try JSONDecoder().decode(KakaoMapModel.self, from: response.data)
-                    // "서"가 포함된 주소만 필터링
                     return kakaoMapModel.documents.filter { $0.addressName.contains(query) }
                 } catch {
                     print("Decoding error: \(error)")
