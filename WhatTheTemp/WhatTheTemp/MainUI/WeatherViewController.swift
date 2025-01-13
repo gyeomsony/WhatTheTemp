@@ -18,6 +18,8 @@ final class WeatherViewController: UIViewController {
             updateTemperatureUnit()
         }
     }
+    // 테스트로 2페이지 설정
+    private var pages: [Int] = [0, 1]
     
     private var pageCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -42,9 +44,6 @@ final class WeatherViewController: UIViewController {
         pageControl.pageIndicatorTintColor = .lightGray
         return pageControl
     }()
-    
-    // 테스트로 2페이지 설정
-    private var pages: [Int] = [0, 1]
     
     init(viewModel: WeatherViewModel) {
         self.viewModel = viewModel
