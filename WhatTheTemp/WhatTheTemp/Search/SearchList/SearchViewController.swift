@@ -14,6 +14,7 @@ final class SearchViewController: UIViewController {
     private var searchResultViewModel: SearchResultViewModel?
     private var searchListVC: SearchResultListViewController?
     let searchHistoryListView = SearchHistoryView()
+    private var refreshControl = UIRefreshControl()
 
     private lazy var searchController: UISearchController = {
         let searchController = UISearchController(searchResultsController: searchListVC)
@@ -25,7 +26,9 @@ final class SearchViewController: UIViewController {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
         // 초기화 시 viewModel을 기반으로 searchResultViewModel을 초기화
-        searchResultViewModel = SearchResultViewModel(addressList: viewModel.addressList.asObservable())
+        searchResultViewModel = SearchResultViewModel(
+            addressList: viewModel.addressList.asObservable(),
+            searchQuery: viewModel.searchQuery.asObservable())
         // searchListVC 초기화
         searchListVC = SearchResultListViewController(viewModel: searchResultViewModel!)
     }
@@ -42,6 +45,7 @@ final class SearchViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor(red: 33/255, green: 33/255, blue: 33/255, alpha: 1.0)
+        setupRefreshControl()
         setupNavigationBar()
         setupSearchController()
         setupCollectionView()
@@ -53,6 +57,22 @@ final class SearchViewController: UIViewController {
 // MARK: - Private Method
 
 private extension SearchViewController {
+    func setupRefreshControl() {
+        // refreshControl property에 UIRefreshControl() 할당
+        searchHistoryListView.collectionView.refreshControl = UIRefreshControl()
+        searchHistoryListView.collectionView.refreshControl?.addTarget(self, action: #selector(handleRefreshControl), for: .valueChanged)
+        
+        searchHistoryListView.collectionView.refreshControl?.tintColor = .white
+    }
+    
+    @objc
+    func handleRefreshControl() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            self.searchHistoryListView.collectionView.reloadData()
+            self.searchHistoryListView.collectionView.refreshControl?.endRefreshing()
+        }
+    }
+    
     func setupNavigationBar() {
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.largeTitleDisplayMode = .always
@@ -103,7 +123,10 @@ private extension SearchViewController {
     // ViewModel에 바인딩
     func bindViewModel() {
         // SearchViewModel에서 데이터를 가져와 SearchResultViewModel에 바인딩
-        searchResultViewModel = SearchResultViewModel(addressList: viewModel.addressList.asObservable())
+        searchResultViewModel = SearchResultViewModel(
+            addressList: viewModel.addressList.asObservable(),
+            searchQuery: viewModel.searchQuery.asObservable()
+        )
     }
     
     func bindSearchBar() {
@@ -112,7 +135,8 @@ private extension SearchViewController {
             .distinctUntilChanged() // 이전 값과 동일하면 무시
             .filter { !$0.isEmpty } // 비어 있지 않은 값만 처리
             .subscribe(onNext: { [weak self] query in
-                self?.viewModel.fetchAddressList(query: query) // ViewModel에 데이터 요청
+                self?.viewModel.fetchAddressList(query: query) // API 요청
+                self?.searchResultViewModel?.searchText.onNext(query) // 검색어 전달
             })
             .disposed(by: disposeBag)
     }
