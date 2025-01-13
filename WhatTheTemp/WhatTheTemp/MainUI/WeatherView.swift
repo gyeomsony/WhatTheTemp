@@ -12,6 +12,10 @@ final class WeatherView: UIView {
     
     private let disposeBag = DisposeBag()
     
+    private var todatyWeather: [WeatherSummary] = []
+    private var tomorrowWeather: [WeatherSummary] = []
+    private var nextFiveDaysWeather: [WeatherSummary] = []
+    
     // MARK: - 상단 UI Components
     // 지역명, 날씨, 기온 표시 컴포넌트
     private let locationNameLabel: UILabel = {
@@ -62,7 +66,7 @@ final class WeatherView: UIView {
     // 체감온도, 최저온도, 최고온도 표시 컴포넌트
     private let feelsLikeTemperatureLabel = WeatherDegreeLabel()
     private lazy var feelsLikeStackView = VerticalStackView(with: [feelsLikeTemperatureLabel,
-                                                                  WeatherTitleLabel("체감")])
+                                                                   WeatherTitleLabel("체감")])
     private let minTemperatureLabel = WeatherDegreeLabel()
     private lazy var minTemperatureStackView = VerticalStackView(with: [minTemperatureLabel,
                                                                         WeatherTitleLabel("최저")])
@@ -83,7 +87,7 @@ final class WeatherView: UIView {
     private let humidityIconImageView = IconImageView(name: "humidity")
     private lazy var humidityStackView = VerticalStackView(with: [humidityIconImageView,
                                                                   humidityLabel,
-                                                                 WeatherTitleLabel("습도")])
+                                                                  WeatherTitleLabel("습도")])
     private let rainLabel = WeatherDegreeLabel()
     private let rainIconImageView = IconImageView(name: "rainProbability")
     private lazy var rainStackView = VerticalStackView(with: [rainIconImageView,
@@ -213,6 +217,27 @@ final class WeatherView: UIView {
                 print("데이터 바인딩 에러 발생: \(error)")
             })
             .disposed(by: disposeBag)
+        
+        viewModel.todayHourly
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] hourlyDatas in
+                self?.todatyWeather = hourlyDatas
+            })
+            .disposed(by: disposeBag)
+        
+        viewModel.tomorrowHourly
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] hourlyDatas in
+                self?.tomorrowWeather = hourlyDatas
+            })
+            .disposed(by: disposeBag)
+        
+        viewModel.nextFiveDaily
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] dailyDatas in
+                self?.nextFiveDaysWeather = dailyDatas
+            })
+            .disposed(by: disposeBag)
     }
     
     // MARK: - UI Update Method
@@ -232,6 +257,10 @@ final class WeatherView: UIView {
         windSpeedLabel.text = "\(Int(current.windSpeed))m/s"
         humidityLabel.text = "\(current.humidity)%"
         rainLabel.text = "\(Int(current.rainProbability))%"
+    }
+    
+    func updateHourlyUI(with hourlyDatas: [WeatherSummary]) {
+        
     }
     
     // 온도단위 업데이트 메서드
