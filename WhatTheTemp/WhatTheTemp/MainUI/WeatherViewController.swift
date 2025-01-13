@@ -41,6 +41,7 @@ final class WeatherViewController: UIViewController {
         super.viewDidLoad()
         setupNavigationBar()
         setupCollectionView()
+        setupNotificationObservers()
         setupViewModel()
     }
     
@@ -81,6 +82,9 @@ final class WeatherViewController: UIViewController {
         
         navigationItem.rightBarButtonItem = searchButton
         navigationItem.leftBarButtonItem = settingsButton
+        // 메뉴 헬퍼
+        settingsButton.menu = MenuHelper.createSettingsMenu()
+        navigationItem.leftBarButtonItem = settingsButton
         
         navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
         navigationController?.navigationBar.shadowImage = UIImage()
@@ -88,6 +92,17 @@ final class WeatherViewController: UIViewController {
         navigationController?.navigationBar.isTranslucent = true
     }
     
+    // 앱의 온도 단위 설정 변경을 감지하고 메뉴 UI를 업데이트
+    private func setupNotificationObservers() {
+        NotificationCenter.default.addObserver(self, selector: #selector(updateMenu), name: .tempUnitChanged, object: nil)
+    }
+    // 설정 버튼의 메뉴를 현재 온도 단위에 맞게 재생성 후 업데이트
+    @objc private func updateMenu() {
+        if let settingsButton = navigationItem.leftBarButtonItem {
+            settingsButton.menu = MenuHelper.createSettingsMenu()
+        }
+    }
+  
     private func setupViewModel() {
         weatherViewModel.fetchWeatherResponse(lat: 37.5665, lon: 126.9780)
     }
