@@ -21,7 +21,7 @@ class WeatherViewModel {
     
     func fetchWeatherResponse(lat: Double, lon: Double) {
         repository.fetchWeather(lat: lat, lon: lon)
-            .subscribe(onSuccess: { [weak self] (response: WeatherResponse) in
+            .map { response -> Current in
                 let current = Current(weatherDescription: response.currentWeather.weather[0].description,
                                       currentTemperature: response.currentWeather.temperature,
                                       weatherCode: response.currentWeather.weather[0].code,
@@ -31,6 +31,9 @@ class WeatherViewModel {
                                       windSpeed: response.currentWeather.windSpeed,
                                       humidity: response.currentWeather.humidity,
                                       rainProbability: response.hourlyWeather[0].rain)
+                return current
+            }
+            .subscribe(onSuccess: { [weak self] current in
                 self?.currentWeather.accept(current)
             }, onFailure: { error in
                 print("에러 발생: \(error)")
