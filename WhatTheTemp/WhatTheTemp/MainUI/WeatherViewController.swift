@@ -10,6 +10,15 @@ import UIKit
 final class WeatherViewController: UIViewController {
     private let weatherViewModel = WeatherViewModel(repository: WeatherRepository())
     
+    // Bool값을 사용해서 현재 온도를 관리하고 기본값은 "섭씨"로 함
+    // UserDefaults를 사용해 선택 상태가 앱이 재실행 되더라도 유지가 됨
+    private var isCelsius: Bool = UserDefaults.standard.object(forKey: "isCelsius") as? Bool ?? true {
+        didSet {
+            UserDefaults.standard.set(isCelsius, forKey: "isCelsius")
+            updateTemperatureUnit()
+        }
+    }
+    
     private var pageCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
@@ -41,7 +50,6 @@ final class WeatherViewController: UIViewController {
         super.viewDidLoad()
         setupNavigationBar()
         setupCollectionView()
-        setupNotificationObservers()
         setupViewModel()
     }
     
@@ -82,9 +90,8 @@ final class WeatherViewController: UIViewController {
         
         navigationItem.rightBarButtonItem = searchButton
         navigationItem.leftBarButtonItem = settingsButton
-        // 메뉴 헬퍼
-        settingsButton.menu = MenuHelper.createSettingsMenu()
-        navigationItem.leftBarButtonItem = settingsButton
+        
+        updateMenu()
         
         navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
         navigationController?.navigationBar.shadowImage = UIImage()
@@ -92,17 +99,40 @@ final class WeatherViewController: UIViewController {
         navigationController?.navigationBar.isTranslucent = true
     }
     
-    // 앱의 온도 단위 설정 변경을 감지하고 메뉴 UI를 업데이트
-    private func setupNotificationObservers() {
-        NotificationCenter.default.addObserver(self, selector: #selector(updateMenu), name: .tempUnitChanged, object: nil)
+    // 설정 메뉴로 온도 단위 전환
+    private func updateMenu() {
+        navigationItem.leftBarButtonItem?.menu = createSettingsMenu()
     }
-    // 설정 버튼의 메뉴를 현재 온도 단위에 맞게 재생성 후 업데이트
-    @objc private func updateMenu() {
-        if let settingsButton = navigationItem.leftBarButtonItem {
-            settingsButton.menu = MenuHelper.createSettingsMenu()
+    
+    private func createSettingsMenu() -> UIMenu {
+        let celsiusAction = UIAction(
+            title: "섭씨",
+            image: UIImage(systemName: "degreesign.celsius"),
+            state: isCelsius ? .on : .off
+        ) { [weak self] _ in
+            self?.isCelsius = true
+        }
+
+        let fahrenheitAction = UIAction(
+            title: "화씨",
+            image: UIImage(systemName: "degreesign.fahrenheit"),
+            state: isCelsius ? .off : .on
+        ) { [weak self] _ in
+            self?.isCelsius = false
+        }
+
+        return UIMenu(title: "온도 설정", children: [celsiusAction, fahrenheitAction])
+    }
+    
+    // 온도 변환과 UI업데이트 진행
+    private func updateTemperatureUnit() {
+        updateMenu() // 메뉴 상태 업데이트 해서 체크표시 유지
+        for cell in pageCollectionView.visibleCells {
+            if let weatherCell = cell as? WeatherPageCell {
+                weatherCell.weatherView.updateTemperatureUnit(isCelsius: isCelsius)
+            }
         }
     }
-  
     private func setupViewModel() {
         weatherViewModel.fetchWeatherResponse(lat: 37.5665, lon: 126.9780)
     }
@@ -124,6 +154,7 @@ extension WeatherViewController: UICollectionViewDataSource {
             return UICollectionViewCell()
         }
         cell.weatherView.bind(to: weatherViewModel)
+        cell.weatherView.updateTemperatureUnit(isCelsius: isCelsius) // 초기 값 전달
         return cell
     }
 }
