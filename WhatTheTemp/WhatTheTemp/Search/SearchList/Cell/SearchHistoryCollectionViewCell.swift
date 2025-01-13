@@ -2,11 +2,12 @@
 //  SearchHistoryCollectionViewCell.swift
 //  WhatTheTemp
 //
-//  Created by t2023-m0019 on 1/9/25.
+//  Created by 박시연 on 1/9/25.
 //
 
 import UIKit
 import SnapKit
+import RxSwift
 
 final class SearchHistoryCollectionViewCell: UICollectionViewCell, ReuseIdentifying {
     let baseView = UIView()
@@ -88,6 +89,7 @@ final class SearchHistoryCollectionViewCell: UICollectionViewCell, ReuseIdentify
     
     // CoreData에서 읽어온 데이터를 셀에 설정
     func configure(with history: SearchHistoryEntity) {
+        print("lat \(history.lat) lon \(history.lon)")
         cityNameLabel.text = history.cityName
         // 날씨 관련 데이터를 셀에 표시
     }
@@ -98,6 +100,13 @@ final class SearchHistoryCollectionViewCell: UICollectionViewCell, ReuseIdentify
         weatherConditionLabel.text = current.weatherDescription
         minTemperatureLabel.text = "Min: \(current.minTemperature)°"
         maxTemperatureLabel.text = "Max: \(current.maxTemperature)°"
+    }
+    
+    var disposeBag = DisposeBag() // DisposeBag를 셀 단위로 관리
+
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        disposeBag = DisposeBag() // 재사용 시 DisposeBag 초기화
     }
 }
 

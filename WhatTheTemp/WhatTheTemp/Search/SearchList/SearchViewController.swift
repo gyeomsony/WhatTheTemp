@@ -183,15 +183,18 @@ extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSo
         let searchHistory = searchHistoryData[indexPath.row]
         cell.configure(with: searchHistory)
         
-        // 날씨 데이터를 업데이트하는 로직
         let lat = searchHistory.lat
         let lon = searchHistory.lon
-        weatherViewModel?.currentWeather
+        
+        // Observable을 구독하여 셀 업데이트
+        weatherViewModel?.fetchWeatherResponseAsObservable(lat: lat, lon: lon)
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { current in
                 cell.updateWeatherInfo(current: current)
+            }, onError: { error in
+                print("Error fetching weather: \(error)")
             })
-            .disposed(by: disposeBag)
+            .disposed(by: cell.disposeBag) // 셀 단위로 DisposeBag 관리
         return cell
     }
 }
