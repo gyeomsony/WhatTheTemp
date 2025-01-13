@@ -25,7 +25,6 @@ final class SearchHistoryCollectionViewCell: UICollectionViewCell, ReuseIdentify
         let label = UILabel()
         label.font = .systemFont(ofSize: 14, weight: .medium)
         label.textColor = .white
-        label.text = "남양주"
         label.textAlignment = .center
         return label
     }()
@@ -89,6 +88,11 @@ final class SearchHistoryCollectionViewCell: UICollectionViewCell, ReuseIdentify
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    // CoreData에서 읽어온 데이터를 셀에 설정
+    func configure(with history: SearchHistoryEntity) {
+        cityNameLabel.text = history.cityName // `cityName`을 셀에 표시
     }
 }
 

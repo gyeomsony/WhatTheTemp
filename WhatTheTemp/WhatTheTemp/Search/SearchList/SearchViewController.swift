@@ -15,6 +15,8 @@ final class SearchViewController: UIViewController {
     private var searchListVC: SearchResultListViewController?
     let searchHistoryListView = SearchHistoryView()
     private var refreshControl = UIRefreshControl()
+    
+    private var searchHistoryData: [SearchHistoryEntity] = [] // CoreData에서 읽어온 데이터
 
     private lazy var searchController: UISearchController = {
         let searchController = UISearchController(searchResultsController: searchListVC)
@@ -51,6 +53,7 @@ final class SearchViewController: UIViewController {
         setupCollectionView()
         bindViewModel()
         bindSearchBar()
+        loadSearchHistory() // CoreData에서 데이터 로딩
     }
 }
 
@@ -140,12 +143,20 @@ private extension SearchViewController {
             })
             .disposed(by: disposeBag)
     }
+    
+    func loadSearchHistory() {
+        // CoreData에서 데이터를 읽어와서 searchHistoryData에 저장
+        let coreDataManager = SearchCoreDataManager.shared
+        searchHistoryData = coreDataManager.readSearchHistoryData()
+        searchHistoryListView.collectionView.reloadData() // 데이터 로딩 후 컬렉션뷰 갱신
+    }
 }
 
 // TODO: - Rx로 변경 예정
 extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        15
+        print("searchHistoryData.count \(searchHistoryData.count)")
+        return searchHistoryData.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -153,6 +164,9 @@ extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSo
             return UICollectionViewCell()
         }
         
+        // CoreData에서 읽어온 데이터를 셀에 전달
+        let searchHistory = searchHistoryData[indexPath.row]
+        cell.configure(with: searchHistory) // `configure` 메서드를 통해 셀에 데이터를 설정
         return cell
     }
 }
