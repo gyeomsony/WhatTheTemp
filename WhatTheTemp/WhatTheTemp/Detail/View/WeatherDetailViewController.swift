@@ -297,7 +297,7 @@ struct WeatherDetailViewController_Previews: PreviewProvider {
     
     struct WeatherDetailViewController_Presentable: UIViewControllerRepresentable {
         func makeUIViewController(context: Context) -> some UIViewController {
-            let vm = WeatherDetailViewModel(repository: WeatherRepository())
+            let vm = WeatherDetailViewModel(weatherRepository: WeatherRepository(), loactionRepository: LocationRepository())
             let vc = WeatherDetailViewController(viewModel: vm)
             return vc
         }

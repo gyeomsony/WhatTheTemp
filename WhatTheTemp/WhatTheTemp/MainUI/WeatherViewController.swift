@@ -203,7 +203,7 @@ extension WeatherViewController: UICollectionViewDataSource {
             .rx.event
             .withUnretained(self)
             .bind(onNext: { vc, _ in
-                let weatherDetailViewModel = WeatherDetailViewModel(repository: WeatherRepository())
+                let weatherDetailViewModel = WeatherDetailViewModel(weatherRepository: WeatherRepository(), loactionRepository: LocationRepository())
                 let weatherDetailViewController = WeatherDetailViewController(viewModel: weatherDetailViewModel)
                 vc.navigationController?.present(weatherDetailViewController, animated: true)
             }).disposed(by: disposeBag)
