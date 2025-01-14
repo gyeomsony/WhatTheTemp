@@ -6,11 +6,14 @@
 //
 import UIKit
 import RxSwift
-import RxCocoa
 
 final class WeatherView: UIView {
     
     private let disposeBag = DisposeBag()
+    
+    private var todatyWeather: [WeatherSummary] = []
+    private var tomorrowWeather: [WeatherSummary] = []
+    private var nextFiveDaysWeather: [WeatherSummary] = []
     
     // MARK: - 상단 UI Components
     // 지역명, 날씨, 기온 표시 컴포넌트
@@ -50,6 +53,9 @@ final class WeatherView: UIView {
     private let weatherIconImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
+        imageView.snp.makeConstraints {
+            $0.size.equalTo(CGSize(width: 60, height: 60))
+        }
         return imageView
     }()
     
@@ -171,7 +177,7 @@ final class WeatherView: UIView {
     }
     
     private func setupButtons() {
-        let buttonTitles = ["Today", "Tomorrow", "Next 3 Days"]
+        let buttonTitles = ["Today", "Tomorrow", "Next 5 Days"]
         for (index, title) in buttonTitles.enumerated() {
             let button = UIButton(type: .custom)
             button.backgroundColor = .clear
@@ -193,6 +199,7 @@ final class WeatherView: UIView {
             $0.isSelected = false
         }
         sender.isSelected = true
+        hourlyCollectionView.reloadData()
     }
     
     private func setupDelegates() {
@@ -208,6 +215,28 @@ final class WeatherView: UIView {
                 self?.updateUI(with: current)
             }, onError: { error in
                 print("데이터 바인딩 에러 발생: \(error)")
+            })
+            .disposed(by: disposeBag)
+        
+        viewModel.todayHourly
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] hourlyDatas in
+                self?.todatyWeather = hourlyDatas
+                self?.hourlyCollectionView.reloadData()
+            })
+            .disposed(by: disposeBag)
+        
+        viewModel.tomorrowHourly
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] hourlyDatas in
+                self?.tomorrowWeather = hourlyDatas
+            })
+            .disposed(by: disposeBag)
+        
+        viewModel.nextFiveDaily
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] dailyDatas in
+                self?.nextFiveDaysWeather = dailyDatas
             })
             .disposed(by: disposeBag)
     }
@@ -268,12 +297,30 @@ final class WeatherView: UIView {
 // MARK: - UIUICollectionView DataSource
 extension WeatherView: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 6
+        if timeFilterButtons[0].isSelected {
+            return todatyWeather.count
+        } else if timeFilterButtons[1].isSelected {
+            return tomorrowWeather.count
+        } else {
+            return nextFiveDaysWeather.count
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "HourlyCollectionViewCell", for: indexPath) as? HourlyCollectionViewCell else {
             return UICollectionViewCell()
+        }
+        
+        let data: WeatherSummary
+        if timeFilterButtons[0].isSelected {
+            data = todatyWeather[indexPath.row]
+            cell.bind(with: data, isDaily: false)
+        } else if timeFilterButtons[1].isSelected {
+            data = tomorrowWeather[indexPath.row]
+            cell.bind(with: data, isDaily: false)
+        } else {
+            data = nextFiveDaysWeather[indexPath.row]
+            cell.bind(with: data, isDaily: true)
         }
         return cell
     }
