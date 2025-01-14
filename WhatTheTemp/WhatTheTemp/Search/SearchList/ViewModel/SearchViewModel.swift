@@ -32,14 +32,4 @@ final class SearchViewModel {
             })
             .disposed(by: disposeBag)
     }
-    
-//    func fetchAddressList(query: String) {
-//        repository.fetchAddressList(query: query)
-//            .subscribe(onSuccess: { [weak self] response in
-//                self?.addressList.accept(response.documents)
-//            }, onFailure: { error in
-//                print("Error fetching address list: \(error)")
-//            })
-//            .disposed(by: disposeBag)
-//    }
 }

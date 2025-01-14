@@ -7,14 +7,17 @@
 
 import UIKit
 import RxSwift
+import RxCocoa
 
 final class SearchResultListViewController: UIViewController {
     private var disposeBag = DisposeBag()
-    private let viewModel: SearchResultViewModel
+    private let resultViewModel: SearchResultViewModel
+    private let searchViewModel: SearchViewModel
     let searchResultListView = SearchResultListView()
 
-    init(viewModel: SearchResultViewModel) {
-        self.viewModel = viewModel
+    init(resultViewModel: SearchResultViewModel, searchViewModel: SearchViewModel) {
+        self.resultViewModel = resultViewModel
+        self.searchViewModel = searchViewModel
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -50,26 +53,29 @@ private extension SearchResultListViewController {
     // ViewModel에 바인딩
     func bindViewModel() {
         // 검색 결과와 검색어를 결합한 데이터를 ViewModel의 resultList와 테이블 뷰를 바인딩
-        viewModel.resultList
+        searchViewModel.addressList
             .observe(on: MainScheduler.instance)
-            .bind(to: searchResultListView.tableView.rx.items(cellIdentifier: SearchResultListTableViewCell.reuseIdentifier, cellType: SearchResultListTableViewCell.self)) { [weak self] index, item, cell in
-                print("데이터 바인딩: \(item)")  // 데이터 출력
-                if let cell = cell as? SearchResultListTableViewCell {
-                    cell.configure(query: item.document, searchText: item.searchText)
-                }
+            .bind(to: searchResultListView.tableView.rx.items(cellIdentifier: SearchResultListTableViewCell.reuseIdentifier)) { [weak self] (index, item, cell: SearchResultListTableViewCell) in
+                guard let self = self else { return }
+                
+                // (문서, 검색어) tuple로 셀을 구성
+                let searchText = self.searchViewModel.searchQuery.value
+                cell.configure(query: item.addressName ?? "", searchText: searchText)
             }
             .disposed(by: disposeBag)
     }
     
     // 셀 선택시 CoreData에 데이터 저장 이벤트 처리
     func bindTableViewCellSelection() {
-        searchResultListView.tableView.rx.modelSelected((KakaoMapModel.Document, String).self)
-            .subscribe(onNext: { [weak self] tuple in
+        searchResultListView.tableView.rx.modelSelected(KakaoMapModel.Document.self)
+            .subscribe(onNext: { [weak self] document in
                 guard let self = self else { return }
-                let (document, searchText) = tuple
-                // document는 이미 non-optional이므로 직접 사용할 수 있습니다.
-                self.viewModel.saveSearchHistory(document: document)
-                self.navigationController?.popViewController(animated: true)
+                self.resultViewModel.saveSearchHistory(document: document)
+                // SearchViewController의 searchController 검색창을 빈 값으로 설정
+                if let searchViewController = self.presentingViewController as? SearchViewController {
+                    searchViewController.searchController.searchBar.text = ""
+                }
+                self.dismiss(animated: true)
             })
             .disposed(by: disposeBag)
     }

@@ -12,7 +12,7 @@ enum KakaoMapAPI {
     case getAddressList(query: String)
 }
 
-// https://dapi.kakao.com/v2/local/search/address.json?query=서울
+// https://dapi.kakao.com/v2/local/search/address.json?query=
 extension KakaoMapAPI: TargetType {
     var baseURL: URL {
         guard let url = URL(string: "https://dapi.kakao.com") else {
