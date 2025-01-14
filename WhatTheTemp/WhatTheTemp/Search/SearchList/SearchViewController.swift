@@ -17,7 +17,7 @@ final class SearchViewController: UIViewController {
     let searchHistoryListView = SearchHistoryView()
     private var refreshControl = UIRefreshControl()
     
-    private var searchHistoryData: [SearchHistoryEntity] = [] // CoreData에서 읽어온 데이터
+    private var cityWeathers: [CityWeather] = [] // CoreData에서 읽어온 데이터
 
     private lazy var searchController: UISearchController = {
         let searchController = UISearchController(searchResultsController: searchResultVC)
@@ -53,7 +53,10 @@ final class SearchViewController: UIViewController {
         setupCollectionView()
         bindViewModel()
         bindSearchBar()
-        loadSearchHistory() // CoreData에서 데이터 로딩
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        bindCollectionViewCell()
     }
 }
 
@@ -123,6 +126,18 @@ private extension SearchViewController {
         searchHistoryListView.collectionView.register(SearchHistoryCollectionViewCell.self, forCellWithReuseIdentifier: SearchHistoryCollectionViewCell.reuseIdentifier)
     }
     
+    // 각 셀에 해당하는 데이터 바인딩
+    func bindCollectionViewCell() {
+        searchHistoryViewModel?.cityWeathers
+            .observe(on: MainScheduler.instance)
+            .withUnretained(self)
+            .subscribe(onNext: { vc, cityWeathers in
+                vc.cityWeathers = cityWeathers
+                vc.searchHistoryListView.collectionView.reloadData()
+            })
+            .disposed(by: disposeBag)
+    }
+    
     // ViewModel에 바인딩
     func bindViewModel() {
         // SearchViewModel에서 데이터를 가져와 SearchResultViewModel에 바인딩
@@ -143,20 +158,12 @@ private extension SearchViewController {
             })
             .disposed(by: disposeBag)
     }
-    
-    func loadSearchHistory() {
-        // CoreData에서 데이터를 읽어와서 searchHistoryData에 저장
-        let coreDataManager = SearchCoreDataManager.shared
-        searchHistoryData = coreDataManager.readSearchHistoryData()
-        searchHistoryListView.collectionView.reloadData() // 데이터 로딩 후 컬렉션뷰 갱신
-    }
 }
 
 // TODO: - Rx로 변경 예정
 extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        print("searchHistoryData.count \(searchHistoryData.count)")
-        return searchHistoryData.count
+        return cityWeathers.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -164,19 +171,9 @@ extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSo
             return UICollectionViewCell()
         }
         
-        let searchHistory = searchHistoryData[indexPath.row]
-        cell.configure(with: searchHistory)
+        let weather = cityWeathers[indexPath.row]
+        cell.configure(with: weather)
         
-        // Observable을 구독하여 셀 업데이트
-        searchHistoryViewModel?.fetchMultipleWeathers(entites: [searchHistory])
-            .subscribe(onNext: { [weak self] cityWeathers in
-                guard let cityWeather = cityWeathers.first else { return } // 첫 번째 CityWeather 객체를 가져옴
-                cell.updateWeatherInfo(current: cityWeather)  // 단일 객체만 전달
-            }, onError: { error in
-                print("Error fetching weather: \(error)")
-                // 여기에 에러 발생 시 처리 로직 추가
-            })
-            .disposed(by: cell.disposeBag) // 셀 단위로 DisposeBag 관리
         return cell
     }
 }

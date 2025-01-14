@@ -24,8 +24,8 @@ class SearchHistoryViewModel {
         fetchMultipleWeathers(entites: entites)
     }
     
-    func fetchMultipleWeathers(entites: [SearchHistoryEntity]) -> Observable<[CityWeather]> {
-        return repository.fetchWeathers(entites: entites)  // Single<[WeatherResponse]>
+    private func fetchMultipleWeathers(entites: [SearchHistoryEntity]) {
+        repository.fetchWeathers(entites: entites)
             .map { responses -> [CityWeather] in
                 responses.enumerated().map { (index, response) in
                     let cityWeather = CityWeather(weatherCode: response.currentWeather.weather[0].code,
@@ -37,6 +37,12 @@ class SearchHistoryViewModel {
                     return cityWeather
                 }
             }
-            .asObservable()  // Single을 Observable로 변환
+            .subscribe(onSuccess: { [weak self] cityWeathers in
+                        // Emit the weather data through the relay
+                        self?.cityWeathers.accept(cityWeathers)
+                    }, onFailure: { error in
+                        print("Error fetching weathers: \(error)")
+                    })
+                    .disposed(by: disposeBag)
     }
 }

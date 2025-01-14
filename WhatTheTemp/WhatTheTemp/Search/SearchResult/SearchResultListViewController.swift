@@ -63,15 +63,6 @@ private extension SearchResultListViewController {
     
     // 셀 선택시 CoreData에 데이터 저장 이벤트 처리
     func bindTableViewCellSelection() {
-//        searchResultListView.tableView.rx.modelSelected((KakaoMapModel.Document, String).self)
-//            .subscribe(onNext: { [weak self] tuple in
-//                guard let self = self else { return }
-//                let (document, searchText) = tuple
-//                // document는 이미 non-optional이므로 직접 사용할 수 있습니다.
-//                self.viewModel.saveSearchHistory(document: document)
-//                self.navigationController?.popViewController(animated: true)
-//            })
-//            .disposed(by: disposeBag)
         searchResultListView.tableView.rx.modelSelected((KakaoMapModel.Document, String).self)
             .subscribe(onNext: { [weak self] tuple in
                 guard let self = self else { return }
