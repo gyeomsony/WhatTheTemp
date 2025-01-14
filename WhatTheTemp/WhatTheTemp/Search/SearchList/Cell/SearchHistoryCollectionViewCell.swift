@@ -2,11 +2,12 @@
 //  SearchHistoryCollectionViewCell.swift
 //  WhatTheTemp
 //
-//  Created by t2023-m0019 on 1/9/25.
+//  Created by 박시연 on 1/9/25.
 //
 
 import UIKit
 import SnapKit
+import RxSwift
 
 final class SearchHistoryCollectionViewCell: UICollectionViewCell, ReuseIdentifying {
     let baseView = UIView()
@@ -25,7 +26,6 @@ final class SearchHistoryCollectionViewCell: UICollectionViewCell, ReuseIdentify
         let label = UILabel()
         label.font = .systemFont(ofSize: 14, weight: .medium)
         label.textColor = .white
-        label.text = "남양주"
         label.textAlignment = .center
         return label
     }()
@@ -34,7 +34,6 @@ final class SearchHistoryCollectionViewCell: UICollectionViewCell, ReuseIdentify
         let label = UILabel()
         label.font = .systemFont(ofSize: 14, weight: .medium)
         label.textColor = .white
-        label.text = "대체로 맑음"
         label.textAlignment = .center
         return label
     }()
@@ -52,7 +51,6 @@ final class SearchHistoryCollectionViewCell: UICollectionViewCell, ReuseIdentify
         let label = UILabel()
         label.font = .systemFont(ofSize: 38, weight: .regular)
         label.textColor = .white
-        label.text = "-13°"
         return label
     }()
     
@@ -69,7 +67,6 @@ final class SearchHistoryCollectionViewCell: UICollectionViewCell, ReuseIdentify
         let label = UILabel()
         label.font = .systemFont(ofSize: 14, weight: .medium)
         label.textColor = .white
-        label.text = "최저 -15°"
         return label
     }()
     
@@ -77,7 +74,6 @@ final class SearchHistoryCollectionViewCell: UICollectionViewCell, ReuseIdentify
         let label = UILabel()
         label.font = .systemFont(ofSize: 14, weight: .medium)
         label.textColor = .white
-        label.text = "최고 -5°"
         return label
     }()
     
@@ -89,6 +85,28 @@ final class SearchHistoryCollectionViewCell: UICollectionViewCell, ReuseIdentify
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    // CoreData에서 읽어온 데이터를 셀에 설정
+    func configure(with history: SearchHistoryEntity) {
+        print("lat \(history.lat) lon \(history.lon)")
+        cityNameLabel.text = history.cityName
+        // 날씨 관련 데이터를 셀에 표시
+    }
+    
+    func updateWeatherInfo(current: Current) {
+        weatherIconImageView.image = UIImage(named: WeatherAssets.getIconName(from: current.weatherCode))
+        temperatureLabel.text = "\(current.currentTemperature)°"
+        weatherConditionLabel.text = current.weatherDescription
+        minTemperatureLabel.text = "Min: \(current.minTemperature)°"
+        maxTemperatureLabel.text = "Max: \(current.maxTemperature)°"
+    }
+    
+    var disposeBag = DisposeBag() // DisposeBag를 셀 단위로 관리
+
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        disposeBag = DisposeBag() // 재사용 시 DisposeBag 초기화
     }
 }
 

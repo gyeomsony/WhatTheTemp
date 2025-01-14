@@ -2,7 +2,7 @@
 //  SearchResultViewModel.swift
 //  WhatTheTemp
 //
-//  Created by t2023-m0019 on 1/9/25.
+//  Created by 박시연 on 1/9/25.
 //
 
 import Foundation
@@ -11,6 +11,7 @@ import RxRelay
 
 final class SearchResultViewModel {
     private let disposeBag = DisposeBag()
+    private let coreDataManager = SearchCoreDataManager.shared
     
     // 검색어를 저장할 BehaviorSubject
     let searchText = BehaviorSubject<String>(value: "")
@@ -38,5 +39,18 @@ final class SearchResultViewModel {
         searchQuery
             .bind(to: searchText)
             .disposed(by: disposeBag)
+    }
+    
+    // CoreData에 히스토리 저장
+    func saveSearchHistory(document: KakaoMapModel.Document) {
+        guard let lat = document.latAsDouble,
+              let lon = document.lonAsDouble,
+              let cityName = document.cityName else {
+            print("유효하지 않은 데이터")
+            return
+        }
+        
+        let addressName = document.addressName // 검색시 동까지 노출
+        coreDataManager.createSearchHistoryData(lat: lat, lon: lon, cityName: cityName, addressName: addressName)
     }
 }

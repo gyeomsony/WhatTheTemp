@@ -12,9 +12,12 @@ final class SearchViewController: UIViewController {
     private var disposeBag = DisposeBag()
     private let viewModel: SearchViewModel
     private var searchResultViewModel: SearchResultViewModel?
+    private var weatherViewModel: WeatherViewModel?
     private var searchListVC: SearchResultListViewController?
     let searchHistoryListView = SearchHistoryView()
     private var refreshControl = UIRefreshControl()
+    
+    private var searchHistoryData: [SearchHistoryEntity] = [] // CoreData에서 읽어온 데이터
 
     private lazy var searchController: UISearchController = {
         let searchController = UISearchController(searchResultsController: searchListVC)
@@ -22,13 +25,16 @@ final class SearchViewController: UIViewController {
         return searchController
     }()
     
-    init(viewModel: SearchViewModel) {
+    init(viewModel: SearchViewModel, weatherViewModel: WeatherViewModel) {
         self.viewModel = viewModel
+        self.weatherViewModel = weatherViewModel
         super.init(nibName: nil, bundle: nil)
+        
         // 초기화 시 viewModel을 기반으로 searchResultViewModel을 초기화
         searchResultViewModel = SearchResultViewModel(
             addressList: viewModel.addressList.asObservable(),
             searchQuery: viewModel.searchQuery.asObservable())
+        
         // searchListVC 초기화
         searchListVC = SearchResultListViewController(viewModel: searchResultViewModel!)
     }
@@ -51,6 +57,8 @@ final class SearchViewController: UIViewController {
         setupCollectionView()
         bindViewModel()
         bindSearchBar()
+        loadSearchHistory() // CoreData에서 데이터 로딩
+        loadWeatherData() // 날씨 데이터 로딩
     }
 }
 
@@ -140,12 +148,31 @@ private extension SearchViewController {
             })
             .disposed(by: disposeBag)
     }
+    
+    func loadSearchHistory() {
+        // CoreData에서 데이터를 읽어와서 searchHistoryData에 저장
+        let coreDataManager = SearchCoreDataManager.shared
+        searchHistoryData = coreDataManager.readSearchHistoryData()
+        searchHistoryListView.collectionView.reloadData() // 데이터 로딩 후 컬렉션뷰 갱신
+    }
+    
+    func loadWeatherData() {
+        // CoreData에서 읽어온 검색 기록을 기반으로 날씨 데이터 로딩
+        for history in searchHistoryData {
+            let lat = history.lat // CoreData에서 가져온 lat
+            let lon = history.lon // CoreData에서 가져온 lon
+            
+            // 날씨 데이터 요청
+            weatherViewModel?.fetchWeatherResponse(lat: lat, lon: lon)
+        }
+    }
 }
 
 // TODO: - Rx로 변경 예정
 extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        15
+        print("searchHistoryData.count \(searchHistoryData.count)")
+        return searchHistoryData.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -153,6 +180,21 @@ extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSo
             return UICollectionViewCell()
         }
         
+        let searchHistory = searchHistoryData[indexPath.row]
+        cell.configure(with: searchHistory)
+        
+        let lat = searchHistory.lat
+        let lon = searchHistory.lon
+        
+        // Observable을 구독하여 셀 업데이트
+        weatherViewModel?.fetchWeatherResponseAsObservable(lat: lat, lon: lon)
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { current in
+                cell.updateWeatherInfo(current: current)
+            }, onError: { error in
+                print("Error fetching weather: \(error)")
+            })
+            .disposed(by: cell.disposeBag) // 셀 단위로 DisposeBag 관리
         return cell
     }
 }
