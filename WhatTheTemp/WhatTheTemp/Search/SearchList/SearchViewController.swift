@@ -83,6 +83,10 @@ private extension SearchViewController {
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.largeTitleDisplayMode = .always
         navigationItem.title = "날씨"
+
+        navigationController?.navigationBar.barTintColor = UIColor(red: 33/255, green: 33/255, blue: 33/255, alpha: 1.0)
+        navigationController?.navigationBar.isTranslucent = true
+
         // navigationBar Large 타이틀 텍스트 색상 설정
         navigationController?.navigationBar.largeTitleTextAttributes = [
             .foregroundColor: UIColor.white
