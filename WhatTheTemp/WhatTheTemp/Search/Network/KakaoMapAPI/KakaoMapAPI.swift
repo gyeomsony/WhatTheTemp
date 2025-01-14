@@ -22,7 +22,7 @@ extension KakaoMapAPI: TargetType {
     }
     
     var path: String {
-        return "/v2/local/search/keyword.json"
+        return "/v2/local/search/address.json"
     }
     
     var method: Moya.Method {

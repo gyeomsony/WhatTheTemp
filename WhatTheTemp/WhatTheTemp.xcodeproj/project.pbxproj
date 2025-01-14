@@ -15,10 +15,13 @@
 		8E6AC15E2D2D504500D40A96 /* Moya in Frameworks */ = {isa = PBXBuildFile; productRef = 8E6AC15D2D2D504500D40A96 /* Moya */; };
 		8E6AC1602D2D504500D40A96 /* RxMoya in Frameworks */ = {isa = PBXBuildFile; productRef = 8E6AC15F2D2D504500D40A96 /* RxMoya */; };
 		8EFE078D2D3565D500BD5F03 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 8EFE078C2D3565D500BD5F03 /* Lottie */; };
+		CBE86FE02D34AA1C00D5326C /* SearchHistoryDataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = CBE86FDE2D34AA1C00D5326C /* SearchHistoryDataModel.xcdatamodeld */; };
+
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		8E6AC1042D2D425E00D40A96 /* WhatTheTemp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WhatTheTemp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		CBE86FDF2D34AA1C00D5326C /* SearchHistoryDataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SearchHistoryDataModel.xcdatamodel; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -64,6 +67,7 @@
 		8E6AC0FB2D2D425E00D40A96 = {
 			isa = PBXGroup;
 			children = (
+				CBE86FDE2D34AA1C00D5326C /* SearchHistoryDataModel.xcdatamodeld */,
 				8E6AC1062D2D425E00D40A96 /* WhatTheTemp */,
 				8E6AC1052D2D425E00D40A96 /* Products */,
 			);
@@ -167,6 +171,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CBE86FE02D34AA1C00D5326C /* SearchHistoryDataModel.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -472,6 +477,19 @@
 			productName = Lottie;
 		};
 /* End XCSwiftPackageProductDependency section */
+
+/* Begin XCVersionGroup section */
+		CBE86FDE2D34AA1C00D5326C /* SearchHistoryDataModel.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				CBE86FDF2D34AA1C00D5326C /* SearchHistoryDataModel.xcdatamodel */,
+			);
+			currentVersion = CBE86FDF2D34AA1C00D5326C /* SearchHistoryDataModel.xcdatamodel */;
+			path = SearchHistoryDataModel.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 8E6AC0FC2D2D425E00D40A96 /* Project object */;
 }
