@@ -19,7 +19,7 @@ final class SearchViewController: UIViewController {
     
     private var cityWeathers: [CityWeather] = [] // CoreData에서 읽어온 데이터
 
-    private lazy var searchController: UISearchController = {
+    lazy var searchController: UISearchController = {
         let searchController = UISearchController(searchResultsController: searchResultVC)
         searchController.obscuresBackgroundDuringPresentation = false
         return searchController

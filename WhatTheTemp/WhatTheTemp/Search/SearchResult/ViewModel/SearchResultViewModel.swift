@@ -50,7 +50,7 @@ final class SearchResultViewModel {
             return
         }
         
-        let addressName = document.addressName // 검색시 동까지 노출
+        let addressName = document.addressName // 검색시 시까지 노출
         coreDataManager.createSearchHistoryData(lat: lat, lon: lon, cityName: cityName, addressName: addressName)
     }
 }

@@ -7,6 +7,7 @@
 
 import UIKit
 import RxSwift
+import RxCocoa
 
 final class SearchResultListViewController: UIViewController {
     private var disposeBag = DisposeBag()
@@ -66,13 +67,15 @@ private extension SearchResultListViewController {
     
     // 셀 선택시 CoreData에 데이터 저장 이벤트 처리
     func bindTableViewCellSelection() {
-        searchResultListView.tableView.rx.modelSelected((KakaoMapModel.Document, String).self)
-            .subscribe(onNext: { [weak self] tuple in
+        searchResultListView.tableView.rx.modelSelected(KakaoMapModel.Document.self)
+            .subscribe(onNext: { [weak self] document in
                 guard let self = self else { return }
-                let (document, searchText) = tuple
-                // document는 이미 non-optional이므로 직접 사용할 수 있습니다.
                 self.resultViewModel.saveSearchHistory(document: document)
-                self.navigationController?.popViewController(animated: true)
+                // SearchViewController의 searchController 검색창을 빈 값으로 설정
+                if let searchViewController = self.presentingViewController as? SearchViewController {
+                    searchViewController.searchController.searchBar.text = ""
+                }
+                self.dismiss(animated: true)
             })
             .disposed(by: disposeBag)
     }
