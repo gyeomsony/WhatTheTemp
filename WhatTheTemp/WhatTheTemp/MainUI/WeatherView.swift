@@ -178,7 +178,7 @@ final class WeatherView: UIView {
     }
     
     private func setupButtons() {
-        let buttonTitles = ["Today", "Tomorrow", "Next 3 Days"]
+        let buttonTitles = ["Today", "Tomorrow", "Next 5 Days"]
         for (index, title) in buttonTitles.enumerated() {
             let button = UIButton(type: .custom)
             button.backgroundColor = .clear
@@ -200,6 +200,7 @@ final class WeatherView: UIView {
             $0.isSelected = false
         }
         sender.isSelected = true
+        hourlyCollectionView.reloadData()
     }
     
     private func setupDelegates() {
@@ -222,6 +223,7 @@ final class WeatherView: UIView {
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] hourlyDatas in
                 self?.todatyWeather = hourlyDatas
+                self?.hourlyCollectionView.reloadData()
             })
             .disposed(by: disposeBag)
         
@@ -238,6 +240,8 @@ final class WeatherView: UIView {
                 self?.nextFiveDaysWeather = dailyDatas
             })
             .disposed(by: disposeBag)
+        
+//        hourlyCollectionView.reloadData()
     }
     
     // MARK: - UI Update Method
@@ -257,10 +261,6 @@ final class WeatherView: UIView {
         windSpeedLabel.text = "\(Int(current.windSpeed))m/s"
         humidityLabel.text = "\(current.humidity)%"
         rainLabel.text = "\(Int(current.rainProbability))%"
-    }
-    
-    func updateHourlyUI(with hourlyDatas: [WeatherSummary]) {
-        
     }
     
     // 온도단위 업데이트 메서드
@@ -300,12 +300,30 @@ final class WeatherView: UIView {
 // MARK: - UIUICollectionView DataSource
 extension WeatherView: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 6
+        if timeFilterButtons[0].isSelected {
+            return todatyWeather.count
+        } else if timeFilterButtons[1].isSelected {
+            return tomorrowWeather.count
+        } else {
+            return nextFiveDaysWeather.count
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "HourlyCollectionViewCell", for: indexPath) as? HourlyCollectionViewCell else {
             return UICollectionViewCell()
+        }
+        
+        let data: WeatherSummary
+        if timeFilterButtons[0].isSelected {
+            data = todatyWeather[indexPath.row]
+            cell.configureHourly(with: data)
+        } else if timeFilterButtons[1].isSelected {
+            data = tomorrowWeather[indexPath.row]
+            cell.configureHourly(with: data)
+        } else {
+            data = nextFiveDaysWeather[indexPath.row]
+            cell.configureDaily(with: data)
         }
         return cell
     }
