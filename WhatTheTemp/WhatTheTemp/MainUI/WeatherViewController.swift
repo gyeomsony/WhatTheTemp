@@ -7,6 +7,7 @@
 
 import UIKit
 import RxSwift
+import RxRelay
 
 final class WeatherViewController: UIViewController {
     private let disposeBag = DisposeBag()
@@ -95,7 +96,7 @@ final class WeatherViewController: UIViewController {
         let searchButton = UIBarButtonItem(image: UIImage(systemName: "magnifyingglass"),
                                            style: .plain,
                                            target: self,
-                                           action: nil)
+                                           action: #selector(searchButtonTapped))
         let settingsButton = UIBarButtonItem(image: UIImage(systemName: "gearshape"),
                                              style: .plain,
                                              target: self,
@@ -110,6 +111,26 @@ final class WeatherViewController: UIViewController {
         navigationController?.navigationBar.shadowImage = UIImage()
         navigationController?.navigationBar.tintColor = .white
         navigationController?.navigationBar.isTranslucent = false // 반투명 해제
+    }
+    
+    // Search Button Action
+    @objc
+    private func searchButtonTapped() {
+        // Create the observables (BehaviorRelay is one way to bind data)
+        let addressListRelay = BehaviorRelay<[KakaoMapModel.Document]>(value: [])
+        let searchQueryRelay = BehaviorRelay<String>(value: "")
+        
+        // Initialize ViewModels
+        let searchviewModel = SearchViewModel(repository: KakaoMapRepository())
+        let searchHistoryViewModel = SearchHistoryViewModel(repository: WeatherRepository())
+        let searchResultViewModel = SearchResultViewModel(addressList: addressListRelay.asObservable(), searchQuery: searchQueryRelay.asObservable())
+        
+        let searchViewController = SearchViewController(
+            viewModel: searchviewModel,  // SearchViewModel
+            searchHistoryViewModel: searchHistoryViewModel,  // SearchHistoryViewModel
+            searchResultViewModel: searchResultViewModel  // SearchResultViewModel
+        )
+        navigationController?.pushViewController(searchViewController, animated: true)
     }
     
     // 설정 메뉴로 온도 단위 전환
