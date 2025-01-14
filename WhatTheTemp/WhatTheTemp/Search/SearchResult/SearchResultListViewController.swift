@@ -55,8 +55,11 @@ private extension SearchResultListViewController {
         searchViewModel.addressList
             .observe(on: MainScheduler.instance)
             .bind(to: searchResultListView.tableView.rx.items(cellIdentifier: SearchResultListTableViewCell.reuseIdentifier)) { [weak self] (index, item, cell: SearchResultListTableViewCell) in
-                print("데이터 바인딩: \(item)")  // 데이터 출력
-                cell.configure(query: item.addressName ?? "", searchText: item.cityName ?? "")
+                guard let self = self else { return }
+                
+                // (문서, 검색어) tuple로 셀을 구성
+                let searchText = self.searchViewModel.searchQuery.value
+                cell.configure(query: item.addressName ?? "", searchText: searchText)
             }
             .disposed(by: disposeBag)
     }
