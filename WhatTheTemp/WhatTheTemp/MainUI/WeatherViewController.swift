@@ -177,7 +177,6 @@ extension WeatherViewController: UICollectionViewDataSource {
             return UICollectionViewCell()
         }
         cell.weatherView.bind(to: viewModel)
-        cell.weatherView.updateTemperatureUnit(isCelsius: isCelsius) // 초기 값 전달
         return cell
     }
 }
