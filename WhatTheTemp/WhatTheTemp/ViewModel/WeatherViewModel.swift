@@ -45,7 +45,6 @@ class WeatherViewModel {
             .combineLatest(locationRepository.currentCityName.asObservable(), weatherRepository.fetchWeather(lat: lat, lon: lon).asObservable())
             .map { (cityName, response) -> (Current, [WeatherSummary], [WeatherSummary], [WeatherSummary]) in
                 let current = Current(locationName: cityName,
-                                      weatherDescription: response.currentWeather.weather[0].description,
                                       currentTemperature: response.currentWeather.temperature,
                                       weatherCode: response.currentWeather.weather[0].code,
                                       feelsLikeTemperature: response.currentWeather.feelsLike,
