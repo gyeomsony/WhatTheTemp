@@ -10,7 +10,7 @@ import RxSwift
 
 final class SearchViewController: UIViewController {
     private var disposeBag = DisposeBag()
-    private let viewModel: SearchViewModel
+    private let searchViewModel: SearchViewModel
     private var searchResultViewModel: SearchResultViewModel
     private var searchHistoryViewModel: SearchHistoryViewModel?
     private var searchResultVC: SearchResultListViewController?
@@ -19,20 +19,20 @@ final class SearchViewController: UIViewController {
     
     private var cityWeathers: [CityWeather] = [] // CoreData에서 읽어온 데이터
 
-    private lazy var searchController: UISearchController = {
+    lazy var searchController: UISearchController = {
         let searchController = UISearchController(searchResultsController: searchResultVC)
         searchController.obscuresBackgroundDuringPresentation = false
         return searchController
     }()
     
     init(viewModel: SearchViewModel, searchHistoryViewModel: SearchHistoryViewModel, searchResultViewModel: SearchResultViewModel) {
-        self.viewModel = viewModel
+        self.searchViewModel = viewModel
         self.searchHistoryViewModel = searchHistoryViewModel
         self.searchResultViewModel = searchResultViewModel
         super.init(nibName: nil, bundle: nil)
         
         // Initialize searchResultVC with searchResultViewModel
-        searchResultVC = SearchResultListViewController(viewModel: searchResultViewModel)
+        searchResultVC = SearchResultListViewController(resultViewModel: searchResultViewModel, searchViewModel: viewModel)
     }
     
     required init?(coder: NSCoder) {
@@ -83,6 +83,10 @@ private extension SearchViewController {
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.largeTitleDisplayMode = .always
         navigationItem.title = "날씨"
+
+        navigationController?.navigationBar.barTintColor = UIColor(red: 33/255, green: 33/255, blue: 33/255, alpha: 1.0)
+        navigationController?.navigationBar.isTranslucent = true
+
         // navigationBar Large 타이틀 텍스트 색상 설정
         navigationController?.navigationBar.largeTitleTextAttributes = [
             .foregroundColor: UIColor.white
@@ -142,8 +146,8 @@ private extension SearchViewController {
     func bindViewModel() {
         // SearchViewModel에서 데이터를 가져와 SearchResultViewModel에 바인딩
         searchResultViewModel = SearchResultViewModel(
-            addressList: viewModel.addressList.asObservable(),
-            searchQuery: viewModel.searchQuery.asObservable()
+            addressList: searchViewModel.addressList.asObservable(),
+            searchQuery: searchViewModel.searchQuery.asObservable()
         )
     }
     
@@ -153,7 +157,7 @@ private extension SearchViewController {
             .distinctUntilChanged() // 이전 값과 동일하면 무시
             .filter { !$0.isEmpty } // 비어 있지 않은 값만 처리
             .subscribe(onNext: { [weak self] query in
-                self?.viewModel.fetchAddressList(query: query) // API 요청
+                self?.searchViewModel.fetchAddressList(query: query) // API 요청
                 self?.searchResultViewModel.searchText.onNext(query) // 검색어 전달
             })
             .disposed(by: disposeBag)
@@ -175,5 +179,10 @@ extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSo
         cell.configure(with: weather)
         
         return cell
+    }
+    
+    // 셀을 탭했을 때 화면 pop
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        self.navigationController?.popViewController(animated: true)
     }
 }
