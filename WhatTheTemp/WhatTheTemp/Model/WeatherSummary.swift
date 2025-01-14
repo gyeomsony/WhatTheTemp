@@ -14,7 +14,7 @@ struct WeatherSummary {
     private let _temperature: Double    // 기온
     
     var temperature: Int {
-        Int(_temperature)
+        Int(round(_temperature))
     }
     
     init(time: Int, statusCode: Int, temperature: Double) {
