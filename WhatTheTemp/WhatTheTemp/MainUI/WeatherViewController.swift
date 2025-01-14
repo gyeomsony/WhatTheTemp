@@ -6,8 +6,10 @@
 //
 
 import UIKit
+import RxSwift
 
 final class WeatherViewController: UIViewController {
+    private let disposeBag = DisposeBag()
     private let viewModel: WeatherViewModel
     private let coreDataManager = SearchCoreDataManager.shared
     private let userDefaults = UserDefaults.standard
@@ -61,14 +63,16 @@ final class WeatherViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        loadPages()
+        scrollToLastViewedPage()
+        updateTemperatureUnit()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupNavigationBar()
         setupCollectionView()
-        loadPages()
-        setupViewModel()
-        updateTemperatureUnit()
-        scrollToLastViewedPage()
     }
     
     private func setupCollectionView() {
@@ -143,10 +147,6 @@ final class WeatherViewController: UIViewController {
         }
     }
     
-    private func setupViewModel() {
-        viewModel.fetchWeatherResponse(lat: 37.5665, lon: 126.9780)
-    }
-    
     private func loadPages() {
         pages = coreDataManager.readSearchHistoryData()
     }
@@ -163,22 +163,19 @@ final class WeatherViewController: UIViewController {
 
 extension WeatherViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        view.frame.size
+        return view.frame.size
     }
 }
 
 extension WeatherViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        pages.count
+        return pages.count + 1
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "WeatherPageCell", for: indexPath) as? WeatherPageCell else {
             return UICollectionViewCell()
         }
-        let page = pages[indexPath.item]
-        viewModel.fetchWeatherResponse(lat: page.lat, lon: page.lon)
-        
         cell.weatherView.bind(to: viewModel)
         cell.weatherView.updateTemperatureUnit(isCelsius: isCelsius) // 초기 값 전달
         return cell
