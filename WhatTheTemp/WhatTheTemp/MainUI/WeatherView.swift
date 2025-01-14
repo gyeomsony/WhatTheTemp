@@ -9,7 +9,11 @@ import RxSwift
 
 final class WeatherView: UIView {
     
-    private let disposeBag = DisposeBag()
+    private var disposeBag = DisposeBag()
+    
+    deinit {
+        print(#function)
+    }
     
     private var todatyWeather: [WeatherSummary] = []
     private var tomorrowWeather: [WeatherSummary] = []
@@ -209,6 +213,8 @@ final class WeatherView: UIView {
     
     // MARK: - Binding Method
     func bind(to viewModel: WeatherViewModel) {
+        disposeBag = DisposeBag()
+        
         viewModel.currentWeather
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] current in
@@ -338,5 +344,33 @@ extension UIView {
             label.textColor = color
         }
         subviews.forEach { $0.updateTextColor(to: color) }
+    }
+}
+
+extension WeatherView {
+    func resetData() {
+        // 데이터 초기화
+        todatyWeather = []
+        tomorrowWeather = []
+        nextFiveDaysWeather = []
+        
+        // 상단 UI 초기화
+        locationNameLabel.text = nil
+        weatherLabel.text = nil
+        temperatureLabel.text = nil
+        weatherIconImageView.image = nil
+        
+        // 체감/최저/최고 온도 초기화
+        feelsLikeTemperatureLabel.text = nil
+        minTemperatureLabel.text = nil
+        maxTemperatureLabel.text = nil
+        
+        // 풍속/습도/강수확률 초기화
+        windSpeedLabel.text = nil
+        humidityLabel.text = nil
+        rainLabel.text = nil
+        
+        // 시간별 날씨 CollectionView 초기화
+        hourlyCollectionView.reloadData()
     }
 }
