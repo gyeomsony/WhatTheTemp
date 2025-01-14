@@ -10,7 +10,8 @@ import RxSwift
 import RxCocoa
 
 class WeatherViewModel {
-    private let repository: WeatherRepositoryProtocol
+    private let locationRepository: LocationRepositoryProtocol
+    private let weatherRepository: WeatherRepositoryProtocol
     private let disposeBag = DisposeBag()
     
     let currentWeather = PublishRelay<Current>()
@@ -18,12 +19,28 @@ class WeatherViewModel {
     let tomorrowHourly = PublishRelay<[WeatherSummary]>()
     let nextFiveDaily = PublishRelay<[WeatherSummary]>()
     
-    init(repository: WeatherRepositoryProtocol) {
-        self.repository = repository
+    init(locationRepository: LocationRepositoryProtocol, weatherRepository: WeatherRepositoryProtocol) {
+        self.locationRepository = locationRepository
+        self.weatherRepository = weatherRepository
+        requestWeatherAPI()
+    }
+    
+    /// LocationRepository에서 사용자 위치 정보 수집 권한이 업데이트 되면 이벤트를 받아 네트워크 통신 요청
+    func requestWeatherAPI() {
+        locationRepository.authorizationUpdated
+            .subscribe { [weak self] _ in
+                guard
+                    let self = self,
+                    let coordinate = locationRepository.currentLocation?.coordinate
+                else { return }
+                
+                fetchWeatherResponse(lat: coordinate.latitude, lon: coordinate.longitude)
+            }
+            .disposed(by: disposeBag)
     }
     
     func fetchWeatherResponse(lat: Double, lon: Double) {
-        repository.fetchWeather(lat: lat, lon: lon)
+        weatherRepository.fetchWeather(lat: lat, lon: lon)
             .map { response -> (Current, [WeatherSummary], [WeatherSummary], [WeatherSummary]) in
                 let current = Current(weatherDescription: response.currentWeather.weather[0].description,
                                       currentTemperature: response.currentWeather.temperature,
