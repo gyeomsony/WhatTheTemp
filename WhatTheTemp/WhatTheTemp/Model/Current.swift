@@ -9,7 +9,7 @@ import Foundation
 
 /// WeatherView - 현재 날씨에 바인딩할 모델
 struct Current {
-    let locationName: String = "서울시"
+    let locationName: String
     let currentTemperature: Double      // 현재 기온
     let weatherCode: Int                // 날씨 코드 >> 날씨 아이콘
     
