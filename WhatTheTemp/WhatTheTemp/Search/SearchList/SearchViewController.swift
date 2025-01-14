@@ -180,4 +180,9 @@ extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSo
         
         return cell
     }
+    
+    // 셀을 탭했을 때 화면 pop
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        self.navigationController?.popViewController(animated: true)
+    }
 }
