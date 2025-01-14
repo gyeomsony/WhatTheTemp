@@ -240,8 +240,6 @@ final class WeatherView: UIView {
                 self?.nextFiveDaysWeather = dailyDatas
             })
             .disposed(by: disposeBag)
-        
-//        hourlyCollectionView.reloadData()
     }
     
     // MARK: - UI Update Method
