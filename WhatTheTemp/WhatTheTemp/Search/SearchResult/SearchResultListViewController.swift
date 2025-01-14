@@ -71,11 +71,12 @@ private extension SearchResultListViewController {
             .subscribe(onNext: { [weak self] document in
                 guard let self = self else { return }
                 self.resultViewModel.saveSearchHistory(document: document)
-                // SearchViewController의 searchController 검색창을 빈 값으로 설정
+                
                 if let searchViewController = self.presentingViewController as? SearchViewController {
                     searchViewController.searchController.searchBar.text = ""
+                    searchViewController.searchController.searchBar.endEditing(true)
+                    searchViewController.navigationController?.popViewController(animated: false)
                 }
-                self.dismiss(animated: true)
             })
             .disposed(by: disposeBag)
     }
