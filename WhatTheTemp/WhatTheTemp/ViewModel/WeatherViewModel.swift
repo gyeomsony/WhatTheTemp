@@ -39,10 +39,13 @@ class WeatherViewModel {
             .disposed(by: disposeBag)
     }
     
+    /// locationRepository에서 추출한 사용자 좌표의 geocoder 행정구역명과 openweather api통신 응답을 결합(combineLatest)하여 뷰에 바인딩할 모델로 매핑
     func fetchWeatherResponse(lat: Double, lon: Double) {
-        weatherRepository.fetchWeather(lat: lat, lon: lon)
-            .map { response -> (Current, [WeatherSummary], [WeatherSummary], [WeatherSummary]) in
-                let current = Current(weatherDescription: response.currentWeather.weather[0].description,
+        Observable
+            .combineLatest(locationRepository.currentCityName.asObservable(), weatherRepository.fetchWeather(lat: lat, lon: lon).asObservable())
+            .map { (cityName, response) -> (Current, [WeatherSummary], [WeatherSummary], [WeatherSummary]) in
+                let current = Current(locationName: cityName,
+                                      weatherDescription: response.currentWeather.weather[0].description,
                                       currentTemperature: response.currentWeather.temperature,
                                       weatherCode: response.currentWeather.weather[0].code,
                                       feelsLikeTemperature: response.currentWeather.feelsLike,
@@ -72,12 +75,12 @@ class WeatherViewModel {
                 
                 return (current, todayHourly, tomorrowHourly, nextFiveDaily)
             }
-            .subscribe(onSuccess: { [weak self] (current, todayHourly, tomorrowHourly, nextFiveDaily) in
+            .subscribe(onNext: { [weak self] (current, todayHourly, tomorrowHourly, nextFiveDaily) in
                 self?.currentWeather.accept(current)
                 self?.todayHourly.accept(todayHourly)
                 self?.tomorrowHourly.accept(tomorrowHourly)
                 self?.nextFiveDaily.accept(nextFiveDaily)
-            }, onFailure: { error in
+            }, onError: { error in
                 print("에러 발생: \(error)")
             })
             .disposed(by: disposeBag)

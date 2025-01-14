@@ -13,14 +13,20 @@ class SearchHistoryViewModel {
     private let repository: WeatherRepositoryProtocol
     private let disposeBag = DisposeBag()
     
+    private let coreDataManager = SearchCoreDataManager.shared
+    
     let cityWeathers = PublishRelay<[CityWeather]>()
     
     init(repository: WeatherRepositoryProtocol) {
         self.repository = repository
+        
+        let entites = coreDataManager.readSearchHistoryData()
+        fetchMultipleWeathers(entites: entites)
+        
     }
     
-    func fetchMultipleWeathers(coordinates: [(lat: Double, lon: Double)]) {
-        repository.fetchWeathers(coordinates: coordinates)
+    private func fetchMultipleWeathers(entites: [SearchHistoryEntity]) {
+        repository.fetchWeathers(entites: entites)
             .map { responses -> [CityWeather] in
                 responses.map { response in
                     let cityWeather = CityWeather(weatherCode: response.currentWeather.weather[0].code,
