@@ -10,6 +10,8 @@ import UIKit
 final class WeatherViewController: UIViewController {
     private let viewModel: WeatherViewModel
     private let coreDataManager = SearchCoreDataManager.shared
+    private let userDefaults = UserDefaults.standard
+    private let lastPageKey = "LastViewedPageIndex"
     
     private var pages: [SearchHistoryEntity] = [] {
         didSet {
@@ -66,6 +68,7 @@ final class WeatherViewController: UIViewController {
         loadPages()
         setupViewModel()
         updateTemperatureUnit()
+        scrollToLastViewedPage()
     }
     
     private func setupCollectionView() {
@@ -147,6 +150,15 @@ final class WeatherViewController: UIViewController {
     private func loadPages() {
         pages = coreDataManager.readSearchHistoryData()
     }
+    
+    private func scrollToLastViewedPage() {
+        let lastPageIndex = userDefaults.integer(forKey: lastPageKey)
+        if lastPageIndex < pages.count {
+            let indexPath = IndexPath(item: lastPageIndex, section: 0)
+            pageCollectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: false)
+            pageControl.currentPage = lastPageIndex
+        }
+    }
 }
 
 extension WeatherViewController: UICollectionViewDelegateFlowLayout {
@@ -177,5 +189,7 @@ extension WeatherViewController: UICollectionViewDelegate {
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         let currentPage = Int(scrollView.contentOffset.x / scrollView.bounds.width)
         pageControl.currentPage = currentPage
+        
+        userDefaults.set(currentPage, forKey: lastPageKey)
     }
 }
