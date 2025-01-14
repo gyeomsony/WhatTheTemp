@@ -19,7 +19,7 @@ final class WeatherDetailNavigationBar: UIView {
         return label
     }()
     
-    private let dismissButton: UIButton = {
+    private(set) var dismissButton: UIButton = {
         let button = UIButton()
         let configuration = UIImage.SymbolConfiguration(weight: .bold)
         button.setImage(UIImage(systemName: "xmark", withConfiguration: configuration), for: .normal)
