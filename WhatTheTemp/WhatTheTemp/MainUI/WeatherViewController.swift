@@ -11,9 +11,9 @@ final class WeatherViewController: UIViewController {
     private let viewModel: WeatherViewModel
     private let coreDataManager = SearchCoreDataManager.shared
     
-    private var weatherPages: [SearchHistoryEntity] = [] {
+    private var pages: [SearchHistoryEntity] = [] {
         didSet {
-            pageControl.numberOfPages = weatherPages.count
+            pageControl.numberOfPages = pages.count + 1
             pageCollectionView.reloadData()
         }
     }
@@ -25,8 +25,6 @@ final class WeatherViewController: UIViewController {
             updateTemperatureUnit()
         }
     }
-    // 테스트로 2페이지 설정
-    private var pages: [Int] = [0, 1]
     
     private var pageCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -45,7 +43,7 @@ final class WeatherViewController: UIViewController {
     
     private lazy var pageControl: UIPageControl = {
         let pageControl = UIPageControl()
-        pageControl.numberOfPages = pages.count
+        pageControl.numberOfPages = pages.count + 1
         pageControl.currentPage = 0
         pageControl.currentPageIndicatorTintColor = .white
         pageControl.pageIndicatorTintColor = .lightGray
@@ -83,15 +81,6 @@ final class WeatherViewController: UIViewController {
         
         pageCollectionView.delegate = self
         pageCollectionView.dataSource = self
-    }
-    
-    func addPage() {
-        let newIndex = pages.count
-        pages.append(newIndex)
-        pageCollectionView.reloadData()
-        
-        let indexPath = IndexPath(item: newIndex, section: 0)
-        pageCollectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
     }
     
     private func setupNavigationBar() {
@@ -149,8 +138,13 @@ final class WeatherViewController: UIViewController {
             }
         }
     }
+    
     private func setupViewModel() {
         viewModel.fetchWeatherResponse(lat: 37.5665, lon: 126.9780)
+    }
+    
+    private func loadPages() {
+        pages = coreDataManager.readSearchHistoryData()
     }
 }
 
