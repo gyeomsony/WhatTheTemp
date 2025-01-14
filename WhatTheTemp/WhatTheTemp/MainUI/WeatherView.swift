@@ -315,13 +315,13 @@ extension WeatherView: UICollectionViewDataSource {
         let data: WeatherSummary
         if timeFilterButtons[0].isSelected {
             data = todatyWeather[indexPath.row]
-            cell.configureHourly(with: data)
+            cell.bind(with: data, isDaily: false)
         } else if timeFilterButtons[1].isSelected {
             data = tomorrowWeather[indexPath.row]
-            cell.configureHourly(with: data)
+            cell.bind(with: data, isDaily: false)
         } else {
             data = nextFiveDaysWeather[indexPath.row]
-            cell.configureDaily(with: data)
+            cell.bind(with: data, isDaily: true)
         }
         return cell
     }
