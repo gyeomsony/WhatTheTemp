@@ -7,8 +7,11 @@
 
 import UIKit
 import SnapKit
+import RxSwift
 
 final class HourlyCollectionViewCell: UICollectionViewCell {
+    private let disposeBag = DisposeBag()
+    
     private let hourLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 12)
@@ -65,15 +68,21 @@ final class HourlyCollectionViewCell: UICollectionViewCell {
         }
     }
     
-    func configureHourly(with data: WeatherSummary) {
-        self.hourLabel.text = "\(data.time)시"
-        self.temperatureLabel.text = "\(data.temperature)°C"
-        self.weatherIconImageView.image = UIImage(named: WeatherAssets.getIconName(from: data.statusCode))
-    }
-    
-    func configureDaily(with data: WeatherSummary) {
-        self.hourLabel.text = "\(data.time)일"
-        self.temperatureLabel.text = "\(data.temperature)°C"
-        self.weatherIconImageView.image = UIImage(named: WeatherAssets.getIconName(from: data.statusCode))
+    func bind(with data: WeatherSummary, isDaily: Bool) {
+        Observable.just(data)
+            .map { "\($0.time)\(isDaily ? "일" : "시")" }
+            .bind(to: hourLabel.rx.text)
+            .disposed(by: disposeBag)
+        
+        Observable.just(data)
+            .map { "\($0.temperature)°C" }
+            .bind(to: temperatureLabel.rx.text)
+            .disposed(by: disposeBag)
+        
+        Observable.just(data)
+            .map { WeatherAssets.getIconName(from: $0.statusCode) }
+            .map { UIImage(named: $0) }
+            .bind(to: weatherIconImageView.rx.image)
+            .disposed(by: disposeBag)
     }
 }
