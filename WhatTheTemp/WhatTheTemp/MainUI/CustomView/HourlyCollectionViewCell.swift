@@ -21,7 +21,7 @@ final class HourlyCollectionViewCell: UICollectionViewCell {
     
     private let temperatureLabel: UILabel = {
         let label = UILabel()
-        label.font = .boldSystemFont(ofSize: 16)
+        label.font = .boldSystemFont(ofSize: 14)
         label.textColor = .white
         label.textAlignment = .center
         return label
@@ -43,7 +43,6 @@ final class HourlyCollectionViewCell: UICollectionViewCell {
         setupView()
         setupSubviews()
         setupAutoLayout()
-        testMethod()
     }
     
     required init?(coder: NSCoder) {
@@ -66,10 +65,15 @@ final class HourlyCollectionViewCell: UICollectionViewCell {
         }
     }
     
-    private func testMethod() {
-        [hourLabel, temperatureLabel].forEach {
-            $0.text = "Test"
-        }
-        weatherIconImageView.image = UIImage(named: "clearDay")
+    func configureHourly(with data: WeatherSummary) {
+        self.hourLabel.text = "\(data.time)시"
+        self.temperatureLabel.text = "\(data.temperature)°C"
+        self.weatherIconImageView.image = UIImage(named: WeatherAssets.getIconName(from: data.statusCode))
+    }
+    
+    func configureDaily(with data: WeatherSummary) {
+        self.hourLabel.text = "\(data.time)일"
+        self.temperatureLabel.text = "\(data.temperature)°C"
+        self.weatherIconImageView.image = UIImage(named: WeatherAssets.getIconName(from: data.statusCode))
     }
 }
