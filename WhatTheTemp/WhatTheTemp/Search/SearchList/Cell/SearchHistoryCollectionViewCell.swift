@@ -88,18 +88,14 @@ final class SearchHistoryCollectionViewCell: UICollectionViewCell, ReuseIdentify
     }
     
     // CoreData에서 읽어온 데이터를 셀에 설정
-    func configure(with history: SearchHistoryEntity) {
-        print("lat \(history.lat) lon \(history.lon)")
-        cityNameLabel.text = history.cityName
-        // 날씨 관련 데이터를 셀에 표시
-    }
-    
-    func updateWeatherInfo(current: CityWeather) {
-        weatherIconImageView.image = UIImage(named: WeatherAssets.getIconName(from: current.weatherCode))
-        temperatureLabel.text = "\(current.roundedCurrentTemperature)°"
-        weatherConditionLabel.text = current.weatherDescription
-        minTemperatureLabel.text = "Min: \(current.roundedMinTemperature)°"
-        maxTemperatureLabel.text = "Max: \(current.roundedMaxTemperature)°"
+    func configure(with cityWeather: CityWeather) {
+        cityNameLabel.text = cityWeather.cityName
+        weatherIconImageView.image = UIImage(named: WeatherAssets.getIconName(from: cityWeather.weatherCode))
+        temperatureLabel.text = "\(cityWeather.roundedCurrentTemperature)°"
+        weatherConditionLabel.text = cityWeather.weatherDescription
+        minTemperatureLabel.text = "Min: \(cityWeather.roundedMinTemperature)°"
+        maxTemperatureLabel.text = "Max: \(cityWeather.roundedMaxTemperature)°"
+        baseView.backgroundColor = WeatherAssets.getColorSet(from: cityWeather.weatherCode).block
     }
     
     var disposeBag = DisposeBag() // DisposeBag를 셀 단위로 관리

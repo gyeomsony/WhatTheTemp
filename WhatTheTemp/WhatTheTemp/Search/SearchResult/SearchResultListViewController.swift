@@ -31,6 +31,7 @@ final class SearchResultListViewController: UIViewController {
         super.viewDidLoad()
         setupTableView()
         bindViewModel()
+        bindTableViewCellSelection()
     }
 }
 
@@ -48,18 +49,20 @@ private extension SearchResultListViewController {
     
     // ViewModel에 바인딩
     func bindViewModel() {
-        // ViewModel의 resultList와 테이블 뷰를 바인딩
+        // 검색 결과와 검색어를 결합한 데이터를 ViewModel의 resultList와 테이블 뷰를 바인딩
         viewModel.resultList
             .observe(on: MainScheduler.instance)
             .bind(to: searchResultListView.tableView.rx.items(cellIdentifier: SearchResultListTableViewCell.reuseIdentifier, cellType: SearchResultListTableViewCell.self)) { [weak self] index, item, cell in
+                print("데이터 바인딩: \(item)")  // 데이터 출력
                 if let cell = cell as? SearchResultListTableViewCell {
-                    // item은 (document, searchText) 튜플이므로, 해당 값을 각각 전달
                     cell.configure(query: item.document, searchText: item.searchText)
                 }
             }
             .disposed(by: disposeBag)
-        
-        // 셀 선택 이벤트 처리
+    }
+    
+    // 셀 선택시 CoreData에 데이터 저장 이벤트 처리
+    func bindTableViewCellSelection() {
         searchResultListView.tableView.rx.modelSelected((KakaoMapModel.Document, String).self)
             .subscribe(onNext: { [weak self] tuple in
                 guard let self = self else { return }

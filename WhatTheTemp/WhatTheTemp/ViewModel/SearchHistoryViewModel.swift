@@ -22,29 +22,27 @@ class SearchHistoryViewModel {
         
         let entites = coreDataManager.readSearchHistoryData()
         fetchMultipleWeathers(entites: entites)
-        
     }
     
     private func fetchMultipleWeathers(entites: [SearchHistoryEntity]) {
         repository.fetchWeathers(entites: entites)
             .map { responses -> [CityWeather] in
-                responses.map { response in
+                responses.enumerated().map { (index, response) in
                     let cityWeather = CityWeather(weatherCode: response.currentWeather.weather[0].code,
-                                                  cityName: "임시값 서울시",
+                                                  cityName: entites[index].cityName ?? "",
+                                                  weatherDescription: response.currentWeather.weather[0].description,
                                                   currentTemperature: response.currentWeather.temperature,
                                                   minTemperature: response.dailyWeather[0].temperature.minTemperature,
                                                   maxTemperature: response.dailyWeather[0].temperature.maxTemperature)
                     return cityWeather
                 }
             }
-            .subscribe(
-                onSuccess: { [weak self] cityWeathers in
-                    self?.cityWeathers.accept(cityWeathers)
-                },
-                onFailure: { error in
-                    print("에러 발생: \(error)")
-                }
-            )
-            .disposed(by: disposeBag)
+            .subscribe(onSuccess: { [weak self] cityWeathers in
+                        // Emit the weather data through the relay
+                        self?.cityWeathers.accept(cityWeathers)
+                    }, onFailure: { error in
+                        print("Error fetching weathers: \(error)")
+                    })
+                    .disposed(by: disposeBag)
     }
 }
