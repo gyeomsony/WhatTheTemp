@@ -30,6 +30,7 @@ final class SearchResultListTableViewCell: UITableViewCell, ReuseIdentifying {
     
     // 하이라이트 기능을 추가한 configure 메서드
     func configure(query: KakaoMapModel.Document, searchText: String) {
+        print("query \(query) searchText \(searchText)")
         let highlightedText = query.addressName.highlightedText(for: searchText, highlightColor: .white)
         cityName.attributedText = highlightedText
     }

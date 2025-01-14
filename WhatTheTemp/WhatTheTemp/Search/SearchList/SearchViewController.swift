@@ -11,32 +11,28 @@ import RxSwift
 final class SearchViewController: UIViewController {
     private var disposeBag = DisposeBag()
     private let viewModel: SearchViewModel
-    private var searchResultViewModel: SearchResultViewModel?
-    private var weatherViewModel: WeatherViewModel?
-    private var searchListVC: SearchResultListViewController?
+    private var searchResultViewModel: SearchResultViewModel
+    private var searchHistoryViewModel: SearchHistoryViewModel?
+    private var searchResultVC: SearchResultListViewController?
     let searchHistoryListView = SearchHistoryView()
     private var refreshControl = UIRefreshControl()
     
-    private var searchHistoryData: [SearchHistoryEntity] = [] // CoreData에서 읽어온 데이터
+    private var cityWeathers: [CityWeather] = [] // CoreData에서 읽어온 데이터
 
     private lazy var searchController: UISearchController = {
-        let searchController = UISearchController(searchResultsController: searchListVC)
+        let searchController = UISearchController(searchResultsController: searchResultVC)
         searchController.obscuresBackgroundDuringPresentation = false
         return searchController
     }()
     
-    init(viewModel: SearchViewModel, weatherViewModel: WeatherViewModel) {
+    init(viewModel: SearchViewModel, searchHistoryViewModel: SearchHistoryViewModel, searchResultViewModel: SearchResultViewModel) {
         self.viewModel = viewModel
-        self.weatherViewModel = weatherViewModel
+        self.searchHistoryViewModel = searchHistoryViewModel
+        self.searchResultViewModel = searchResultViewModel
         super.init(nibName: nil, bundle: nil)
         
-        // 초기화 시 viewModel을 기반으로 searchResultViewModel을 초기화
-        searchResultViewModel = SearchResultViewModel(
-            addressList: viewModel.addressList.asObservable(),
-            searchQuery: viewModel.searchQuery.asObservable())
-        
-        // searchListVC 초기화
-        searchListVC = SearchResultListViewController(viewModel: searchResultViewModel!)
+        // Initialize searchResultVC with searchResultViewModel
+        searchResultVC = SearchResultListViewController(viewModel: searchResultViewModel)
     }
     
     required init?(coder: NSCoder) {
@@ -57,8 +53,10 @@ final class SearchViewController: UIViewController {
         setupCollectionView()
         bindViewModel()
         bindSearchBar()
-        loadSearchHistory() // CoreData에서 데이터 로딩
-        loadWeatherData() // 날씨 데이터 로딩
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        bindCollectionViewCell()
     }
 }
 
@@ -128,6 +126,18 @@ private extension SearchViewController {
         searchHistoryListView.collectionView.register(SearchHistoryCollectionViewCell.self, forCellWithReuseIdentifier: SearchHistoryCollectionViewCell.reuseIdentifier)
     }
     
+    // 각 셀에 해당하는 데이터 바인딩
+    func bindCollectionViewCell() {
+        searchHistoryViewModel?.cityWeathers
+            .observe(on: MainScheduler.instance)
+            .withUnretained(self)
+            .subscribe(onNext: { vc, cityWeathers in
+                vc.cityWeathers = cityWeathers
+                vc.searchHistoryListView.collectionView.reloadData()
+            })
+            .disposed(by: disposeBag)
+    }
+    
     // ViewModel에 바인딩
     func bindViewModel() {
         // SearchViewModel에서 데이터를 가져와 SearchResultViewModel에 바인딩
@@ -144,35 +154,16 @@ private extension SearchViewController {
             .filter { !$0.isEmpty } // 비어 있지 않은 값만 처리
             .subscribe(onNext: { [weak self] query in
                 self?.viewModel.fetchAddressList(query: query) // API 요청
-                self?.searchResultViewModel?.searchText.onNext(query) // 검색어 전달
+                self?.searchResultViewModel.searchText.onNext(query) // 검색어 전달
             })
             .disposed(by: disposeBag)
-    }
-    
-    func loadSearchHistory() {
-        // CoreData에서 데이터를 읽어와서 searchHistoryData에 저장
-        let coreDataManager = SearchCoreDataManager.shared
-        searchHistoryData = coreDataManager.readSearchHistoryData()
-        searchHistoryListView.collectionView.reloadData() // 데이터 로딩 후 컬렉션뷰 갱신
-    }
-    
-    func loadWeatherData() {
-        // CoreData에서 읽어온 검색 기록을 기반으로 날씨 데이터 로딩
-        for history in searchHistoryData {
-            let lat = history.lat // CoreData에서 가져온 lat
-            let lon = history.lon // CoreData에서 가져온 lon
-            
-            // 날씨 데이터 요청
-            weatherViewModel?.fetchWeatherResponse(lat: lat, lon: lon)
-        }
     }
 }
 
 // TODO: - Rx로 변경 예정
 extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        print("searchHistoryData.count \(searchHistoryData.count)")
-        return searchHistoryData.count
+        return cityWeathers.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -180,24 +171,9 @@ extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSo
             return UICollectionViewCell()
         }
         
-        let searchHistory = searchHistoryData[indexPath.row]
-        cell.configure(with: searchHistory)
+        let weather = cityWeathers[indexPath.row]
+        cell.configure(with: weather)
         
-        let lat = searchHistory.lat
-        let lon = searchHistory.lon
-        
-        // Observable을 구독하여 셀 업데이트
-        weatherViewModel?.fetchWeatherResponseAsObservable(lat: lat, lon: lon)
-            .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] current in
-                // Current를 CityWeather로 변환
-                let cityWeather = current.toCityWeather(cityName: searchHistory.cityName ?? "")
-                cell.updateWeatherInfo(current: cityWeather)
-            }, onError: { error in
-                print("Error fetching weather: \(error)")
-                // 여기에 에러 발생 시 처리 로직 추가
-            })
-            .disposed(by: cell.disposeBag) // 셀 단위로 DisposeBag 관리
         return cell
     }
 }
