@@ -178,6 +178,14 @@ extension WeatherViewController: UICollectionViewDataSource {
         }
         cell.weatherView.bind(to: viewModel)
         cell.weatherView.updateTemperatureUnit(isCelsius: isCelsius) // 초기 값 전달
+        cell.weatherView.mainWeatherBlockTapGesture?
+            .rx.event
+            .withUnretained(self)
+            .bind(onNext: { vc, _ in
+                let weatherDetailViewModel = WeatherDetailViewModel(repository: WeatherRepository())
+                let weatherDetailViewController = WeatherDetailViewController(viewModel: weatherDetailViewModel)
+                vc.navigationController?.present(weatherDetailViewController, animated: true)
+            }).disposed(by: disposeBag)
         return cell
     }
 }

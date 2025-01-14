@@ -87,6 +87,7 @@ final class WeatherDetailViewController: UIViewController {
         super.viewDidLoad()
         
         self.bindViewModel()
+        self.bindNavigationBar()
         self.configureUI()
         self.setupConstraints()
     }
@@ -126,6 +127,14 @@ final class WeatherDetailViewController: UIViewController {
             .subscribe(onNext: { vc, chartIndex in
                 let indexPath = IndexPath(item: chartIndex, section: 1)
                 vc.collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
+            }).disposed(by: disposeBag)
+    }
+    
+    private func bindNavigationBar() {
+        navigationBar.dismissButton.rx.tap
+            .withUnretained(self)
+            .bind(onNext: { vc, _ in
+                vc.dismiss(animated: true)
             }).disposed(by: disposeBag)
     }
     

@@ -52,7 +52,7 @@ extension LocationRepository: CLLocationManagerDelegate {
             authorizationUpdated.accept(())
             guard let currentLocation = currentLocation else { return }
             geocoder.reverseGeocodeLocation(currentLocation) { [weak self] placemarks, error in
-                guard let cityName = placemarks?.first?.administrativeArea else { return }
+                guard let cityName = placemarks?.first?.subLocality else { return }
                 self?.currentCityName.accept(cityName)
             }
         /// 사용자가 동의를 안한 상황(미선택, 거절, 제한 등) : 어차피 currentLocation의 기본값인 서울시청 좌표를 사용할 거기 때문에 이벤트만 방출
