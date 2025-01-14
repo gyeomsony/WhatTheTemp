@@ -14,10 +14,6 @@ final class SearchResultListViewController: UIViewController {
     private let searchViewModel: SearchViewModel
     let searchResultListView = SearchResultListView()
 
-//    init(viewModel: SearchViewModel) {
-//        self.viewModel = viewModel
-//        super.init(nibName: nil, bundle: nil)
-//    }
     init(resultViewModel: SearchResultViewModel, searchViewModel: SearchViewModel) {
         self.resultViewModel = resultViewModel
         self.searchViewModel = searchViewModel
@@ -60,10 +56,7 @@ private extension SearchResultListViewController {
             .observe(on: MainScheduler.instance)
             .bind(to: searchResultListView.tableView.rx.items(cellIdentifier: SearchResultListTableViewCell.reuseIdentifier)) { [weak self] (index, item, cell: SearchResultListTableViewCell) in
                 print("데이터 바인딩: \(item)")  // 데이터 출력
-//                if let cell = cell as? SearchResultListTableViewCell {
-//                    cell.configure(query: item.document, searchText: item.searchText)
-//                }
-                cell.configure(query: item.addressName ?? "", searchText: item.cityName)
+                cell.configure(query: item.addressName ?? "", searchText: item.cityName ?? "")
             }
             .disposed(by: disposeBag)
     }
