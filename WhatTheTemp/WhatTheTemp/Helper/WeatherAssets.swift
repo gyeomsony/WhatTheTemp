@@ -88,6 +88,19 @@ enum WeatherAssets: String {
             return isDayTime ? (background: UIColor.clearDayBackground, block: UIColor.clearDayBlock) : (background: UIColor.clearNightBackground, block: UIColor.clearyNightBlock)
         }
     }
+    
+    static func getFontColor(from code: Int) -> UIColor {
+        let isDayTime = Date.now.isDayTime
+        
+        switch code {
+        case 511, 600...622:
+            return isDayTime ? .cyan : .white
+        case 701, 711, 721, 741:
+            return isDayTime ? .gray : .white
+        default:
+            return .white
+        }
+    }
 }
 
 // MARK: - Visual Crossing 
