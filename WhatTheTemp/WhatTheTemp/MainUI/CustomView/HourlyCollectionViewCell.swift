@@ -75,7 +75,7 @@ final class HourlyCollectionViewCell: UICollectionViewCell {
             .disposed(by: disposeBag)
         
         Observable.just(data)
-            .map { "\($0.temperature)°C" }
+            .map { "\($0.temperature)°" }
             .bind(to: temperatureLabel.rx.text)
             .disposed(by: disposeBag)
         
