@@ -88,6 +88,52 @@ enum WeatherAssets: String {
             return isDayTime ? (background: UIColor.clearDayBackground, block: UIColor.clearDayBlock) : (background: UIColor.clearNightBackground, block: UIColor.clearyNightBlock)
         }
     }
+    
+    static func getFontColor(from code: Int) -> UIColor {
+        let isDayTime = Date.now.isDayTime
+        
+        switch code {
+        case 511, 600...622:
+            return isDayTime ? .cyan : .white
+        case 701, 711, 721, 741:
+            return isDayTime ? .gray : .white
+        default:
+            return .white
+        }
+    }
+    
+    static func getWeatherDescription(from code: Int) -> String {
+        switch code {
+        case 200...202, 230...232:
+            return "천둥과 비"
+        case 210...221:
+            return "천둥"
+        case 300..<400, 500, 520...531:
+            return "보슬비"
+        case 501:
+            return "비"
+        case 502...504:
+            return "장대비"
+        case 511, 600, 611...622:
+            return "진눈깨비"
+        case 601, 602:
+            return "눈"
+        case 701, 711, 721, 741:
+            return "안개"
+        case 731, 751:
+            return "먼지"
+        case 761:
+            return "모래"
+        case 762:
+            return "화산재"
+        case 771, 781:
+            return "돌풍"
+        case 801...804:
+            return "구름"
+        default:
+            return "맑음"
+        }
+    }
 }
 
 // MARK: - Visual Crossing 
