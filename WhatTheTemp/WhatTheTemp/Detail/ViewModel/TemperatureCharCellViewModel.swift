@@ -37,11 +37,19 @@ final class TemperatureCharCellViewModel {
             
         
         self.weatherIcons = Observable.just(temperatureInfo.conditions)
-            .map { model -> [String] in
-                model.enumerated().map { index, condition in
+            .flatMap { Observable.from($0) }
+            .map { condition in
+                if condition.contains(", ") {
+                    return condition.components(separatedBy: ", ").last?.trimmingCharacters(in: .whitespaces) ?? "NoData"
+                } else {
+                    return condition
+                }
+            }.toArray()
+            .map {
+                $0.enumerated().map { index, realCondition in
                     let isDayTime = (3...8).contains(index)
                     
-                    return VXCWeatherIcons.getIconName(from: condition, isDayTime: isDayTime)
+                    return VXCWeatherIcons.getIconName(from: realCondition, isDayTime: isDayTime)
                 }
             }.asDriver(onErrorJustReturn: [])
     }
