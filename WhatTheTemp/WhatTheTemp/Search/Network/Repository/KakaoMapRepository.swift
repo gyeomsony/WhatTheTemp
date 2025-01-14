@@ -26,6 +26,7 @@ final class KakaoMapRepository: KakaoMapRepositoryProtocol {
             .map { response -> [KakaoMapModel.Document] in
                 do {
                     let kakaoMapModel = try JSONDecoder().decode(KakaoMapModel.self, from: response.data)
+                    print("Decoded cityName: \(kakaoMapModel.documents.first?.cityName ?? "nil")") // cityName 확인
                     return kakaoMapModel.documents.filter { $0.addressName.contains(query) }
                 } catch {
                     print("Decoding error: \(error)")
