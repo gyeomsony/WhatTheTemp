@@ -9,6 +9,14 @@ import UIKit
 
 final class WeatherViewController: UIViewController {
     private let viewModel: WeatherViewModel
+    private let coreDataManager = SearchCoreDataManager.shared
+    
+    private var weatherPages: [SearchHistoryEntity] = [] {
+        didSet {
+            pageControl.numberOfPages = weatherPages.count
+            pageCollectionView.reloadData()
+        }
+    }
     
     // Bool값을 사용해서 현재 온도를 관리하고 기본값은 "섭씨"로 함
     // UserDefaults를 사용해 선택 상태가 앱이 재실행 되더라도 유지가 됨
