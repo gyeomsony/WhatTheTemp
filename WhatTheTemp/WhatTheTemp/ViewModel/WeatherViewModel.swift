@@ -42,8 +42,7 @@ class WeatherViewModel {
     func fetchWeatherResponse(lat: Double, lon: Double) {
         weatherRepository.fetchWeather(lat: lat, lon: lon)
             .map { response -> (Current, [WeatherSummary], [WeatherSummary], [WeatherSummary]) in
-                let current = Current(weatherDescription: response.currentWeather.weather[0].description,
-                                      currentTemperature: response.currentWeather.temperature,
+                let current = Current(currentTemperature: response.currentWeather.temperature,
                                       weatherCode: response.currentWeather.weather[0].code,
                                       feelsLikeTemperature: response.currentWeather.feelsLike,
                                       minTemperature: response.dailyWeather[0].temperature.minTemperature,
