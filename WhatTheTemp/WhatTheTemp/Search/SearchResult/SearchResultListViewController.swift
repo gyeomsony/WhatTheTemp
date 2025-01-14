@@ -10,11 +10,17 @@ import RxSwift
 
 final class SearchResultListViewController: UIViewController {
     private var disposeBag = DisposeBag()
-    private let viewModel: SearchResultViewModel
+    private let resultViewModel: SearchResultViewModel
+    private let searchViewModel: SearchViewModel
     let searchResultListView = SearchResultListView()
 
-    init(viewModel: SearchResultViewModel) {
-        self.viewModel = viewModel
+//    init(viewModel: SearchViewModel) {
+//        self.viewModel = viewModel
+//        super.init(nibName: nil, bundle: nil)
+//    }
+    init(resultViewModel: SearchResultViewModel, searchViewModel: SearchViewModel) {
+        self.resultViewModel = resultViewModel
+        self.searchViewModel = searchViewModel
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -50,13 +56,14 @@ private extension SearchResultListViewController {
     // ViewModel에 바인딩
     func bindViewModel() {
         // 검색 결과와 검색어를 결합한 데이터를 ViewModel의 resultList와 테이블 뷰를 바인딩
-        viewModel.resultList
+        searchViewModel.addressList
             .observe(on: MainScheduler.instance)
-            .bind(to: searchResultListView.tableView.rx.items(cellIdentifier: SearchResultListTableViewCell.reuseIdentifier, cellType: SearchResultListTableViewCell.self)) { [weak self] index, item, cell in
+            .bind(to: searchResultListView.tableView.rx.items(cellIdentifier: SearchResultListTableViewCell.reuseIdentifier)) { [weak self] (index, item, cell: SearchResultListTableViewCell) in
                 print("데이터 바인딩: \(item)")  // 데이터 출력
-                if let cell = cell as? SearchResultListTableViewCell {
-                    cell.configure(query: item.document, searchText: item.searchText)
-                }
+//                if let cell = cell as? SearchResultListTableViewCell {
+//                    cell.configure(query: item.document, searchText: item.searchText)
+//                }
+                cell.configure(query: item.addressName ?? "", searchText: item.cityName)
             }
             .disposed(by: disposeBag)
     }
@@ -68,7 +75,7 @@ private extension SearchResultListViewController {
                 guard let self = self else { return }
                 let (document, searchText) = tuple
                 // document는 이미 non-optional이므로 직접 사용할 수 있습니다.
-                self.viewModel.saveSearchHistory(document: document)
+                self.resultViewModel.saveSearchHistory(document: document)
                 self.navigationController?.popViewController(animated: true)
             })
             .disposed(by: disposeBag)

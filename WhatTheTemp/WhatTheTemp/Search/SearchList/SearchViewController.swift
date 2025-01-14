@@ -10,7 +10,7 @@ import RxSwift
 
 final class SearchViewController: UIViewController {
     private var disposeBag = DisposeBag()
-    private let viewModel: SearchViewModel
+    private let searchViewModel: SearchViewModel
     private var searchResultViewModel: SearchResultViewModel
     private var searchHistoryViewModel: SearchHistoryViewModel?
     private var searchResultVC: SearchResultListViewController?
@@ -26,13 +26,13 @@ final class SearchViewController: UIViewController {
     }()
     
     init(viewModel: SearchViewModel, searchHistoryViewModel: SearchHistoryViewModel, searchResultViewModel: SearchResultViewModel) {
-        self.viewModel = viewModel
+        self.searchViewModel = viewModel
         self.searchHistoryViewModel = searchHistoryViewModel
         self.searchResultViewModel = searchResultViewModel
         super.init(nibName: nil, bundle: nil)
         
         // Initialize searchResultVC with searchResultViewModel
-        searchResultVC = SearchResultListViewController(viewModel: searchResultViewModel)
+        searchResultVC = SearchResultListViewController(resultViewModel: searchResultViewModel, searchViewModel: viewModel)
     }
     
     required init?(coder: NSCoder) {
@@ -142,8 +142,8 @@ private extension SearchViewController {
     func bindViewModel() {
         // SearchViewModel에서 데이터를 가져와 SearchResultViewModel에 바인딩
         searchResultViewModel = SearchResultViewModel(
-            addressList: viewModel.addressList.asObservable(),
-            searchQuery: viewModel.searchQuery.asObservable()
+            addressList: searchViewModel.addressList.asObservable(),
+            searchQuery: searchViewModel.searchQuery.asObservable()
         )
     }
     
@@ -153,7 +153,7 @@ private extension SearchViewController {
             .distinctUntilChanged() // 이전 값과 동일하면 무시
             .filter { !$0.isEmpty } // 비어 있지 않은 값만 처리
             .subscribe(onNext: { [weak self] query in
-                self?.viewModel.fetchAddressList(query: query) // API 요청
+                self?.searchViewModel.fetchAddressList(query: query) // API 요청
                 self?.searchResultViewModel.searchText.onNext(query) // 검색어 전달
             })
             .disposed(by: disposeBag)
