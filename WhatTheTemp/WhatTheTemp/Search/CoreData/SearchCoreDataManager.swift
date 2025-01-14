@@ -82,9 +82,26 @@ final class SearchCoreDataManager {
     }
     
     // Delete
-    func deleteSearchHistoryData(lat: Double, lon: Double) {
+//    func deleteSearchHistoryData(lat: Double, lon: Double) {
+//        let fetchRequest = SearchHistoryEntity.fetchRequest()
+//        fetchRequest.predicate = NSPredicate(format: "lat == %lf AND lon == %lf", lat, lon)
+//        
+//        do {
+//            let results = try self.context.fetch(fetchRequest)
+//            
+//            for object in results {
+//                self.context.delete(object)
+//            }
+//            
+//            try self.context.save()
+//            print("히스토리 데이터 삭제 성공")
+//        } catch {
+//            print("히스토리 데이터 삭제 실패: \(error.localizedDescription)")
+//        }
+//    }
+    func deleteSearchHistoryData(cityName: String, completion: @escaping (Bool) -> Void) {
         let fetchRequest = SearchHistoryEntity.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "lat == %lf AND lon == %lf", lat, lon)
+        fetchRequest.predicate = NSPredicate(format: "cityName == %@", cityName)
         
         do {
             let results = try self.context.fetch(fetchRequest)
@@ -95,8 +112,10 @@ final class SearchCoreDataManager {
             
             try self.context.save()
             print("히스토리 데이터 삭제 성공")
+            completion(true)
         } catch {
             print("히스토리 데이터 삭제 실패: \(error.localizedDescription)")
+            completion(false)
         }
     }
 }

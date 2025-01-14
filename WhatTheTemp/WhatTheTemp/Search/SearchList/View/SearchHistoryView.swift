@@ -10,12 +10,15 @@ import SnapKit
 
 final class SearchHistoryView: UIView {
     lazy var collectionView: UICollectionView = {
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: createFlowLayout())
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: createCompositionalLayout())
         collectionView.showsVerticalScrollIndicator = false
         collectionView.backgroundColor = .clear
 
         return collectionView
     }()
+    
+    // 삭제 액션을 뷰 컨트롤러에 전달하는 클로저
+    var onDeleteAction: ((IndexPath) -> Void)?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -40,12 +43,40 @@ private extension SearchHistoryView {
         }
     }
     
-    func createFlowLayout() -> UICollectionViewFlowLayout {
-        let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .vertical
-        layout.minimumLineSpacing = 10
-        layout.itemSize = CGSize(width: UIScreen.main.bounds.width - 32, height: 100)
+//    func createCompositionalLayout() -> UICollectionViewCompositionalLayout {
+//        // UICollectionLayoutListConfiguration 사용
+//        var config = UICollectionLayoutListConfiguration(appearance: .plain)
+//        config.showsSeparators = false // 구분선 숨김
+//        config.trailingSwipeActionsConfigurationProvider = { indexPath in
+//            // 셀 오른쪽 스와이프 동작 정의 (예: 삭제)
+//            let deleteAction = UIContextualAction(style: .destructive, title: "삭제") { _, _, completion in
+//                // 셀 삭제 동작 처리
+//                completion(true)
+//            }
+//            let swipeActions = UISwipeActionsConfiguration(actions: [deleteAction])
+//            return swipeActions
+//        }
+//        
+//        // UICollectionViewCompositionalLayout 사용
+//        let layout = UICollectionViewCompositionalLayout.list(using: config)
+//        return layout
+//    }
+    func createCompositionalLayout() -> UICollectionViewCompositionalLayout {
+        var config = UICollectionLayoutListConfiguration(appearance: .plain)
+        config.showsSeparators = false // 구분선 숨김
+        config.trailingSwipeActionsConfigurationProvider = { [weak self] indexPath in
+            guard let self = self else { return nil }
+            
+            let deleteAction = UIContextualAction(style: .destructive, title: "삭제") { _, _, completion in
+                // 셀 삭제 동작을 뷰컨트롤러에 전달
+                self.onDeleteAction?(indexPath)
+                completion(true)
+            }
+            let swipeActions = UISwipeActionsConfiguration(actions: [deleteAction])
+            return swipeActions
+        }
         
+        let layout = UICollectionViewCompositionalLayout.list(using: config)
         return layout
     }
 }

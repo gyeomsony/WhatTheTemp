@@ -13,9 +13,10 @@ class SearchHistoryViewModel {
     private let repository: WeatherRepositoryProtocol
     private let disposeBag = DisposeBag()
     
-    private let coreDataManager = SearchCoreDataManager.shared
+    let coreDataManager = SearchCoreDataManager.shared
     
-    let cityWeathers = PublishRelay<[CityWeather]>()
+    // BehaviorRelay로 변경하여 값을 저장하고 접근 가능하게 함
+    let cityWeathers = BehaviorRelay<[CityWeather]>(value: [])
     
     init(repository: WeatherRepositoryProtocol) {
         self.repository = repository
@@ -43,5 +44,22 @@ class SearchHistoryViewModel {
                         print("Error fetching weathers: \(error)")
                     })
                     .disposed(by: disposeBag)
+    }
+    
+    func deleteCityWeather(at index: Int) {
+        guard index >= 0, index < cityWeathers.value.count else { return }
+        
+        let cityWeather = cityWeathers.value[index]
+        
+        // Core Data에서 cityName을 기준으로 삭제
+        coreDataManager.deleteSearchHistoryData(cityName: cityWeather.cityName) { [weak self] success in
+            if success {
+                var updatedCityWeathers = self?.cityWeathers.value ?? []
+                updatedCityWeathers.remove(at: index)  // 데이터에서 삭제
+                self?.cityWeathers.accept(updatedCityWeathers)  // 변경된 데이터로 업데이트
+            } else {
+                print("Failed to delete city weather.")
+            }
+        }
     }
 }
