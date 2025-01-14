@@ -30,7 +30,6 @@ class SearchHistoryViewModel {
                 responses.enumerated().map { (index, response) in
                     let cityWeather = CityWeather(weatherCode: response.currentWeather.weather[0].code,
                                                   cityName: entites[index].cityName ?? "",
-                                                  weatherDescription: response.currentWeather.weather[0].description,
                                                   currentTemperature: response.currentWeather.temperature,
                                                   minTemperature: response.dailyWeather[0].temperature.minTemperature,
                                                   maxTemperature: response.dailyWeather[0].temperature.maxTemperature)
