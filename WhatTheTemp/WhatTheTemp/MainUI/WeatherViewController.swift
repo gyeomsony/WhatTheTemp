@@ -6,9 +6,21 @@
 //
 
 import UIKit
+import RxSwift
 
 final class WeatherViewController: UIViewController {
+    private let disposeBag = DisposeBag()
     private let viewModel: WeatherViewModel
+    private let coreDataManager = SearchCoreDataManager.shared
+    private let userDefaults = UserDefaults.standard
+    private let lastPageKey = "LastViewedPageIndex"
+    
+    private var pages: [SearchHistoryEntity] = [] {
+        didSet {
+            pageControl.numberOfPages = pages.count + 1
+            pageCollectionView.reloadData()
+        }
+    }
     
     // Bool값을 사용해서 현재 온도를 관리하고 기본값은 "섭씨"로 함
     // UserDefaults를 사용해 선택 상태가 앱이 재실행 되더라도 유지가 됨
@@ -17,8 +29,6 @@ final class WeatherViewController: UIViewController {
             updateTemperatureUnit()
         }
     }
-    // 테스트로 2페이지 설정
-    private var pages: [Int] = [0, 1]
     
     private var pageCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -37,7 +47,7 @@ final class WeatherViewController: UIViewController {
     
     private lazy var pageControl: UIPageControl = {
         let pageControl = UIPageControl()
-        pageControl.numberOfPages = pages.count
+        pageControl.numberOfPages = pages.count + 1
         pageControl.currentPage = 0
         pageControl.currentPageIndicatorTintColor = .white
         pageControl.pageIndicatorTintColor = .lightGray
@@ -53,12 +63,16 @@ final class WeatherViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        loadPages()
+        scrollToLastViewedPage()
+        updateTemperatureUnit()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupNavigationBar()
         setupCollectionView()
-        setupViewModel()
-        updateTemperatureUnit()
     }
     
     private func setupCollectionView() {
@@ -75,15 +89,6 @@ final class WeatherViewController: UIViewController {
         
         pageCollectionView.delegate = self
         pageCollectionView.dataSource = self
-    }
-    
-    func addPage() {
-        let newIndex = pages.count
-        pages.append(newIndex)
-        pageCollectionView.reloadData()
-        
-        let indexPath = IndexPath(item: newIndex, section: 0)
-        pageCollectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
     }
     
     private func setupNavigationBar() {
@@ -141,20 +146,30 @@ final class WeatherViewController: UIViewController {
             }
         }
     }
-    private func setupViewModel() {
-        viewModel.fetchWeatherResponse(lat: 37.5665, lon: 126.9780)
+    
+    private func loadPages() {
+        pages = coreDataManager.readSearchHistoryData()
+    }
+    
+    private func scrollToLastViewedPage() {
+        let lastPageIndex = userDefaults.integer(forKey: lastPageKey)
+        if lastPageIndex < pages.count {
+            let indexPath = IndexPath(item: lastPageIndex, section: 0)
+            pageCollectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: false)
+            pageControl.currentPage = lastPageIndex
+        }
     }
 }
 
 extension WeatherViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        view.frame.size
+        return view.frame.size
     }
 }
 
 extension WeatherViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        pages.count
+        return pages.count + 1
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -171,5 +186,7 @@ extension WeatherViewController: UICollectionViewDelegate {
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         let currentPage = Int(scrollView.contentOffset.x / scrollView.bounds.width)
         pageControl.currentPage = currentPage
+        
+        userDefaults.set(currentPage, forKey: lastPageKey)
     }
 }

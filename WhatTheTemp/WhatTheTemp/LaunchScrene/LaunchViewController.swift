@@ -62,8 +62,9 @@ class LaunchViewController: UIViewController {
     }
     
     func transitionToWeatherView() {
-        let weatherVC = WeatherViewController()
-        navigationController?.pushViewController(weatherVC, animated: false)
+        let vm = WeatherViewModel(locationRepository: LocationRepository(), weatherRepository: WeatherRepository())
+        let vc = WeatherViewController(viewModel: vm)
+        navigationController?.pushViewController(vc, animated: false)
 
         UIView.transition(
             with: UIApplication.shared.windows.first ?? UIWindow(),
