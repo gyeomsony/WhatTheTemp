@@ -13,6 +13,8 @@ final class SearchViewModel {
     private let repository: KakaoMapRepositoryProtocol
     private let disposeBag = DisposeBag()
     
+    // 선택된 인덱스를 전달할 PublishSubject 선언
+    let selectedIndexSubject = PublishSubject<Int>()
     // 주소 리스트를 저장할 BehaviorRelay
     let addressList = BehaviorRelay<[KakaoMapModel.Document]>(value: [])
     // 검색어를 저장할 BehaviorRelay
