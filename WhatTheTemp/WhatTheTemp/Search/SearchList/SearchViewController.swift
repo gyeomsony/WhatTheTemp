@@ -189,10 +189,13 @@ extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSo
         // Observable을 구독하여 셀 업데이트
         weatherViewModel?.fetchWeatherResponseAsObservable(lat: lat, lon: lon)
             .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { current in
-                cell.updateWeatherInfo(current: current)
+            .subscribe(onNext: { [weak self] current in
+                // Current를 CityWeather로 변환
+                let cityWeather = current.toCityWeather(cityName: searchHistory.cityName ?? "")
+                cell.updateWeatherInfo(current: cityWeather)
             }, onError: { error in
                 print("Error fetching weather: \(error)")
+                // 여기에 에러 발생 시 처리 로직 추가
             })
             .disposed(by: cell.disposeBag) // 셀 단위로 DisposeBag 관리
         return cell
