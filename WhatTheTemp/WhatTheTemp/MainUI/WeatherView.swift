@@ -329,3 +329,12 @@ extension WeatherView: UICollectionViewDataSource {
 // MARK: - UICollectionView Delegate
 extension WeatherView: UICollectionViewDelegate {
 }
+
+extension UIView {
+    func updateTextColor(to color: UIColor) {
+        if let label = self as? UILabel {
+            label.textColor = color
+        }
+        subviews.forEach { $0.updateTextColor(to: color) }
+    }
+}
