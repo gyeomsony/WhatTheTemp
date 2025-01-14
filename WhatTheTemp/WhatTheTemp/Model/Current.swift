@@ -22,3 +22,16 @@ struct Current {
     let humidity: Double                // 현재 습도
     let rainProbability: Double         // 현재 강수 확률
 }
+
+extension Current {
+    func toCityWeather(cityName: String) -> CityWeather {
+        return CityWeather(
+            weatherCode: self.weatherCode,
+            cityName: cityName,
+            weatherDescription: self.weatherDescription,
+            currentTemperature: self.currentTemperature,
+            minTemperature: self.minTemperature,
+            maxTemperature: self.maxTemperature
+        )
+    }
+}
