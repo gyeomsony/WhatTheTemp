@@ -11,10 +11,14 @@ import Foundation
 struct CityWeather {
     let weatherCode: Int
     let cityName: String
-    let weatherDescription: String
     let currentTemperature: Double
     let minTemperature: Double
     let maxTemperature: Double
+    
+    /// 날씨 code를 통해 description 반환
+    var weatherDescription: String {
+        return WeatherAssets.getWeatherDescription(from: self.weatherCode)
+    }
     
     // 반올림 및 반내림을 적용한 계산 속성
     var roundedCurrentTemperature: Int {

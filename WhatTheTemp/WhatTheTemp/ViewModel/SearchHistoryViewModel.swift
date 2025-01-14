@@ -31,7 +31,6 @@ class SearchHistoryViewModel {
                 responses.map { response in
                     let cityWeather = CityWeather(weatherCode: response.currentWeather.weather[0].code,
                                                   cityName: "임시값 서울시",
-                                                  weatherDescription: response.currentWeather.weather[0].description,
                                                   currentTemperature: response.currentWeather.temperature,
                                                   minTemperature: response.dailyWeather[0].temperature.minTemperature,
                                                   maxTemperature: response.dailyWeather[0].temperature.maxTemperature)
