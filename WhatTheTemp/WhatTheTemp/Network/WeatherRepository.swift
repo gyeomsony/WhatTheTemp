@@ -13,7 +13,7 @@ import RxSwift
 protocol WeatherRepositoryProtocol {
     // OpenWeather API
     func fetchWeather(lat: Double, lon: Double) -> Single<WeatherResponse>
-    func fetchWeathers(coordinates: [(lat: Double, lon: Double)]) -> Single<[WeatherResponse]>
+    func fetchWeathers(entites: [SearchHistoryEntity]) -> Single<[WeatherResponse]>
     
     // Visual Crossing API
     func fetchVXCWeatherData(location: String, startDate: String, endDate: String) -> Single<VXCWeatherResponse>
@@ -30,11 +30,10 @@ final class WeatherRepository: WeatherRepositoryProtocol {
     }
     
     /// 여러개의 좌표를 배열로 받아 그에 대응하는 날씨 데이터의 배열을 반환
-    func fetchWeathers(coordinates: [(lat: Double, lon: Double)]) -> Single<[WeatherResponse]> {
-        let requests = coordinates.map { (lat, lon) in
-            fetchWeather(lat: lat, lon: lon)
+    func fetchWeathers(entites: [SearchHistoryEntity]) -> Single<[WeatherResponse]> {
+        let requests = entites.map { entity in
+            fetchWeather(lat: entity.lat, lon: entity.lon)
         }
-        
         /// zip : 입력 순서와 동일한 순서로 결과를 방출하는 것을 보장
         return Single.zip(requests) { responses in
             return responses
