@@ -80,13 +80,13 @@ final class WeatherViewController: UIViewController {
     
     private func setupNavigationBar() {
         let searchButton = UIBarButtonItem(image: UIImage(systemName: "magnifyingglass"),
-                                         style: .plain,
-                                         target: self,
-                                         action: nil)
-        let settingsButton = UIBarButtonItem(image: UIImage(systemName: "gearshape"),
                                            style: .plain,
                                            target: self,
                                            action: nil)
+        let settingsButton = UIBarButtonItem(image: UIImage(systemName: "gearshape"),
+                                             style: .plain,
+                                             target: self,
+                                             action: nil)
         
         navigationItem.rightBarButtonItem = searchButton
         navigationItem.leftBarButtonItem = settingsButton
@@ -96,7 +96,7 @@ final class WeatherViewController: UIViewController {
         navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
         navigationController?.navigationBar.shadowImage = UIImage()
         navigationController?.navigationBar.tintColor = .white
-        navigationController?.navigationBar.isTranslucent = true
+        navigationController?.navigationBar.isTranslucent = false // 반투명 해제
     }
     
     // 설정 메뉴로 온도 단위 전환
