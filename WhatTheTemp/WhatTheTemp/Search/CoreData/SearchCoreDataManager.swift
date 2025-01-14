@@ -22,23 +22,35 @@ final class SearchCoreDataManager {
     
     // Create
     func createSearchHistoryData(lat: Double, lon: Double, cityName: String, addressName: String) {
-        guard let entity = NSEntityDescription.entity(forEntityName: SearchHistoryEntity.className, in: context) else {
-            print("Entity not found")
-            return
-        }
-        
-        let newHistory = NSManagedObject(entity: entity, insertInto: context)
-        
-        newHistory.setValue(lon, forKey: SearchHistoryEntity.Key.lon)
-        newHistory.setValue(lat, forKey: SearchHistoryEntity.Key.lat)
-        newHistory.setValue(cityName, forKey: SearchHistoryEntity.Key.cityName)
-        newHistory.setValue(addressName, forKey: SearchHistoryEntity.Key.addressName)
+        // 중복 체크를 위한 FetchRequest 생성
+        let fetchRequest: NSFetchRequest<SearchHistoryEntity> = SearchHistoryEntity.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "cityName == %@", cityName)
         
         do {
+            let existingRecords = try self.context.fetch(fetchRequest)
+            
+            // cityName이 이미 존재하면 중복 저장하지 않음
+            if !existingRecords.isEmpty {
+                print("이미 저장된 cityName: \(cityName)")
+                return
+            }
+            
+            // 중복되지 않으면 새로운 데이터 생성
+            guard let entity = NSEntityDescription.entity(forEntityName: SearchHistoryEntity.className, in: context) else {
+                print("Entity not found")
+                return
+            }
+            
+            let newHistory = NSManagedObject(entity: entity, insertInto: context)
+            newHistory.setValue(lon, forKey: SearchHistoryEntity.Key.lon)
+            newHistory.setValue(lat, forKey: SearchHistoryEntity.Key.lat)
+            newHistory.setValue(cityName, forKey: SearchHistoryEntity.Key.cityName)
+            newHistory.setValue(addressName, forKey: SearchHistoryEntity.Key.addressName)
+            
             try self.context.save()
             print("히스토리 데이터 저장 성공")
         } catch {
-            print("히스토리 데이터 저장 실패: \(error.localizedDescription)")
+            print("히스토리 데이터 저장 실패 또는 중복 체크 중 에러: \(error.localizedDescription)")
         }
     }
     

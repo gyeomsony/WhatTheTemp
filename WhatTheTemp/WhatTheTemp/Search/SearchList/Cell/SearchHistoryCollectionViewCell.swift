@@ -94,12 +94,12 @@ final class SearchHistoryCollectionViewCell: UICollectionViewCell, ReuseIdentify
         // 날씨 관련 데이터를 셀에 표시
     }
     
-    func updateWeatherInfo(current: CityWeather) {
-        weatherIconImageView.image = UIImage(named: WeatherAssets.getIconName(from: current.weatherCode))
-        temperatureLabel.text = "\(current.roundedCurrentTemperature)°"
-        weatherConditionLabel.text = current.weatherDescription
-        minTemperatureLabel.text = "Min: \(current.roundedMinTemperature)°"
-        maxTemperatureLabel.text = "Max: \(current.roundedMaxTemperature)°"
+    func updateWeatherInfo(current cityWeather: CityWeather) {
+        weatherIconImageView.image = UIImage(named: WeatherAssets.getIconName(from: cityWeather.weatherCode))
+        temperatureLabel.text = "\(cityWeather.roundedCurrentTemperature)°"
+        weatherConditionLabel.text = cityWeather.weatherDescription
+        minTemperatureLabel.text = "Min: \(cityWeather.roundedMinTemperature)°"
+        maxTemperatureLabel.text = "Max: \(cityWeather.roundedMaxTemperature)°"
     }
     
     var disposeBag = DisposeBag() // DisposeBag를 셀 단위로 관리
