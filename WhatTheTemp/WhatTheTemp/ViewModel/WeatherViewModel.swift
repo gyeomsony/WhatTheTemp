@@ -66,3 +66,23 @@ class WeatherViewModel {
             .disposed(by: disposeBag)
     }
 }
+
+// MARK: - SearchViewController 바인딩용으로 기존 코드 건드리지 않기 위함
+extension WeatherViewModel {
+    func fetchWeatherResponseAsObservable(lat: Double, lon: Double) -> Observable<Current> {
+        return repository.fetchWeather(lat: lat, lon: lon)
+            .map { response -> Current in
+                let current = Current(weatherDescription: response.currentWeather.weather[0].description,
+                                      currentTemperature: response.currentWeather.temperature,
+                                      weatherCode: response.currentWeather.weather[0].code,
+                                      feelsLikeTemperature: response.currentWeather.feelsLike,
+                                      minTemperature: response.dailyWeather[0].temperature.minTemperature,
+                                      maxTemperature: response.dailyWeather[0].temperature.maxTemperature,
+                                      windSpeed: response.currentWeather.windSpeed,
+                                      humidity: response.currentWeather.humidity,
+                                      rainProbability: response.hourlyWeather[0].rain)
+                return current
+            }
+            .asObservable() // Single을 Observable로 변환
+    }
+}
