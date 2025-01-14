@@ -258,6 +258,8 @@ final class WeatherView: UIView {
         windSpeedLabel.text = "\(Int(current.windSpeed))m/s"
         humidityLabel.text = "\(current.humidity)%"
         rainLabel.text = "\(Int(current.rainProbability))%"
+        
+        updateTextColor(to: WeatherAssets.getFontColor(from: current.weatherCode))
     }
     
     // 온도단위 업데이트 메서드
