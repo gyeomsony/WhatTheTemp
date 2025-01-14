@@ -19,6 +19,13 @@ class WeatherViewModel {
     let tomorrowHourly = PublishRelay<[WeatherSummary]>()
     let nextFiveDaily = PublishRelay<[WeatherSummary]>()
     
+    let multipleCurrentWeather = PublishRelay<Current>()
+    let multipleTodayHourly = PublishRelay<[WeatherSummary]>()
+    let multipleTomorrowHourly = PublishRelay<[WeatherSummary]>()
+    let multipleNextFiveDaily = PublishRelay<[WeatherSummary]>()
+    
+    var currentLocation: (latitude: Double, longitude: Double) = (0, 0)
+    
     init(locationRepository: LocationRepositoryProtocol, weatherRepository: WeatherRepositoryProtocol) {
         self.locationRepository = locationRepository
         self.weatherRepository = weatherRepository
@@ -33,7 +40,7 @@ class WeatherViewModel {
                     let self = self,
                     let coordinate = locationRepository.currentLocation?.coordinate
                 else { return }
-                
+                currentLocation = (coordinate.latitude, coordinate.longitude)
                 fetchWeatherResponse(lat: coordinate.latitude, lon: coordinate.longitude)
             }
             .disposed(by: disposeBag)
@@ -85,6 +92,10 @@ class WeatherViewModel {
             .disposed(by: disposeBag)
     }
     
+    func fetchWeatherResponse() {
+        fetchWeatherResponse(lat: currentLocation.latitude, lon: currentLocation.longitude)
+    }
+    
     func fetchMultipleWeathers(entity: SearchHistoryEntity) {
         Observable
             .combineLatest(Observable.just(entity.cityName ?? ""),
@@ -121,10 +132,10 @@ class WeatherViewModel {
                 return (current, todayHourly, tomorrowHourly, nextFiveDaily)
             }
             .subscribe(onNext: { [weak self] (current, todayHourly, tomorrowHourly, nextFiveDaily) in
-                self?.currentWeather.accept(current)
-                self?.todayHourly.accept(todayHourly)
-                self?.tomorrowHourly.accept(tomorrowHourly)
-                self?.nextFiveDaily.accept(nextFiveDaily)
+                self?.multipleCurrentWeather.accept(current)
+                self?.multipleTodayHourly.accept(todayHourly)
+                self?.multipleTomorrowHourly.accept(tomorrowHourly)
+                self?.multipleNextFiveDaily.accept(nextFiveDaily)
             }, onError: { error in
                 print("에러 발생: \(error)")
             })

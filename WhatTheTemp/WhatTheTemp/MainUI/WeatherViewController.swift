@@ -45,6 +45,7 @@ final class WeatherViewController: UIViewController {
         collectionView.backgroundColor = .clear
         collectionView.isPagingEnabled = true
         collectionView.showsHorizontalScrollIndicator = false
+        collectionView.isPrefetchingEnabled = false
         collectionView.contentInsetAdjustmentBehavior = .never
         return collectionView
     }()
@@ -206,16 +207,18 @@ extension WeatherViewController: UICollectionViewDataSource {
             return UICollectionViewCell()
         }
         if indexPath.section == 0 {
-//            cell.weatherView.bind(to: viewModel)
+            cell.weatherView.bind(to: viewModel)
+            viewModel.fetchWeatherResponse()
         } else {
             if pages.isEmpty {
                 cell.weatherView.bind(to: viewModel)
+                viewModel.fetchWeatherResponse()
             }
             // 코어데이터에 저장된 위치
             else {
                 // 코어데이터에 저장된 위, 경도 값으로 불러와서 사용해야 함..
                 let storedLocation = pages[indexPath.item]
-                cell.weatherView.bind(to: viewModel)
+                cell.weatherView.multipleBind(to: viewModel)
                 viewModel.fetchMultipleWeathers(entity: storedLocation)
             }
         }

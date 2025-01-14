@@ -247,6 +247,37 @@ final class WeatherView: UIView {
             .disposed(by: disposeBag)
     }
     
+    func multipleBind(to viewModel: WeatherViewModel) {
+        disposeBag = DisposeBag()
+        viewModel.multipleCurrentWeather
+          .observe(on: MainScheduler.instance)
+          .subscribe(onNext: { [weak self] current in
+            self?.updateUI(with: current)
+          }, onError: { error in
+            print("데이터 바인딩 에러 발생: \(error)")
+          })
+          .disposed(by: disposeBag)
+        viewModel.multipleTodayHourly
+          .observe(on: MainScheduler.instance)
+          .subscribe(onNext: { [weak self] hourlyDatas in
+            self?.todatyWeather = hourlyDatas
+            self?.hourlyCollectionView.reloadData()
+          })
+          .disposed(by: disposeBag)
+        viewModel.multipleTomorrowHourly
+          .observe(on: MainScheduler.instance)
+          .subscribe(onNext: { [weak self] hourlyDatas in
+            self?.tomorrowWeather = hourlyDatas
+          })
+          .disposed(by: disposeBag)
+        viewModel.multipleNextFiveDaily
+          .observe(on: MainScheduler.instance)
+          .subscribe(onNext: { [weak self] dailyDatas in
+            self?.nextFiveDaysWeather = dailyDatas
+          })
+          .disposed(by: disposeBag)
+      }
+    
     // MARK: - UI Update Method
     public func updateUI(with current: Current) {
         // 현재 날씨

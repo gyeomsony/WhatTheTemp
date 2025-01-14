@@ -6,11 +6,9 @@
 //
 
 import UIKit
-import RxSwift
 
 final class WeatherPageCell: UICollectionViewCell {
     private(set) var weatherView = WeatherView()
-    private var disposeBag = DisposeBag()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -23,7 +21,6 @@ final class WeatherPageCell: UICollectionViewCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
-        disposeBag = DisposeBag()
         weatherView.resetData()
     }
     
