@@ -63,6 +63,7 @@ final class WeatherViewController: UIViewController {
         super.viewDidLoad()
         setupNavigationBar()
         setupCollectionView()
+        loadPages()
         setupViewModel()
         updateTemperatureUnit()
     }
@@ -163,6 +164,9 @@ extension WeatherViewController: UICollectionViewDataSource {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "WeatherPageCell", for: indexPath) as? WeatherPageCell else {
             return UICollectionViewCell()
         }
+        let page = pages[indexPath.item]
+        viewModel.fetchWeatherResponse(lat: page.lat, lon: page.lon)
+        
         cell.weatherView.bind(to: viewModel)
         cell.weatherView.updateTemperatureUnit(isCelsius: isCelsius) // 초기 값 전달
         return cell
