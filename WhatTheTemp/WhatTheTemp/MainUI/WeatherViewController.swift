@@ -53,7 +53,6 @@ final class WeatherViewController: UIViewController {
     private lazy var pageControl: UIPageControl = {
         let pageControl = UIPageControl()
         pageControl.numberOfPages = pages.count + 1
-        pageControl.currentPage = 0
         pageControl.currentPageIndicatorTintColor = .white
         pageControl.pageIndicatorTintColor = .lightGray
         return pageControl
@@ -70,14 +69,15 @@ final class WeatherViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        updateTemperatureUnit()
         setupNavigationBar()
         setupCollectionView()
-        loadPages()
-        scrollToLastViewedPage()
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        updateTemperatureUnit()
+        navigationController?.navigationBar.prefersLargeTitles = false
+        loadPages()
+        scrollToLastViewedPage()
     }
     
     private func setupCollectionView() {
@@ -177,12 +177,21 @@ final class WeatherViewController: UIViewController {
     }
     
     private func scrollToLastViewedPage() {
-        let lastPageIndex = userDefaults.integer(forKey: lastPageKey) - 1
-        let indexPath = IndexPath(item: lastPageIndex, section: 1)
+        pageControl.currentPage = pageControl.numberOfPages - 1
+        let indexPath = IndexPath(item: pageControl.currentPage - 1, section: 1)
         mainQueue.async {
             self.pageCollectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
         }
-        pageControl.currentPage = lastPageIndex
+//        if userDefaults.integer(forKey: lastPageKey) == 0 {
+//            pageControl.currentPage = 0
+//        } else {
+//            let lastPageIndex = userDefaults.integer(forKey: lastPageKey) - 1
+//            let indexPath = IndexPath(item: lastPageIndex, section: 1)
+//            mainQueue.async {
+//                self.pageCollectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
+//            }
+//            pageControl.currentPage = lastPageIndex + 1
+//        }
     }
 }
 
