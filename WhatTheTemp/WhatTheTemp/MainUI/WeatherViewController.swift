@@ -15,11 +15,14 @@ final class WeatherViewController: UIViewController {
     private let coreDataManager = SearchCoreDataManager.shared
     private let userDefaults = UserDefaults.standard
     private let lastPageKey = "LastViewedPageIndex"
+    let mainQueue = DispatchQueue.main
     
     private var pages: [SearchHistoryEntity] = [] {
         didSet {
             pageControl.numberOfPages = pages.count + 1
-            pageCollectionView.reloadData()
+            mainQueue.async {
+                self.pageCollectionView.reloadData()
+            }
         }
     }
     
@@ -64,16 +67,16 @@ final class WeatherViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        loadPages()
-        scrollToLastViewedPage()
-        updateTemperatureUnit()
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupNavigationBar()
         setupCollectionView()
+        loadPages()
+        scrollToLastViewedPage()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        updateTemperatureUnit()
     }
     
     private func setupCollectionView() {
@@ -173,12 +176,12 @@ final class WeatherViewController: UIViewController {
     }
     
     private func scrollToLastViewedPage() {
-        let lastPageIndex = userDefaults.integer(forKey: lastPageKey)
-        if lastPageIndex < pages.count {
-            let indexPath = IndexPath(item: lastPageIndex, section: 0)
-            pageCollectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: false)
-            pageControl.currentPage = lastPageIndex
+        let lastPageIndex = userDefaults.integer(forKey: lastPageKey) - 1
+        let indexPath = IndexPath(item: lastPageIndex, section: 1)
+        mainQueue.async {
+            self.pageCollectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
         }
+        pageControl.currentPage = lastPageIndex
     }
 }
 
@@ -189,16 +192,35 @@ extension WeatherViewController: UICollectionViewDelegateFlowLayout {
 }
 
 extension WeatherViewController: UICollectionViewDataSource {
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return 2
+    }
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return pages.count + 1
+        if section == 0 { return 1 }
+        else { return pages.count }
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "WeatherPageCell", for: indexPath) as? WeatherPageCell else {
             return UICollectionViewCell()
         }
-        cell.weatherView.bind(to: viewModel)
-        cell.weatherView.updateTemperatureUnit(isCelsius: isCelsius) // 초기 값 전달
+        if indexPath.section == 0 {
+           cell.weatherView.bind(to: viewModel)
+           viewModel.fetchWeatherResponse()
+        } else {
+            if pages.isEmpty {
+                cell.weatherView.bind(to: viewModel)
+                viewModel.fetchWeatherResponse()
+            }
+            // 코어데이터에 저장된 위치
+            else {
+                // 코어데이터에 저장된 위, 경도 값으로 불러와서 사용해야 함..
+                let storedLocation = pages[indexPath.item]
+                cell.weatherView.bind(to: viewModel)
+                viewModel.fetchMultipleWeathers(entity: storedLocation)
+            }
+        }
         cell.weatherView.mainWeatherBlockTapGesture?
             .rx.event
             .withUnretained(self)
@@ -215,7 +237,6 @@ extension WeatherViewController: UICollectionViewDelegate {
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         let currentPage = Int(scrollView.contentOffset.x / scrollView.bounds.width)
         pageControl.currentPage = currentPage
-        
         userDefaults.set(currentPage, forKey: lastPageKey)
     }
 }
