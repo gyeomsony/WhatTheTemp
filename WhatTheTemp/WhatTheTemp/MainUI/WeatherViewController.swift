@@ -70,6 +70,7 @@ final class WeatherViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        updateTemperatureUnit()
         setupNavigationBar()
         setupCollectionView()
         loadPages()
@@ -77,7 +78,7 @@ final class WeatherViewController: UIViewController {
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        updateTemperatureUnit()
+        navigationController?.navigationBar.prefersLargeTitles = false
     }
     
     private func setupCollectionView() {
