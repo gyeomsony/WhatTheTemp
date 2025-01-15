@@ -13,7 +13,7 @@ class SearchHistoryViewModel {
     private let repository: WeatherRepositoryProtocol
     private let disposeBag = DisposeBag()
     
-    private let coreDataManager = SearchCoreDataManager.shared
+    let coreDataManager = SearchCoreDataManager.shared
     
     let cityWeathers = PublishRelay<[CityWeather]>()
     
