@@ -23,6 +23,7 @@ final class WeatherView: UIView {
     private var tomorrowWeather: [WeatherSummary] = []
     private var nextFiveDaysWeather: [WeatherSummary] = []
     
+    private(set) var mainWeatherBlockTapGesture: UITapGestureRecognizer?
     weak var delegate: WeatherViewDelegate?
     
     // MARK: - 상단 UI Components
@@ -69,7 +70,7 @@ final class WeatherView: UIView {
         return imageView
     }()
     
-    private lazy var mainWeatherBlock = HorizontalStackView(with: [mainWeatherTextStackView,
+    private(set) lazy var mainWeatherBlock = HorizontalStackView(with: [mainWeatherTextStackView,
                                                                    weatherIconImageView])
     
     // 체감온도, 최저온도, 최고온도 표시 컴포넌트
@@ -141,6 +142,7 @@ final class WeatherView: UIView {
         setupButtons()
         setupAutoLayouts()
         setupDelegates()
+        setupTapGestureRecognizer()
     }
     
     required init?(coder: NSCoder) {
@@ -341,6 +343,11 @@ final class WeatherView: UIView {
             let convertedMax = SettingsManager.convertTemperature(value: maxTempValue, to: targetUnit)
             maxTemperatureLabel.text = "\(Int(convertedMax))°"
         }
+    }
+    
+    private func setupTapGestureRecognizer() {
+        mainWeatherBlockTapGesture = UITapGestureRecognizer()
+        mainWeatherBlock.addGestureRecognizer(mainWeatherBlockTapGesture!)
     }
 }
 
