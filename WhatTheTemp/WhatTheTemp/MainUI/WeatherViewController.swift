@@ -53,7 +53,6 @@ final class WeatherViewController: UIViewController {
     private lazy var pageControl: UIPageControl = {
         let pageControl = UIPageControl()
         pageControl.numberOfPages = pages.count + 1
-        pageControl.currentPage = 0
         pageControl.currentPageIndicatorTintColor = .white
         pageControl.pageIndicatorTintColor = .lightGray
         return pageControl
@@ -77,7 +76,7 @@ final class WeatherViewController: UIViewController {
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        updateTemperatureUnit()
+//        updateTemperatureUnit()
     }
     
     private func setupCollectionView() {
@@ -177,12 +176,16 @@ final class WeatherViewController: UIViewController {
     }
     
     private func scrollToLastViewedPage() {
-        let lastPageIndex = userDefaults.integer(forKey: lastPageKey) - 1
-        let indexPath = IndexPath(item: lastPageIndex, section: 1)
-        mainQueue.async {
-            self.pageCollectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
+        if userDefaults.integer(forKey: lastPageKey) == 0 {
+            pageControl.currentPage = 0
+        } else {
+            let lastPageIndex = userDefaults.integer(forKey: lastPageKey) - 1
+            let indexPath = IndexPath(item: lastPageIndex, section: 1)
+            mainQueue.async {
+                self.pageCollectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
+            }
+            pageControl.currentPage = lastPageIndex + 1
         }
-        pageControl.currentPage = lastPageIndex
     }
 }
 
