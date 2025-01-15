@@ -84,5 +84,8 @@ final class HourlyCollectionViewCell: UICollectionViewCell {
             .map { UIImage(named: $0) }
             .bind(to: weatherIconImageView.rx.image)
             .disposed(by: disposeBag)
+        
+        updateTextColor(to: WeatherAssets.getFontColor(from: data.statusCode))
+        self.backgroundColor = WeatherAssets.getColorSet(from: data.statusCode).block
     }
 }

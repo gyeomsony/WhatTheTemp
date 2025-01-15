@@ -7,6 +7,10 @@
 import UIKit
 import RxSwift
 
+protocol WeatherViewDelegate: AnyObject {
+    func setNavigationBarTintColor(to color: UIColor)
+}
+
 final class WeatherView: UIView {
     
     private var disposeBag = DisposeBag()
@@ -18,6 +22,8 @@ final class WeatherView: UIView {
     private var todatyWeather: [WeatherSummary] = []
     private var tomorrowWeather: [WeatherSummary] = []
     private var nextFiveDaysWeather: [WeatherSummary] = []
+    
+    weak var delegate: WeatherViewDelegate?
     
     // MARK: - 상단 UI Components
     // 지역명, 날씨, 기온 표시 컴포넌트
@@ -297,6 +303,11 @@ final class WeatherView: UIView {
         rainLabel.text = "\(Int(current.rainProbability))%"
         
         updateTextColor(to: WeatherAssets.getFontColor(from: current.weatherCode))
+        [mainWeatherBlock, feelsLikeBlock, windSpeedBlock].forEach {
+            $0.backgroundColor = WeatherAssets.getColorSet(from: current.weatherCode).block
+        }
+        backgroundColor = WeatherAssets.getColorSet(from: current.weatherCode).background
+        delegate?.setNavigationBarTintColor(to: WeatherAssets.getFontColor(from: current.weatherCode))
     }
     
     // 온도단위 업데이트 메서드
