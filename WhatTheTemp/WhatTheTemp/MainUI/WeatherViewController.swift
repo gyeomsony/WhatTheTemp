@@ -206,10 +206,12 @@ extension WeatherViewController: UICollectionViewDataSource {
             return UICollectionViewCell()
         }
         if indexPath.section == 0 {
-//            cell.weatherView.bind(to: viewModel)
+           cell.weatherView.bind(to: viewModel)
+           viewModel.fetchWeatherResponse()
         } else {
             if pages.isEmpty {
                 cell.weatherView.bind(to: viewModel)
+                viewModel.fetchWeatherResponse()
             }
             // 코어데이터에 저장된 위치
             else {
@@ -219,6 +221,14 @@ extension WeatherViewController: UICollectionViewDataSource {
                 viewModel.fetchMultipleWeathers(entity: storedLocation)
             }
         }
+        cell.weatherView.mainWeatherBlockTapGesture?
+            .rx.event
+            .withUnretained(self)
+            .bind(onNext: { vc, _ in
+                let weatherDetailViewModel = WeatherDetailViewModel(weatherRepository: WeatherRepository(), loactionRepository: LocationRepository())
+                let weatherDetailViewController = WeatherDetailViewController(viewModel: weatherDetailViewModel)
+                vc.navigationController?.present(weatherDetailViewController, animated: true)
+            }).disposed(by: disposeBag)
         return cell
     }
 }

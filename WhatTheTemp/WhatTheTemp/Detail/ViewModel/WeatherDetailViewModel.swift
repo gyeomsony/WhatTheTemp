@@ -9,7 +9,9 @@ import RxSwift
 import RxCocoa
 
 final class WeatherDetailViewModel {
-    private let repository: WeatherRepositoryProtocol
+    private let weatherRepository: WeatherRepositoryProtocol
+    private let locationRepository: LocationRepository
+    private let searchCoreDataManager = SearchCoreDataManager.shared
     private let disposeBag = DisposeBag()
     
     private let selectedDateCellID = BehaviorRelay<String?>(value: nil)
@@ -18,17 +20,35 @@ final class WeatherDetailViewModel {
     let viewDidLoadTrigger = PublishRelay<Void>()
     let weatherSections = BehaviorRelay<[SectionModel]>(value: [])
     
-    init(repository: WeatherRepositoryProtocol) {
-        self.repository = repository
+    init(weatherRepository: WeatherRepositoryProtocol,
+         loactionRepository: LocationRepository) {
+        self.weatherRepository = weatherRepository
+        self.locationRepository = loactionRepository
         
         viewDidLoadTrigger
-            .flatMap { [weak self] _ -> Observable<[SectionModel]> in
+            .map { [weak self] _ -> String in
+                guard let self = self else { return ""}
+                let currentPage = UserDefaults.standard.integer(forKey: "LastViewedPageIndex")
+                
+                if currentPage == 0 { // 첫 번째 페이지는 CLLocation에서 위도 경도 관리중
+                    guard let lat = locationRepository.currentLocation?.coordinate.latitude,
+                          let lon = locationRepository.currentLocation?.coordinate.longitude else { return "" }
+                    
+                    return "\(lat),\(lon)"
+                } else {    // 두 번째 페이지부터 CoreData에서 위도 경도 관리중
+                    let list = searchCoreDataManager.readSearchHistoryData()
+                    let lat = list[currentPage - 1].lat
+                    let lon = list[currentPage - 1].lon
+                    
+                    return "\(lat),\(lon)"
+                }
+            }.flatMap { [weak self] location -> Observable<[SectionModel]> in
                 guard let self = self else { return .empty() }
                 
-                return self.repository.fetchVXCWeatherData(
-                    location: "37.4837,127.0325",
-                    startDate: "2025-01-10",
-                    endDate: "2025-01-12"
+                return self.weatherRepository.fetchVXCWeatherData(
+                    location: location,
+                    startDate: createTodayDateString(),
+                    endDate: createEndDateString() ?? "2025-12-31"
                 ).asObservable()
                     .withUnretained(self)
                     .map { vm, response in
@@ -41,7 +61,7 @@ final class WeatherDetailViewModel {
                             vm.selectedDateCellID.accept(dateCellViewModel.dateInfo.id)
                             vm.dateSectionFooterData.accept(dateCellViewModel.dateInfo.fullDate)
                         }
-                    
+                        
                         return [dateSection, weatherSection]
                     }
             }.bind(to: weatherSections)
@@ -194,10 +214,23 @@ final class WeatherDetailViewModel {
         return components[0] + components[1] / 60
     }
     
-    private func todayDateString() -> String {
+    private func createTodayDateString() -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
         formatter.locale = Locale(identifier: "ko_KR")
         return formatter.string(from: Date())
+    }
+    
+    private func createEndDateString() -> String? {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        dateFormatter.locale = Locale(identifier: "ko_KR")
+        
+        guard let date = dateFormatter.date(from: createTodayDateString()) else { return nil }
+        
+        let calender = Calendar.current
+        guard let endDate = calender.date(byAdding: .day, value: 10, to: date) else { return nil }
+        
+        return dateFormatter.string(from: endDate)
     }
 }

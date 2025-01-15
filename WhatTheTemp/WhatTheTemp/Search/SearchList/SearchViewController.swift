@@ -7,6 +7,7 @@
 
 import UIKit
 import RxSwift
+import RxCocoa
 
 final class SearchViewController: UIViewController {
     private var disposeBag = DisposeBag()
@@ -53,6 +54,7 @@ final class SearchViewController: UIViewController {
         setupCollectionView()
         bindViewModel()
         bindSearchBar()
+        bindCollectionViewCellIndex()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -142,6 +144,19 @@ private extension SearchViewController {
             .disposed(by: disposeBag)
     }
     
+    func bindCollectionViewCellIndex() {
+        searchHistoryListView.collectionView.rx.itemSelected
+            .subscribe(onNext: { [weak self] indexPath in
+                guard let self = self else { return }
+                // 셀 선택 시 selectedIndexSubject에 인덱스 전달
+                self.searchViewModel.selectedIndexSubject.onNext(indexPath.row)
+                // 화면 pop
+                self.navigationController?.popViewController(animated: false)
+            })
+            .disposed(by: disposeBag)
+    }
+
+    
     // ViewModel에 바인딩
     func bindViewModel() {
         // SearchViewModel에서 데이터를 가져와 SearchResultViewModel에 바인딩
@@ -182,7 +197,7 @@ extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSo
     }
     
     // 셀을 탭했을 때 화면 pop
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        self.navigationController?.popViewController(animated: true)
-    }
+//    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+//        self.navigationController?.popViewController(animated: false)
+//    }
 }
