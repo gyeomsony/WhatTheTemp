@@ -108,8 +108,8 @@ final class SearchHistoryCollectionViewCell: UICollectionViewCell, ReuseIdentify
 
 extension SearchHistoryCollectionViewCell {
     func setupUI() {
-        self.backgroundColor = .clear
-        baseView.backgroundColor = UIColor(red: 55/255, green: 55/255, blue: 55/255, alpha: 1.0)
+        self.backgroundColor = UIColor(red: 33/255, green: 33/255, blue: 33/255, alpha: 1.0)
+        baseView.backgroundColor = UIColor(red: 33/255, green: 33/255, blue: 33/255, alpha: 1.0)
         baseView.layer.cornerRadius = 20
         baseView.clipsToBounds = true
         
@@ -124,7 +124,7 @@ extension SearchHistoryCollectionViewCell {
     
     func setupConstraint() {
         baseView.snp.makeConstraints {
-            $0.edges.equalToSuperview()
+            $0.edges.equalToSuperview().inset(10)
         }
         
         weatherIconImageView.snp.makeConstraints {

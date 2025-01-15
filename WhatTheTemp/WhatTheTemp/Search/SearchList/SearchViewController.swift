@@ -130,6 +130,10 @@ private extension SearchViewController {
         searchHistoryListView.collectionView.dataSource = self
         
         searchHistoryListView.collectionView.register(SearchHistoryCollectionViewCell.self, forCellWithReuseIdentifier: SearchHistoryCollectionViewCell.reuseIdentifier)
+        // deleteAction 클로저 설정
+        searchHistoryListView.onDeleteAction = { [weak self] indexPath in
+            self?.deleteItem(at: indexPath)
+        }
     }
     
     // 각 셀에 해당하는 데이터 바인딩
@@ -150,6 +154,8 @@ private extension SearchViewController {
                 guard let self = self else { return }
                 // 셀 선택 시 selectedIndexSubject에 인덱스 전달
                 self.searchViewModel.selectedIndexSubject.onNext(indexPath.row)
+                // 삭제
+                self.searchHistoryViewModel?.cityWeathers
                 // 화면 pop
                 self.navigationController?.popViewController(animated: false)
             })
@@ -195,9 +201,47 @@ extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSo
         
         return cell
     }
+}
+
+// MARK: - 삭제 처리 메소드
+
+private extension SearchViewController {
+    func deleteItem(at indexPath: IndexPath) {
+        guard cityWeathers.indices.contains(indexPath.row) else { return }
+        
+        // Core Data에서 데이터 삭제
+        let cityWeather = cityWeathers[indexPath.row]
+        deleteCityWeatherFromCoreData(cityWeather)
+        
+        // 배열에서 데이터 삭제
+        cityWeathers.remove(at: indexPath.row)
+        
+        // 컬렉션 뷰 갱신
+        searchHistoryListView.collectionView.reloadData()
+    }
+
+    func deleteCityWeatherFromCoreData(_ cityWeather: CityWeather) {
+        guard let viewModel = searchHistoryViewModel else {
+            print("SearchHistoryViewModel is nil")
+            return
+        }
+        
+        // Core Data에서 해당 도시 날씨 데이터를 삭제
+        viewModel.coreDataManager.deleteSearchHistoryData(cityName: cityWeather.cityName) { [weak self] success in
+            if success {
+                // Core Data에서 삭제 후 최신 데이터 가져오기
+                self?.fetchUpdatedCityWeathers()
+            } else {
+                print("Failed to delete city weather from Core Data.")
+            }
+        }
+    }
     
-    // 셀을 탭했을 때 화면 pop
-//    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-//        self.navigationController?.popViewController(animated: false)
-//    }
+    func fetchUpdatedCityWeathers() {
+        // 최신 데이터를 Core Data에서 가져옵니다
+        let updatedCityWeathers = searchHistoryViewModel?.coreDataManager.readSearchHistoryData() ?? []
+        
+        // ViewModel에 최신 데이터 업데이트
+        searchHistoryViewModel?.cityWeathers
+    }
 }
