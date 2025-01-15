@@ -7,6 +7,10 @@
 import UIKit
 import RxSwift
 
+protocol WeatherViewDelegate: AnyObject {
+    func setNavigationBarTintColor(to color: UIColor)
+}
+
 final class WeatherView: UIView {
     
     private var disposeBag = DisposeBag()
@@ -20,6 +24,7 @@ final class WeatherView: UIView {
     private var nextFiveDaysWeather: [WeatherSummary] = []
     
     private(set) var mainWeatherBlockTapGesture: UITapGestureRecognizer?
+    weak var delegate: WeatherViewDelegate?
     
     // MARK: - 상단 UI Components
     // 지역명, 날씨, 기온 표시 컴포넌트
@@ -250,6 +255,37 @@ final class WeatherView: UIView {
             .disposed(by: disposeBag)
     }
     
+    func multipleBind(to viewModel: WeatherViewModel) {
+        disposeBag = DisposeBag()
+        viewModel.multipleCurrentWeather
+          .observe(on: MainScheduler.instance)
+          .subscribe(onNext: { [weak self] current in
+            self?.updateUI(with: current)
+          }, onError: { error in
+            print("데이터 바인딩 에러 발생: \(error)")
+          })
+          .disposed(by: disposeBag)
+        viewModel.multipleTodayHourly
+          .observe(on: MainScheduler.instance)
+          .subscribe(onNext: { [weak self] hourlyDatas in
+            self?.todatyWeather = hourlyDatas
+            self?.hourlyCollectionView.reloadData()
+          })
+          .disposed(by: disposeBag)
+        viewModel.multipleTomorrowHourly
+          .observe(on: MainScheduler.instance)
+          .subscribe(onNext: { [weak self] hourlyDatas in
+            self?.tomorrowWeather = hourlyDatas
+          })
+          .disposed(by: disposeBag)
+        viewModel.multipleNextFiveDaily
+          .observe(on: MainScheduler.instance)
+          .subscribe(onNext: { [weak self] dailyDatas in
+            self?.nextFiveDaysWeather = dailyDatas
+          })
+          .disposed(by: disposeBag)
+      }
+    
     // MARK: - UI Update Method
     public func updateUI(with current: Current) {
         // 현재 날씨
@@ -269,6 +305,11 @@ final class WeatherView: UIView {
         rainLabel.text = "\(Int(current.rainProbability))%"
         
         updateTextColor(to: WeatherAssets.getFontColor(from: current.weatherCode))
+        [mainWeatherBlock, feelsLikeBlock, windSpeedBlock].forEach {
+            $0.backgroundColor = WeatherAssets.getColorSet(from: current.weatherCode).block
+        }
+        backgroundColor = WeatherAssets.getColorSet(from: current.weatherCode).background
+        delegate?.setNavigationBarTintColor(to: WeatherAssets.getFontColor(from: current.weatherCode))
     }
     
     // 온도단위 업데이트 메서드

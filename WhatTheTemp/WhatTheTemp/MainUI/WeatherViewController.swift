@@ -45,6 +45,7 @@ final class WeatherViewController: UIViewController {
         collectionView.backgroundColor = .clear
         collectionView.isPagingEnabled = true
         collectionView.showsHorizontalScrollIndicator = false
+        collectionView.isPrefetchingEnabled = false
         collectionView.contentInsetAdjustmentBehavior = .never
         return collectionView
     }()
@@ -112,8 +113,8 @@ final class WeatherViewController: UIViewController {
         
         navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
         navigationController?.navigationBar.shadowImage = UIImage()
-        navigationController?.navigationBar.tintColor = .white
-        navigationController?.navigationBar.isTranslucent = false // 반투명 해제
+        navigationController?.navigationBar.isTranslucent = true
+        navigationController?.navigationBar.backgroundColor = .clear
     }
     
     // Search Button Action
@@ -205,9 +206,11 @@ extension WeatherViewController: UICollectionViewDataSource {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "WeatherPageCell", for: indexPath) as? WeatherPageCell else {
             return UICollectionViewCell()
         }
+        cell.weatherView.delegate = self
+        
         if indexPath.section == 0 {
-           cell.weatherView.bind(to: viewModel)
-           viewModel.fetchWeatherResponse()
+            cell.weatherView.bind(to: viewModel)
+            viewModel.fetchWeatherResponse()
         } else {
             if pages.isEmpty {
                 cell.weatherView.bind(to: viewModel)
@@ -217,7 +220,7 @@ extension WeatherViewController: UICollectionViewDataSource {
             else {
                 // 코어데이터에 저장된 위, 경도 값으로 불러와서 사용해야 함..
                 let storedLocation = pages[indexPath.item]
-                cell.weatherView.bind(to: viewModel)
+                cell.weatherView.multipleBind(to: viewModel)
                 viewModel.fetchMultipleWeathers(entity: storedLocation)
             }
         }
@@ -238,5 +241,11 @@ extension WeatherViewController: UICollectionViewDelegate {
         let currentPage = Int(scrollView.contentOffset.x / scrollView.bounds.width)
         pageControl.currentPage = currentPage
         userDefaults.set(currentPage, forKey: lastPageKey)
+    }
+}
+
+extension WeatherViewController: WeatherViewDelegate {
+    func setNavigationBarTintColor(to color: UIColor) {
+        self.navigationController?.navigationBar.tintColor = color
     }
 }
