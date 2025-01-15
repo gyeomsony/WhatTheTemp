@@ -72,12 +72,12 @@ final class WeatherViewController: UIViewController {
         updateTemperatureUnit()
         setupNavigationBar()
         setupCollectionView()
-        loadPages()
-        scrollToLastViewedPage()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         navigationController?.navigationBar.prefersLargeTitles = false
+        loadPages()
+        scrollToLastViewedPage()
     }
     
     private func setupCollectionView() {
@@ -177,16 +177,21 @@ final class WeatherViewController: UIViewController {
     }
     
     private func scrollToLastViewedPage() {
-        if userDefaults.integer(forKey: lastPageKey) == 0 {
-            pageControl.currentPage = 0
-        } else {
-            let lastPageIndex = userDefaults.integer(forKey: lastPageKey) - 1
-            let indexPath = IndexPath(item: lastPageIndex, section: 1)
-            mainQueue.async {
-                self.pageCollectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
-            }
-            pageControl.currentPage = lastPageIndex + 1
+        pageControl.currentPage = pageControl.numberOfPages - 1
+        let indexPath = IndexPath(item: pageControl.currentPage - 1, section: 1)
+        mainQueue.async {
+            self.pageCollectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
         }
+//        if userDefaults.integer(forKey: lastPageKey) == 0 {
+//            pageControl.currentPage = 0
+//        } else {
+//            let lastPageIndex = userDefaults.integer(forKey: lastPageKey) - 1
+//            let indexPath = IndexPath(item: lastPageIndex, section: 1)
+//            mainQueue.async {
+//                self.pageCollectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
+//            }
+//            pageControl.currentPage = lastPageIndex + 1
+//        }
     }
 }
 
